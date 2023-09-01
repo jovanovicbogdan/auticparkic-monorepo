@@ -4,8 +4,8 @@
 
 ### TODO Backend
 
-- [ ] Add Swagger
-- [ ] Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level
+- [x] Add Swagger
+- [x] Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level
 
 ### TODO Frontend
 

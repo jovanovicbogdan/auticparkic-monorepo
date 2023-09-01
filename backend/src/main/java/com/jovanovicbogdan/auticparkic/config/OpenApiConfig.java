@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
     servers = {
-        @Server(url = "http://localhost:8080", description = "Local server"),
+        @Server(url = "http://localhost:10000", description = "Local server"),
         @Server(url = "https://auticparkic.herokuapp.com", description = "Heroku server")
     },
     info = @Info(

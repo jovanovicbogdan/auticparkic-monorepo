@@ -27,6 +27,8 @@ aws:
 
 # spring boot actuator
 management:
+#  server:
+#    port: 10000
   endpoints:
     web:
       exposure:
