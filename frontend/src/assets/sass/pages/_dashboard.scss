@@ -1,0 +1,228 @@
+.dashboard-root {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+
+  .backdrop.active {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .dashboard-navbar {
+    width: 300px;
+    margin-right: 2rem;
+
+    h1 {
+      margin: 2rem 4rem 2rem 2rem;
+      font-size: 14px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      margin-left: 1rem;
+      margin-top: 1.2rem;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+
+      .nav-item-icon {
+        background-color: #ffffff;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.12);
+      }
+
+      span {
+        margin-left: 1rem;
+      }
+    }
+
+    .icon {
+      color: #8c8c8c;
+    }
+
+    .nav-item.active {
+      background-color: #ffffff;
+      box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.12);
+
+      .nav-item-icon.active {
+        background-color: $blue;
+
+        .icon {
+          color: #ffffff;
+        }
+      }
+
+      span {
+        font-weight: 600;
+      }
+    }
+  }
+
+  .dashboard-tables {
+    overflow-x: auto;
+    background-color: #ffffff;
+    box-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.05);
+    width: 80%;
+    max-height: 70vh;
+    margin-top: 6rem;
+    margin-right: 2rem;
+    padding: 2rem;
+
+    .dashboard-description {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      h2 {
+        font-size: 16px;
+      }
+
+      button {
+        font-weight: 600;
+        border-width: 2px;
+      }
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 3rem;
+      min-width: 100%;
+      text-align: left;
+
+      td {
+        font-size: 14px;
+      }
+
+      .vehicle-image {
+        width: 80px;
+      }
+
+      thead {
+        th {
+          font-weight: 700;
+          color: #8c8c8c;
+        }
+      }
+
+      tbody {
+        tr {
+          border-top: 1px solid #f0f0f0;
+
+          .vehicle-status {
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+          }
+
+          .vehicle-status-active {
+            background-color: $blue;
+          }
+
+          .vehicle-status-inactive {
+            background-color: $red;
+          }
+
+          .edit-btn {
+            font-weight: 500;
+            text-decoration: underline;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+
+  .dashboard-slider {
+    position: absolute;
+    background-color: #ffffff;
+    min-height: 100%;
+    border-start-start-radius: 16px;
+    border-bottom-left-radius: 16px;
+    // right: -100%;
+    width: 60vw;
+
+    .slider-header {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      h3 {
+        margin-left: 1rem;
+      }
+    }
+
+    .slider-data {
+      margin-top: 2rem;
+      // margin: 2rem auto 0 auto;
+      // width: 70%;
+      // text-align: center;
+
+      // label {
+      //   display: inline-block;
+      //   margin-top: 2rem;
+      //   margin-right: 1rem;
+      //   margin-bottom: 1rem;
+      // }
+
+      // input[type="file"] {
+      //   display: none;
+      // }
+
+      // label[for="slider-image"] {
+      //   background-color: #ffffff;
+      //   border: 1px solid #8c8c8c;
+      //   border-radius: 16px;
+      //   padding: 0.5rem 1rem;
+      //   cursor: pointer;
+      //   width: 100px;
+      //   text-align: center;
+      //   margin: 1.5rem auto;
+      //   cursor: not-allowed;
+      //   margin-right: 1rem;
+      // }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-root {
+    flex-direction: column;
+
+    .dashboard-slider {
+      width: 100vw;
+    }
+
+    .dashboard-navbar {
+      width: 100%;
+
+      h1 {
+        text-align: center;
+      }
+    }
+
+    .dashboard-tables {
+      margin-left: auto;
+      margin-right: auto;
+
+      .dashboard-description {
+        flex-direction: column;
+
+        button {
+          margin-top: 1rem;
+        }
+      }
+
+      table {
+        min-width: 800px;
+      }
+    }
+  }
+}

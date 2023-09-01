@@ -1,0 +1,50 @@
+server:
+  port: 10000
+
+app:
+  datasource:
+    main:
+      jdbc-url: "jdbc:postgresql://localhost:5432/autic_parkic"
+      username: "postgres"
+      password: "rootpassword"
+      pool-size: 30
+
+logging:
+  level:
+    com:
+      jovanovicbogdan:
+        auticparkic: "DEBUG"
+    org:
+      springframework:
+        jdbc: "DEBUG"
+
+aws:
+  region: "eu-central-1"
+  s3:
+    mock: true
+    buckets:
+      vehicles: "auticparkic-vehicles-test"
+
+# spring boot actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: "env,beans"
+
+# can be overridden through env variable: SPRING_PROFILES_ACTIVE=dev
+spring:
+  profiles:
+    active: "dev"
+  servlet:
+    multipart:
+      max-file-size: "10MB"
+      max-request-size: "10MB"
+  codec:
+    max-in-memory-size: "10MB"
+
+springdoc:
+  swagger-ui:
+    path: "/swagger"
+  show-actuator: true

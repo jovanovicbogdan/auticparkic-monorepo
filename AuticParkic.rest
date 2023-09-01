@@ -1,0 +1,58 @@
+### Create ride
+POST http://localhost:10000/api/v1/rides/create?vehicleId=2
+
+### Start ride
+POST http://localhost:10000/api/v1/rides/13/start
+
+### Pause ride
+POST http://localhost:10000/api/v1/rides/1/pause?elapsedTime=1000
+
+### Stop ride
+POST http://localhost:10000/api/v1/rides/1/stop?elapsedTime=1000
+
+### Finish ride
+POST http://localhost:10000/api/v1/rides/5/finish?elapsedTime=1000
+
+### Get unfinished rides
+GET http://localhost:10000/api/v1/rides/unfinished
+
+### Update ride's elapsed time
+POST http://localhost:10000/api/v1/rides/2?elapsedTime=500
+
+### Create vehicle
+POST http://localhost:10000/api/v1/vehicles
+Content-Type: application/json
+
+{
+  "vehicleName": "vehicle-5",
+  "isActive": true
+}
+
+### Get vehicle by id
+GET http://localhost:10000/api/v1/vehicles/1
+
+### Get available vehicles
+GET http://localhost:10000/api/v1/vehicles/available
+
+### Update vehicle name
+POST http://localhost:10000/api/v1/vehicles/1/update
+Content-Type: application/json
+
+{
+  "vehicleName": "hyundai",
+  "isActive": true
+}
+
+### Upload vehicle image
+POST http://localhost:10000/api/v1/vehicles/image/3/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="image"; filename="electric-vehicle-5.jpg"
+
+< /Users/bogdanjovanovic/dev/JavaScript/react/autic-parkic-frontend/public/assets/images/electric-vehicle-5.jpg
+--boundary
+Content-Disposition: form-data; name="image"
+
+1
+--boundary

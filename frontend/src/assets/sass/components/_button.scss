@@ -1,0 +1,42 @@
+@mixin btn($bg-color: #e2e2e2) {
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  display: inline-block;
+  padding: $base-padding $base-padding * 2;
+  border-radius: $base-border-radius;
+  background-color: $bg-color;
+}
+
+.btn {
+  @include btn;
+}
+
+@each $key, $value in $colors {
+  .btn-#{$key} {
+    @include btn($value);
+
+    &:hover {
+      background-color: lighten($value, 5%);
+    }
+  }
+
+  .btn-outlined-#{$key} {
+    @include btn(transparent);
+    border: $base-border-thickness solid $value;
+
+    &:hover {
+      background-color: $value;
+    }
+  }
+
+  .btn-complement-#{$key} {
+    @include btn($value);
+    color: light-comp($value);
+
+    &:hover {
+      color: $value;
+      background-color: light-comp($value);
+    }
+  }
+}
