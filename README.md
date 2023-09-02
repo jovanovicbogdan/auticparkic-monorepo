@@ -9,12 +9,14 @@
 
 ## TODO Frontend
 
+- [ ] Add CRUD functionality for vehicles in /dashboard page
 - [ ] Add notifications for errors
+- [ ] Add loader/spinner
 
 ## AWS Beanstalk
 
 - We need `psql` to connect to the database, so create docker container with `psql` installed
- 
+
 ```shell
 docker run --rm -it postgres:alpine bash
 ```
@@ -26,7 +28,7 @@ psql -U postgres -d postgres -h awseb-e-hpqaxacpv6-stack-awsebrdsdatabase-dafkdv
 ```
 
 ## Build React Docker Image
-    
+
 ```shell
 docker build --no-cache --build-arg="API_BASE_URL=http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/api" -t bogdanjovanovic/auticparkic-frontend .
 ```
