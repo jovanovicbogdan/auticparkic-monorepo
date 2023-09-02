@@ -11,7 +11,7 @@
 
 - [ ] Add notifications for errors
 
-## AWS
+## AWS Beanstalk
 
 - We need `psql` to connect to the database, so create docker container with `psql` installed
  
@@ -23,6 +23,12 @@ docker run --rm -it postgres:alpine bash
 
 ```shell
 psql -U postgres -d postgres -h awseb-e-hpqaxacpv6-stack-awsebrdsdatabase-dafkdvlt0qvd.cncflnnvajsx.eu-central-1.rds.amazonaws.com
+```
+
+## Build React Docker Image
+    
+```shell
+docker build -t react-app .
 ```
 
 ### Docker Format

@@ -1,13 +1,21 @@
 server:
   port: 10000
 
-#app:
-#  datasource:
-#    main:
-#      url: "jdbc:postgresql://localhost:5432/autic_parkic"
-#      username: "postgres"
-#      password: "rootpassword"
-#      pool-size: 30
+spring:
+  datasource:
+    jdbc-url: "jdbc:postgresql://localhost:5432/autic_parkic"
+    username: "postgres"
+    password: "rootpassword"
+    pool-size: 30
+    driver-class-name: org.postgresql.Driver
+  profiles:
+    active: "dev" # can be overridden through env variable: SPRING_PROFILES_ACTIVE=dev
+  servlet:
+    multipart:
+      max-file-size: "10MB"
+      max-request-size: "10MB"
+  codec:
+    max-in-memory-size: "10MB"
 
 logging:
   level:
@@ -18,41 +26,24 @@ logging:
       springframework:
         jdbc: "DEBUG"
 
-aws:
-  region: "eu-central-1"
-  s3:
-    mock: true
-    buckets:
-      vehicles: "auticparkic-vehicles-test"
-
 # spring boot actuator
 management:
-#  server:
-#    port: 10000
+  #  server:
+  #    port: 10000
   endpoints:
     web:
       exposure:
         include: "*"
         exclude: "env,beans"
 
-# can be overridden through env variable: SPRING_PROFILES_ACTIVE=dev
-spring:
-  datasource:
-    jdbc-url: "jdbc:postgresql://localhost:5432/autic_parkic"
-    username: "postgres"
-    password: "rootpassword"
-    pool-size: 30
-    driver-class-name: org.postgresql.Driver
-  profiles:
-    active: "dev"
-  servlet:
-    multipart:
-      max-file-size: "10MB"
-      max-request-size: "10MB"
-  codec:
-    max-in-memory-size: "10MB"
-
 springdoc:
   swagger-ui:
     path: "/swagger"
   show-actuator: true
+
+aws:
+  region: "eu-central-1"
+  s3:
+    mock: true
+    buckets:
+      vehicles: "auticparkic-vehicles-test"

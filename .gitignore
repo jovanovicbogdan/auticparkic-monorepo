@@ -42,7 +42,8 @@ out/
 
 ### Frontend ###
 
-frontend/src/frontend/logs
+frontend/src/logs
+frontend/src/.env
 frontend/*.log
 frontend/npm-debug.log*
 frontend/yarn-debug.log*

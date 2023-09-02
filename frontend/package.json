@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "npm@9.6.7",
   "scripts": {
-    "start:dev": "vite",
+    "start:dev": "vite --host",
     "build": "rimraf ./build && tsc && vite build",
     "postbuild": "purgecss --css build/assets/*.css --content build/index.html build/assets/*.js --output build/assets",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",

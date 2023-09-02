@@ -37,51 +37,6 @@ jib.container {
 //    environment = mapOf("SPRING_PROFILES_ACTIVE" to "production")
 }
 
-//frontend {
-//    nodeInstallDirectory.set(project.layout.projectDirectory.dir("node"))
-//
-//    nodeVersion.set("18.17.1")
-//    assembleScript.set("run build")
-//    verboseModeEnabled.set(true)
-//
-//    val frontendProjectDir = project.layout.projectDirectory.dir("../frontend")
-//    packageJsonDirectory.set(frontendProjectDir)
-//}
-
-//tasks.named<InstallFrontendTask>("installFrontend") {
-//    doLast {
-//        copy {
-//            from("../frontend/build")
-//            into("src/main/resources/static")
-//        }
-//    }
-//
-//    val ciPlatformPresent = providers.environmentVariable("CI").isPresent()
-//    val lockFilePath = "../frontend/package-lock.json"
-//    val retainedMetadataFileNames: Set<String>
-//    if (ciPlatformPresent) {
-//        // If the host is a CI platform, execute a strict install of dependencies based on the lock file.
-//        installScript.set("ci")
-//        retainedMetadataFileNames = setOf(lockFilePath)
-//    } else {
-//        // The naive configuration below allows to skip the task if the last successful execution did not change neither
-//        // the package.json file, nor the package-lock.json file, nor the node_modules directory. Any other scenario
-//        // where for example the lock file is regenerated will lead to another execution before the task is "up-to-date"
-//        // because the lock file is both an input and an output of the task.
-//        val acceptableMetadataFileNames = listOf(lockFilePath, "../frontend/yarn.lock")
-//        retainedMetadataFileNames = mutableSetOf("../frontend/package.json")
-//        for (acceptableMetadataFileName in acceptableMetadataFileNames) {
-//            if (Files.exists(Paths.get(acceptableMetadataFileName))) {
-//                retainedMetadataFileNames.add(acceptableMetadataFileName)
-//                break
-//            }
-//        }
-//        outputs.file(lockFilePath).withPropertyName("lockFile")
-//    }
-//    inputs.files(retainedMetadataFileNames).withPropertyName("metadataFiles")
-//    outputs.dir("../frontend/node_modules").withPropertyName("nodeModulesDirectory")
-//}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     withSourcesJar()

@@ -14,10 +14,6 @@
       ],
       "environment": [
         {
-          "name": "SPRING_PROFILES_ACTIVE",
-          "value": "test"
-        },
-        {
           "name": "SPRING_DATASOURCE_JDBC_URL",
           "value": "jdbc:postgresql://awseb-e-hpqaxacpv6-stack-awsebrdsdatabase-dafkdvlt0qvd.cncflnnvajsx.eu-central-1.rds.amazonaws.com:5432/autic_parkic"
         }
