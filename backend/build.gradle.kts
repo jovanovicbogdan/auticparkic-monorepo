@@ -20,7 +20,14 @@ jib.to {
 }
 
 jib.from {
-    image = "openjdk:17-jdk-alpine"
+    image = "eclipse-temurin:17"
+
+    platforms {
+        platform {
+            architecture = "arm64"
+            os = "linux"
+        }
+    }
 }
 
 jib.container {

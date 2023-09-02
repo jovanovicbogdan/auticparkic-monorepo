@@ -17,7 +17,7 @@ public class DatasourceConfig {
 
   @Bean
   @Primary
-  @ConfigurationProperties("app.datasource.main")
+  @ConfigurationProperties("spring.datasource")
   public HikariDataSource hikariDataSource() {
     return DataSourceBuilder
         .create()

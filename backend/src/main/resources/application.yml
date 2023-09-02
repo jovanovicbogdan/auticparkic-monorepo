@@ -1,13 +1,13 @@
 server:
   port: 10000
 
-app:
-  datasource:
-    main:
-      jdbc-url: "jdbc:postgresql://localhost:5432/autic_parkic"
-      username: "postgres"
-      password: "rootpassword"
-      pool-size: 30
+#app:
+#  datasource:
+#    main:
+#      url: "jdbc:postgresql://localhost:5432/autic_parkic"
+#      username: "postgres"
+#      password: "rootpassword"
+#      pool-size: 30
 
 logging:
   level:
@@ -37,6 +37,12 @@ management:
 
 # can be overridden through env variable: SPRING_PROFILES_ACTIVE=dev
 spring:
+  datasource:
+    jdbc-url: "jdbc:postgresql://localhost:5432/autic_parkic"
+    username: "postgres"
+    password: "rootpassword"
+    pool-size: 30
+    driver-class-name: org.postgresql.Driver
   profiles:
     active: "dev"
   servlet:

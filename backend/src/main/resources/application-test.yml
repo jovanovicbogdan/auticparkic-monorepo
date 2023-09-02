@@ -1,13 +1,13 @@
 # set SPRING_PROFILES_ACTIVE=test as active profile
 # and override the values from application.yml
 
-app:
-  datasource:
-    main:
-      jdbc-url: "jdbc:postgresql://postgres:5432/autic_parkic"
-      username: "postgres"
-      password: "rootpassword"
-      pool-size: 30
+#app:
+#  datasource:
+#    main:
+#      jdbc-url: "jdbc:postgresql://postgres:5432/autic_parkic"
+#      username: "postgres"
+#      password: "rootpassword"
+#      pool-size: 30
 
 logging:
   level:
