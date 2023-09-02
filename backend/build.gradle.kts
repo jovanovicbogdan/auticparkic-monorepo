@@ -14,8 +14,8 @@ group = "com.jovanovicbogdan"
 version = "1.0.0"
 
 jib.to {
-    val appImageName: String = findProject("appImageName") as String? ?: "auticparkic-api"
-    val appImageTag: String = findProject("appImageTag") as String? ?: "latest"
+    val appImageName: String = findProperty("appImageName") as String? ?: "auticparkic-api"
+    val appImageTag: String = findProperty("appImageTag") as String? ?: "latest"
     image = "bogdanjovanovic/${appImageName}:${appImageTag}"
 }
 
