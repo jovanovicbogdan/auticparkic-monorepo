@@ -17,11 +17,11 @@ public class RideService {
 
   private final Logger log = LoggerFactory.getLogger(RideService.class);
   private final RideDTOMapper rideDTOMapper;
-  private final RideJdbcDao dao;
+  private final RideJdbcDataAccessService dao;
   private final VehicleJdbcDataAccessService vehicleJdbcDao;
   private final Clock clock;
 
-  public RideService(final RideDTOMapper rideDTOMapper, final RideJdbcDao dao,
+  public RideService(final RideDTOMapper rideDTOMapper, final RideJdbcDataAccessService dao,
       final VehicleJdbcDataAccessService vehicleJdbcDao, final Clock clock) {
     this.rideDTOMapper = rideDTOMapper;
     this.dao = dao;

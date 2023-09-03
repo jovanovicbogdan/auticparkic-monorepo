@@ -80,8 +80,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootStarterVersion}")
     testImplementation("org.mockito:mockito-core:${mockitoCoreVersion}")
     testImplementation("org.testcontainers:testcontainers:${testcontainersVersion}")
-    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql:${testcontainersVersion}")
+    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.assertj:assertj-core")
 }
 

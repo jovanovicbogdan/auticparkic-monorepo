@@ -2,7 +2,7 @@ package com.jovanovicbogdan.auticparkic.vehicle;
 
 import com.jovanovicbogdan.auticparkic.exception.ConflictException;
 import com.jovanovicbogdan.auticparkic.exception.ResourceNotFoundException;
-import com.jovanovicbogdan.auticparkic.ride.RideJdbcDao;
+import com.jovanovicbogdan.auticparkic.ride.RideJdbcDataAccessService;
 import com.jovanovicbogdan.auticparkic.ride.RideStatus;
 import com.jovanovicbogdan.auticparkic.s3.S3Buckets;
 import com.jovanovicbogdan.auticparkic.s3.S3Service;
@@ -19,11 +19,11 @@ public class VehicleService {
 
   private final Logger log = LoggerFactory.getLogger(VehicleService.class);
   private final VehicleJdbcDataAccessService dao;
-  private final RideJdbcDao rideJdbcDao;
+  private final RideJdbcDataAccessService rideJdbcDao;
   private final S3Service s3Service;
   private final S3Buckets s3Buckets;
 
-  public VehicleService(final VehicleJdbcDataAccessService dao, final RideJdbcDao rideJdbcDao,
+  public VehicleService(final VehicleJdbcDataAccessService dao, final RideJdbcDataAccessService rideJdbcDao,
       final S3Service s3Service, final S3Buckets s3Buckets) {
     this.dao = dao;
     this.rideJdbcDao = rideJdbcDao;

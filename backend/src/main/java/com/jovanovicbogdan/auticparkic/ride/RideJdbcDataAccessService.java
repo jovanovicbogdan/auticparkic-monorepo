@@ -11,12 +11,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public class RideJdbcDao implements DAO<Ride> {
+public class RideJdbcDataAccessService implements DAO<Ride> {
 
   private final JdbcTemplate jdbcTemplate;
   private final RideRowMapper rideRowMapper;
 
-  public RideJdbcDao(final JdbcTemplate jdbcTemplate, final RideRowMapper rideRowMapper) {
+  public RideJdbcDataAccessService(final JdbcTemplate jdbcTemplate, final RideRowMapper rideRowMapper) {
     this.jdbcTemplate = jdbcTemplate;
     this.rideRowMapper = rideRowMapper;
   }

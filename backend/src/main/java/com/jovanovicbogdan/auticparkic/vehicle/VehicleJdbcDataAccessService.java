@@ -92,6 +92,16 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
     jdbcTemplate.update(sql, vehicleId);
   }
 
+  protected void deleteAll() {
+    final String sql = """
+        DELETE FROM vehicle;
+        """;
+
+    log.debug("Attempting to delete all vehicles from database");
+
+    jdbcTemplate.update(sql);
+  }
+
   public Optional<Vehicle> findVehicleByName(final String name) {
     final String sql = """
         SELECT vehicle_id, name, created_at, vehicle_image_id, is_active
