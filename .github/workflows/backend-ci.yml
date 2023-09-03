@@ -1,0 +1,12 @@
+name: CI - Build Backend
+
+on:
+  pull_request:
+    branches:
+      - "master"
+    paths:
+      - "backend/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest

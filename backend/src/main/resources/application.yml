@@ -27,14 +27,14 @@ logging:
         jdbc: "DEBUG"
 
 # spring boot actuator
-management:
+#management:
   #  server:
   #    port: 10000
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-        exclude: "env,beans"
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#        exclude: "env,beans"
 
 springdoc:
   swagger-ui:
