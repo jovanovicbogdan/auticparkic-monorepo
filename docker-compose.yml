@@ -13,32 +13,32 @@ services:
     networks:
       - auticparkicnetwork
     restart: unless-stopped
-  auticparkic-api:
-    image: bogdanjovanovic/auticparkic-api:latest
-    container_name: auticparkic-api
-    ports:
-      - 10000:10000
-    environment:
-      - SPRING_PROFILES_ACTIVE=test
-    restart: unless-stopped
-    networks:
-      - auticparkicnetwork
-    depends_on:
-      - db
-  auticparkic-frontend:
-    image: bogdanjovanovic/auticparkic-frontend:latest
-    container_name: auticparkic-react
-    build:
-      context: frontend/
-      args:
-        API_BASE_URL: http://localhost:10000/api
-    ports:
-      - 80:3000
-    restart: unless-stopped
-    networks:
-      - auticparkicnetwork
-    depends_on:
-      - auticparkic-api
+#  auticparkic-api:
+#    image: bogdanjovanovic/auticparkic-api:latest
+#    container_name: auticparkic-api
+#    ports:
+#      - 10000:10000
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=test
+#    restart: unless-stopped
+#    networks:
+#      - auticparkicnetwork
+#    depends_on:
+#      - db
+#  auticparkic-frontend:
+#    image: bogdanjovanovic/auticparkic-frontend:latest
+#    container_name: auticparkic-react
+#    build:
+#      context: frontend/
+#      args:
+#        API_BASE_URL: http://localhost:10000/api
+#    ports:
+#      - 80:3000
+#    restart: unless-stopped
+#    networks:
+#      - auticparkicnetwork
+#    depends_on:
+#      - auticparkic-api
 
 networks:
   auticparkicnetwork:

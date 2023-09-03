@@ -18,12 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class VehicleService {
 
   private final Logger log = LoggerFactory.getLogger(VehicleService.class);
-  private final VehicleJdbcDao dao;
+  private final VehicleJdbcDataAccessService dao;
   private final RideJdbcDao rideJdbcDao;
   private final S3Service s3Service;
   private final S3Buckets s3Buckets;
 
-  public VehicleService(final VehicleJdbcDao dao, final RideJdbcDao rideJdbcDao,
+  public VehicleService(final VehicleJdbcDataAccessService dao, final RideJdbcDao rideJdbcDao,
       final S3Service s3Service, final S3Buckets s3Buckets) {
     this.dao = dao;
     this.rideJdbcDao = rideJdbcDao;

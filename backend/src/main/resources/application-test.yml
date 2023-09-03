@@ -3,4 +3,4 @@
 
 spring:
   datasource:
-    jdbc-url: "jdbc:postgresql://postgres:5432/autic_parkic" # postgres is the name of the container
+    url: "jdbc:postgresql://postgres:5432/autic_parkic" # postgres is the name of the container

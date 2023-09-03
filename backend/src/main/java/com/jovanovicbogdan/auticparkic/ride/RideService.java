@@ -2,7 +2,7 @@ package com.jovanovicbogdan.auticparkic.ride;
 
 import com.jovanovicbogdan.auticparkic.exception.BadRequestException;
 import com.jovanovicbogdan.auticparkic.exception.ResourceNotFoundException;
-import com.jovanovicbogdan.auticparkic.vehicle.VehicleJdbcDao;
+import com.jovanovicbogdan.auticparkic.vehicle.VehicleJdbcDataAccessService;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -18,11 +18,11 @@ public class RideService {
   private final Logger log = LoggerFactory.getLogger(RideService.class);
   private final RideDTOMapper rideDTOMapper;
   private final RideJdbcDao dao;
-  private final VehicleJdbcDao vehicleJdbcDao;
+  private final VehicleJdbcDataAccessService vehicleJdbcDao;
   private final Clock clock;
 
   public RideService(final RideDTOMapper rideDTOMapper, final RideJdbcDao dao,
-      final VehicleJdbcDao vehicleJdbcDao, final Clock clock) {
+      final VehicleJdbcDataAccessService vehicleJdbcDao, final Clock clock) {
     this.rideDTOMapper = rideDTOMapper;
     this.dao = dao;
     this.vehicleJdbcDao = vehicleJdbcDao;

@@ -10,13 +10,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public class VehicleJdbcDao implements DAO<Vehicle> {
+public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
 
-  private final Logger log = LoggerFactory.getLogger(VehicleJdbcDao.class);
+  private final Logger log = LoggerFactory.getLogger(VehicleJdbcDataAccessService.class);
   private final JdbcTemplate jdbcTemplate;
   private final VehicleRowMapper vehicleRowMapper;
 
-  public VehicleJdbcDao(final JdbcTemplate jdbcTemplate, final VehicleRowMapper vehicleRowMapper) {
+  public VehicleJdbcDataAccessService(final JdbcTemplate jdbcTemplate, final VehicleRowMapper vehicleRowMapper) {
     this.jdbcTemplate = jdbcTemplate;
     this.vehicleRowMapper = vehicleRowMapper;
   }

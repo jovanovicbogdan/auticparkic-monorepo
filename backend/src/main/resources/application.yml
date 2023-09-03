@@ -1,15 +1,19 @@
 server:
   port: 10000
+  error:
+    include-message: always
 
 spring:
   datasource:
-    jdbc-url: "jdbc:postgresql://localhost:5432/autic_parkic"
+    url: "jdbc:postgresql://localhost:5432/autic_parkic"
     username: "postgres"
     password: "rootpassword"
     pool-size: 30
     driver-class-name: org.postgresql.Driver
-  profiles:
-    active: "dev" # can be overridden through env variable: SPRING_PROFILES_ACTIVE=dev
+  main:
+    web-application-type: servlet
+  #  profiles:
+#    active: "dev" # can be overridden through env variable: SPRING_PROFILES_ACTIVE=dev
   servlet:
     multipart:
       max-file-size: "10MB"
@@ -21,12 +25,12 @@ logging:
   level:
     com:
       jovanovicbogdan:
-        auticparkic: "DEBUG"
+        auticparkic: debug
     org:
       springframework:
-        jdbc: "DEBUG"
+        jdbc: debug
 
-# spring boot actuator
+  # spring boot actuator
 #management:
   #  server:
   #    port: 10000

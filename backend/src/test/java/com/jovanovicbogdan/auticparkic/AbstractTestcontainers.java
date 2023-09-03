@@ -14,7 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.sql.DataSource;
 
 @Testcontainers
-public class AbstractTestcontainers {
+public abstract class AbstractTestcontainers {
 
   @BeforeAll
   static void beforeAll() {
@@ -37,7 +37,7 @@ public class AbstractTestcontainers {
 
   @DynamicPropertySource
   private static void registerDataSourceProperties(final DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.jdbc-url", postgreSQLContainer::getJdbcUrl);
+    registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
     registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
     registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
   }

@@ -12,31 +12,31 @@ import org.springframework.integration.jdbc.lock.JdbcLockRegistry;
 import org.springframework.integration.jdbc.lock.LockRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@Configuration
+//@Configuration
 public class DatasourceConfig {
 
-  @Bean
-  @Primary
-  @ConfigurationProperties("spring.datasource")
-  public HikariDataSource hikariDataSource() {
-    return DataSourceBuilder
-        .create()
-        .type(HikariDataSource.class)
-        .build();
-  }
-
-  @Bean
-  public JdbcTemplate jdbcTemplate(final HikariDataSource hikariDataSource) {
-    return new JdbcTemplate(hikariDataSource);
-  }
-
-  @Bean
-  public DefaultLockRepository defaultLockRepository(final HikariDataSource dataSource) {
-    return new DefaultLockRepository(dataSource);
-  }
-
-  @Bean
-  public JdbcLockRegistry jdbcLockRegistry(final LockRepository lockRepository) {
-    return new JdbcLockRegistry(lockRepository);
-  }
+//  @Bean
+//  @Primary
+//  @ConfigurationProperties("spring.datasource")
+//  public HikariDataSource hikariDataSource() {
+//    return DataSourceBuilder
+//        .create()
+//        .type(HikariDataSource.class)
+//        .build();
+//  }
+//
+//  @Bean
+//  public JdbcTemplate jdbcTemplate(final HikariDataSource hikariDataSource) {
+//    return new JdbcTemplate(hikariDataSource);
+//  }
+//
+//  @Bean
+//  public DefaultLockRepository defaultLockRepository(final HikariDataSource dataSource) {
+//    return new DefaultLockRepository(dataSource);
+//  }
+//
+//  @Bean
+//  public JdbcLockRegistry jdbcLockRegistry(final LockRepository lockRepository) {
+//    return new JdbcLockRegistry(lockRepository);
+//  }
 }

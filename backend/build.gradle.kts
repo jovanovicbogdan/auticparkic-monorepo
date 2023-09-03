@@ -58,7 +58,9 @@ dependencies {
     val javaFakerVersion = "1.0.2"
     val springdocOpenapiVersion = "2.2.0"
     val mockitoCoreVersion = "5.5.0"
+//    val junitJupiterVersion = "5.8.1"
     val testcontainersVersion = "1.17.6"
+//    val assertJCoreVersion = "3.24.2"
 
     implementation(platform("software.amazon.awssdk:bom:2.20.128"))
     implementation("software.amazon.awssdk:s3")
