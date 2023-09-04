@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,7 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
 
   private final JdbcTemplate jdbcTemplate;
   private final RideRowMapper rideRowMapper;
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
   public RideJdbcDataAccessService(final JdbcTemplate jdbcTemplate, final RideRowMapper rideRowMapper) {
     this.jdbcTemplate = jdbcTemplate;
@@ -33,6 +36,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         .map(it -> it.format(Constants.FORMATTER))
         .orElse(null);
 
+    log.debug("Attempting to save ride to database: {}", ride);
+
     return jdbcTemplate.queryForObject(sql, rideRowMapper, ride.status.name(), ride.elapsedTime,
         ride.createdAt, finishedAt, ride.price, ride.vehicleId);
   }
@@ -47,6 +52,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         RETURNING ride_id, status, elapsed_time, created_at, finished_at, price, vehicle_id;
         """;
 
+    log.debug("Attempting to update ride in database: {}", ride);
+
     return jdbcTemplate.queryForObject(sql, rideRowMapper, ride.status.name(), ride.elapsedTime,
         ride.createdAt, ride.finishedAt, ride.price, ride.vehicleId, ride.rideId);
   }
@@ -59,6 +66,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         ORDER BY ride_id DESC;
         """;
 
+    log.debug("Attempting to retrieve all rides from database");
+
     return jdbcTemplate.query(sql, rideRowMapper);
   }
 
@@ -69,6 +78,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         FROM ride
         WHERE ride_id = ?;
         """;
+
+    log.debug("Attempting to retrieve ride with id {} from database", rideId);
 
     return jdbcTemplate.query(sql, rideRowMapper, rideId)
         .stream()
@@ -85,6 +96,16 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
     jdbcTemplate.update(sql, rideId);
   }
 
+  protected void deleteAll() {
+    final String sql = """
+        DELETE FROM ride;
+        """;
+
+    log.debug("Attempting to delete all rides from database");
+
+    jdbcTemplate.update(sql);
+  }
+
   public List<Ride> findByStatuses(final List<String> statuses) {
     final String inSql = String.join(", ", Collections.nCopies(statuses.size(), "?::status"));
     final String sql = """
@@ -93,6 +114,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         WHERE status IN (%s)
         ORDER BY ride_id DESC;
         """;
+
+    log.debug("Attempting to retrieve rides with statuses {} from database", statuses);
 
     return jdbcTemplate.query(String.format(sql, inSql), rideRowMapper, statuses.toArray());
   }
@@ -113,6 +136,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         WHERE vehicle_id = ? AND status IN (%s)
         ORDER BY ride_id DESC;
         """;
+
+    log.debug("Attempting to retrieve rides with statuses {} and vehicle id {} from database", statuses, vehicleId);
 
     return jdbcTemplate.query(String.format(sql, inSql), rideRowMapper, params);
   }
