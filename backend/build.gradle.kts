@@ -7,7 +7,6 @@ plugins {
     id("org.springframework.boot") version "3.1.0"
     id("io.spring.dependency-management") version "1.1.0"
     id("com.google.cloud.tools.jib") version "3.3.2"
-//    id("org.siouan.frontend-jdk17") version "8.0.0"
 }
 
 group = "com.jovanovicbogdan"
