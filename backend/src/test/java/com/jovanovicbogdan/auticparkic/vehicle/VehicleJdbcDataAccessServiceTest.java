@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
@@ -23,6 +24,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void createVehicle() {
     // Given
     final Vehicle vehicle = new Vehicle(FAKER.funnyName().name(), true);
@@ -37,6 +39,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void findAllVehiclesReturnsEmptyIfNoneFound() {
     // Given
     // When
@@ -47,6 +50,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void findAllVehicles() {
     // Given
     final Vehicle vehicle = new Vehicle(FAKER.funnyName().name(), true);
@@ -60,6 +64,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void updateVehicle() {
     // Given
     final Vehicle vehicle = new Vehicle(FAKER.funnyName().name(), true);
@@ -75,6 +80,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void findVehicleByVehicleId() {
     // Given
     final Vehicle vehicle = new Vehicle(FAKER.funnyName().name(), true);
@@ -97,6 +103,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void findByIdReturnsEmptyIfNotFound() {
     // Given
     final long vehicleId = -1L;
@@ -109,6 +116,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void deleteVehicleByVehicleId() {
     // Given
     final Vehicle vehicle = new Vehicle(FAKER.funnyName().name(), true);
@@ -123,6 +131,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void findVehicleByName() {
     // Given
     final Vehicle vehicle = new Vehicle(FAKER.funnyName().name(), true);
@@ -139,6 +148,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void findVehicleByNameReturnsEmptyIfNotFound() {
     // Given
     // Make sure it's a unique name
@@ -152,6 +162,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void updateVehicleImageIdForExistingVehicle() {
     // Given
     final Vehicle vehicle = new Vehicle(FAKER.funnyName().name(), true);
@@ -169,6 +180,7 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void updateVehicleImageIdForNonExistingVehicle() {
     // Given
     final long vehicleId = -1L;

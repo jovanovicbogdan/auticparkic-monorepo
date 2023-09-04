@@ -36,7 +36,7 @@ public class S3ServiceTest {
   }
 
   @Test
-  @Tag("unit")
+  @Tags({@Tag("unit"), @Tag("s3")})
   public void canPutObject() throws IOException {
     // given
     final String bucket = "vehicles";
@@ -73,7 +73,7 @@ public class S3ServiceTest {
   }
 
   @Test
-  @Tag("unit")
+  @Tags({@Tag("unit"), @Tag("s3")})
   public void canGetObject() throws IOException {
     // given
     final String bucket = "vehicles";

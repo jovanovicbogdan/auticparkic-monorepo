@@ -8,6 +8,7 @@ import com.jovanovicbogdan.auticparkic.vehicle.VehicleJdbcDataAccessService;
 import com.jovanovicbogdan.auticparkic.vehicle.VehicleRowMapper;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class RideJdbcDataAccessServiceTest extends AbstractTestcontainers {
@@ -30,6 +31,7 @@ class RideJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void createRide() {
     // Given
     final Vehicle vehicle = createVehicle();
@@ -51,26 +53,32 @@ class RideJdbcDataAccessServiceTest extends AbstractTestcontainers {
   }
 
   @Test
+  @Tag("unit")
   void update() {
   }
 
   @Test
+  @Tag("unit")
   void findAll() {
   }
 
   @Test
+  @Tag("unit")
   void findById() {
   }
 
   @Test
+  @Tag("unit")
   void delete() {
   }
 
   @Test
+  @Tag("unit")
   void findByStatuses() {
   }
 
   @Test
+  @Tag("unit")
   void findByVehicleIdAndStatuses() {
   }
 
