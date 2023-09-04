@@ -31,7 +31,7 @@ public abstract class AbstractTestcontainers {
   @Container
   protected static final PostgreSQLContainer<?> postgreSQLContainer =
       new PostgreSQLContainer<>("postgres:latest")
-          .withDatabaseName("autic-parkic-test")
+          .withDatabaseName("autic_parkic_test")
           .withUsername("postgres")
           .withPassword("postgres");
 
