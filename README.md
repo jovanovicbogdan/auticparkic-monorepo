@@ -1,4 +1,4 @@
-# React and Java Spring Boot Project
+# React.js and Java Spring Boot Project
 
 - Application for managing rides asynchronously and the costs per each drive based on elapsed time
 
