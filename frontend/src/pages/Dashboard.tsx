@@ -143,7 +143,8 @@ export default function Dashboard() {
       </div>
       {showVehicles && (
         <Vehicles
-          vehicles={availableVehicles}
+          availableVehicles={availableVehicles}
+          setAvailableVehicles={setAvailableVehicles}
           setIsSliderOpen={setIsSliderOpen}
         />
       )}

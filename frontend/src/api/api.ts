@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
 
 import axios, { AxiosResponse } from "axios";
-import { ApiConfig } from "../config/api.config.ts";
+import { ApiConfig } from "../config/api.config";
 
-export type HttpMethod = "get" | "post" | "put" | "delete";
+type HttpMethod = "get" | "post" | "delete";
 
 export type ApiResponse = {
   status: "ok" | "error";
@@ -12,7 +12,7 @@ export type ApiResponse = {
 
 export default function api(
   path: string,
-  method: "get" | "post",
+  method: HttpMethod,
   body?: any,
   signal?: AbortSignal
 ) {

@@ -99,6 +99,13 @@ public class VehicleService {
     );
   }
 
+  public void deleteVehicle(final long vehicleId) {
+    final Vehicle vehicle = findVehicleIfExistsOrThrow(vehicleId);
+    dao.delete(vehicle.vehicleId);
+    // TODO: delete vehicle image from S3
+    log.info("Deleted vehicle: {}", vehicle);
+  }
+
   private Vehicle findVehicleIfExistsOrThrow(long vehicleId) {
     return dao.findById(vehicleId).orElseThrow(
         () -> new ResourceNotFoundException("Vehicle with id '" + vehicleId + "' does not exist."));

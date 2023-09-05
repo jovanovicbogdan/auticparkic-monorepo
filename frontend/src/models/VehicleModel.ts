@@ -1,4 +1,4 @@
-import { ApiConfig } from "../config/api.config.ts";
+import { ApiConfig } from "../config/api.config";
 
 export function getVehicleImageUrl(vehicleId: number) {
   return `${ApiConfig.API_URL}/v1/vehicles/image/${vehicleId}/download`;

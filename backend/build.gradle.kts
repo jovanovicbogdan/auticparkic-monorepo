@@ -53,7 +53,7 @@ repositories {
 dependencies {
     val springBootStarterVersion = "3.1.3"
     val springIntegrationJdbcVersion = "6.1.2"
-    val flywayCoreVersion = "9.22.0"
+    val flywayCoreVersion = "9.16.3"
     val javaFakerVersion = "1.0.2"
     val springdocOpenapiVersion = "2.2.0"
     val mockitoCoreVersion = "5.5.0"

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,6 +69,13 @@ public class VehicleController {
   public byte[] getVehicleImage(@PathVariable final long vehicleId) {
     log.info("Request to download image for vehicle with id: {}", vehicleId);
     return service.getVehicleImage(vehicleId);
+  }
+
+  @DeleteMapping("/{vehicleId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteVehicle(@PathVariable final long vehicleId) {
+    log.info("Request to delete vehicle with id: {}", vehicleId);
+    service.deleteVehicle(vehicleId);
   }
 
 }

@@ -6,6 +6,7 @@
 
 - [x] Add Swagger
 - [x] Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level
+- [ ] Add deleteObject functionality for s3 service
 
 ## TODO Frontend
 

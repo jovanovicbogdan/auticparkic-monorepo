@@ -1,11 +1,31 @@
-import Vehicle from "../../models/VehicleModel.ts";
+import api from "../../api/api.ts";
+import Vehicle, { getVehicleImageUrl } from "../../models/VehicleModel.ts";
 
 type VehiclesProps = {
-  vehicles: Vehicle[];
+  availableVehicles: Vehicle[];
+  setAvailableVehicles: (vehicles: Vehicle[]) => void;
   setIsSliderOpen: (isSidebarOpen: boolean) => void;
 };
 
-export default function Vehicles({ vehicles, setIsSliderOpen }: VehiclesProps) {
+export default function Vehicles({
+  availableVehicles,
+  setAvailableVehicles,
+  setIsSliderOpen,
+}: VehiclesProps) {
+  function deleteVehicle(vehicleId: number) {
+    api(`/v1/vehicles/${vehicleId}`, "delete")
+      .then((res) => {
+        if (res.status !== "ok") throw new Error("Brisanje vozila nije uspelo");
+        const newVehicles = availableVehicles.filter(
+          (vehicle) => vehicle.vehicleId !== vehicleId
+        );
+        setAvailableVehicles(newVehicles);
+      })
+      .catch(() => {
+        // handle error
+      });
+  }
+
   return (
     <div className="dashboard-tables br-md">
       <div className="dashboard-description">
@@ -28,12 +48,12 @@ export default function Vehicles({ vehicles, setIsSliderOpen }: VehiclesProps) {
           </tr>
         </thead>
         <tbody>
-          {vehicles.map((vehicle, index) => (
+          {availableVehicles.map((vehicle) => (
             <tr key={vehicle.vehicleId}>
               <td className="pt-1">
                 <img
                   className="vehicle-image"
-                  src={`/assets/images/electric-vehicle-${index + 1}.jpg`}
+                  src={getVehicleImageUrl(vehicle.vehicleId)}
                   alt="electric vehicle image"
                 />
               </td>
@@ -52,10 +72,10 @@ export default function Vehicles({ vehicles, setIsSliderOpen }: VehiclesProps) {
               <td>{new Date(vehicle.createdAt).toLocaleDateString()}</td>
               <td>
                 <a
-                  className="edit-btn text-gray"
-                  onClick={() => alert("Izmeni vozilo modal...")}
+                  className="edit-btn text-red"
+                  onClick={() => deleteVehicle(vehicle.vehicleId)}
                 >
-                  Izmeni
+                  Izbriši
                 </a>
               </td>
             </tr>

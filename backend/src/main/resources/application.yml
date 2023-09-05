@@ -5,7 +5,7 @@ server:
 
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost:5432/autic_parkic"
+    jdbc-url: "jdbc:postgresql://localhost:5432/autic_parkic"
     username: "postgres"
     password: "rootpassword"
     pool-size: 30
@@ -43,7 +43,7 @@ logging:
 springdoc:
   swagger-ui:
     path: "/swagger"
-  show-actuator: true
+#  show-actuator: true
 
 aws:
   region: "eu-central-1"

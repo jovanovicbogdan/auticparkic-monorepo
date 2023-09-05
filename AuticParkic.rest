@@ -24,7 +24,7 @@ POST http://localhost:10000/api/v1/vehicles
 Content-Type: application/json
 
 {
-  "vehicleName": "vehicle-5",
+  "vehicleName": "mercedes",
   "isActive": true
 }
 
@@ -43,14 +43,17 @@ Content-Type: application/json
   "isActive": true
 }
 
+### Delete vehicle
+DELETE http://localhost:10000/api/v1/vehicles/1
+
 ### Upload vehicle image
-POST http://localhost:10000/api/v1/vehicles/image/3/upload
+POST http://localhost:10000/api/v1/vehicles/image/2/upload
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="image"; filename="electric-vehicle-5.jpg"
+Content-Disposition: form-data; name="image"; filename="electric-vehicle-2.jpg"
 
-< /Users/bogdanjovanovic/dev/JavaScript/react/autic-parkic-frontend/public/assets/images/electric-vehicle-5.jpg
+< /Users/bogdanjovanovic/Pictures/auticparkic images/electric-vehicle-2.jpg
 --boundary
 Content-Disposition: form-data; name="image"
 
