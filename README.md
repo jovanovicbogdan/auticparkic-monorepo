@@ -9,7 +9,7 @@
 
 ## TODO Frontend
 
-- [ ] Add CRUD functionality for vehicles in /dashboard page
+- [ ] Add delete functionality for vehicles in /dashboard page
 - [ ] Add notifications for errors
 - [ ] Add loader/spinner
 
