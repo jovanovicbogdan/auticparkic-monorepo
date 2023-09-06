@@ -58,7 +58,7 @@ export default function Dashboard() {
     return showEmployees ? (JSON.parse(showEmployees) as boolean) : false;
   });
   const [vehicleName, setVehicleName] = useState("");
-  const [vehicleStatus, setVehicleStatus] = useState("on");
+  const [isChecked, setIsChecked] = useState<boolean>(true);
   const [vehicleImage, setVehicleImage] = useState<File>();
   const [updateVehicle, setUpdateVehicle] = useState<Vehicle>();
 
@@ -82,7 +82,7 @@ export default function Dashboard() {
     if (!vehicleName || !vehicleImage) return;
     const payload = {
       vehicleName,
-      isActive: vehicleStatus === "on",
+      isActive: isChecked,
     };
     api("/v1/vehicles", "post", payload)
       .then((res) => {
@@ -103,6 +103,9 @@ export default function Dashboard() {
       .then((res) => {
         if (res.status !== "ok") throw new Error("Dodavanje slike nije uspelo");
         getAndSetAvailableVehicles();
+        setIsAddVehicleSliderOpen(false);
+        setVehicleName("");
+        setIsChecked(true);
       })
       .catch((error: Error) => {
         // handle error
@@ -117,6 +120,8 @@ export default function Dashboard() {
       .then((res) => {
         if (res.status !== "ok") throw new Error("Update nije uspeo");
         getAndSetAvailableVehicles();
+        setIsUpdateVehicleSliderOpen(false);
+        setVehicleName("");
       })
       .catch(() => {
         // handle error
@@ -194,7 +199,7 @@ export default function Dashboard() {
                     className="ml-2"
                     type="checkbox"
                     defaultChecked={true}
-                    onChange={(e) => setVehicleStatus(e.target.value)}
+                    onChange={() => setIsChecked(!isChecked)}
                   />
                 </label>
               </div>
@@ -211,12 +216,7 @@ export default function Dashboard() {
               <div>
                 <button
                   className="btn-black text-white font-md"
-                  onClick={() => {
-                    addVehicle();
-                    setIsAddVehicleSliderOpen(false);
-                    setVehicleName("");
-                    setVehicleStatus("on");
-                  }}
+                  onClick={() => addVehicle()}
                 >
                   Dodaj Vozilo
                 </button>
@@ -260,12 +260,12 @@ export default function Dashboard() {
               </div>
               <div>
                 <label className="checkbox-label">
-                  Status vozila
+                  Da li je vozilo dostupno?
                   <input
                     className="ml-2"
                     type="checkbox"
-                    defaultChecked={updateVehicle?.isActive}
-                    onChange={(e) => setVehicleStatus(e.target.value)}
+                    checked={isChecked}
+                    onChange={() => setIsChecked(!isChecked)}
                   />
                 </label>
               </div>
@@ -276,10 +276,8 @@ export default function Dashboard() {
                     if (updateVehicle)
                       updateVehicleData(updateVehicle.vehicleId, {
                         vehicleName,
-                        isActive: vehicleStatus,
+                        isActive: isChecked,
                       });
-                    setIsUpdateVehicleSliderOpen(false);
-                    setVehicleName("");
                   }}
                 >
                   Izmeni Vozilo

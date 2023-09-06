@@ -64,7 +64,7 @@ public class VehicleService {
 
     return dao.findAll()
         .stream()
-        .filter(vehicle -> !activeVehicleIds.contains(vehicle.vehicleId) && vehicle.isActive)
+        .filter(vehicle -> !activeVehicleIds.contains(vehicle.vehicleId))
         .toList();
   }
 
