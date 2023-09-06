@@ -135,6 +135,10 @@
             text-decoration: underline;
             cursor: pointer;
           }
+
+          td > a:last-child {
+            margin-left: 20px;
+          }
         }
       }
     }
@@ -161,33 +165,17 @@
 
     .slider-data {
       margin-top: 2rem;
-      // margin: 2rem auto 0 auto;
-      // width: 70%;
-      // text-align: center;
+      padding: 0 5rem;
 
-      // label {
-      //   display: inline-block;
-      //   margin-top: 2rem;
-      //   margin-right: 1rem;
-      //   margin-bottom: 1rem;
-      // }
+      div {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
 
-      // input[type="file"] {
-      //   display: none;
-      // }
-
-      // label[for="slider-image"] {
-      //   background-color: #ffffff;
-      //   border: 1px solid #8c8c8c;
-      //   border-radius: 16px;
-      //   padding: 0.5rem 1rem;
-      //   cursor: pointer;
-      //   width: 100px;
-      //   text-align: center;
-      //   margin: 1.5rem auto;
-      //   cursor: not-allowed;
-      //   margin-right: 1rem;
-      // }
+        label.checkbox-label {
+          cursor: pointer;
+        }
+      }
     }
   }
 }

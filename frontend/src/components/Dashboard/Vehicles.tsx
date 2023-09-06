@@ -5,12 +5,16 @@ type VehiclesProps = {
   availableVehicles: Vehicle[];
   setAvailableVehicles: (vehicles: Vehicle[]) => void;
   setIsSliderOpen: (isSidebarOpen: boolean) => void;
+  setIsUpdateVehicleSliderOpen: (isSidebarOpen: boolean) => void;
+  setUpdateVehicle: (vehicle: Vehicle) => void;
 };
 
 export default function Vehicles({
   availableVehicles,
   setAvailableVehicles,
   setIsSliderOpen,
+  setIsUpdateVehicleSliderOpen,
+  setUpdateVehicle,
 }: VehiclesProps) {
   function deleteVehicle(vehicleId: number) {
     api(`/v1/vehicles/${vehicleId}`, "delete")
@@ -23,6 +27,21 @@ export default function Vehicles({
       })
       .catch(() => {
         // handle error
+      });
+  }
+
+  function fetchVehicle(vehicleId: number) {
+    api(`/v1/vehicles/${vehicleId}`, "get")
+      .then((res) => {
+        if (res.status !== "ok")
+          throw new Error("Greška pri dobavljanju vozila");
+        return res.data as Vehicle;
+      })
+      .then((vehicle) => {
+        setUpdateVehicle(vehicle);
+      })
+      .catch(() => {
+        // handle error message
       });
   }
 
@@ -71,6 +90,15 @@ export default function Vehicles({
               </td>
               <td>{new Date(vehicle.createdAt).toLocaleDateString()}</td>
               <td>
+                <a
+                  className="edit-btn text-blue"
+                  onClick={() => {
+                    fetchVehicle(vehicle.vehicleId);
+                    setIsUpdateVehicleSliderOpen(true);
+                  }}
+                >
+                  Izmeni
+                </a>
                 <a
                   className="edit-btn text-red"
                   onClick={() => deleteVehicle(vehicle.vehicleId)}

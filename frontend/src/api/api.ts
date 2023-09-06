@@ -3,7 +3,7 @@
 import axios, { AxiosResponse } from "axios";
 import { ApiConfig } from "../config/api.config";
 
-type HttpMethod = "get" | "post" | "delete";
+type HttpMethod = "get" | "post" | "put" | "delete";
 
 export type ApiResponse = {
   status: "ok" | "error";

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import Vehicle from "../models/VehicleModel.ts";
+import Vehicle, { getVehicleImageUrl } from "../models/VehicleModel.ts";
 import api, { apiForm } from "../api/api.ts";
 import Slider from "../components/Dashboard/Slider.tsx";
 import Vehicles from "../components/Dashboard/Vehicles.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import Employees from "../components/Dashboard/Employees.tsx";
 
 type NavItemProps = {
   text: string;
@@ -47,7 +46,9 @@ function NavItem({
 
 export default function Dashboard() {
   const [availableVehicles, setAvailableVehicles] = useState<Vehicle[]>([]);
-  const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [isAddVehicleSliderOpen, setIsAddVehicleSliderOpen] = useState(false);
+  const [isUpdateVehicleSliderOpen, setIsUpdateVehicleSliderOpen] =
+    useState(false);
   const [showVehicles, setShowVehicles] = useState(() => {
     const showVehicles = localStorage.getItem("showVehicles");
     return showVehicles ? (JSON.parse(showVehicles) as boolean) : true;
@@ -57,8 +58,9 @@ export default function Dashboard() {
     return showEmployees ? (JSON.parse(showEmployees) as boolean) : false;
   });
   const [vehicleName, setVehicleName] = useState("");
-  const [isVehicleReady, setIsVehicleReady] = useState("on");
+  const [vehicleStatus, setVehicleStatus] = useState("on");
   const [vehicleImage, setVehicleImage] = useState<File>();
+  const [updateVehicle, setUpdateVehicle] = useState<Vehicle>();
 
   function getAndSetAvailableVehicles(): AbortController {
     const controller = new AbortController();
@@ -80,7 +82,7 @@ export default function Dashboard() {
     if (!vehicleName || !vehicleImage) return;
     const payload = {
       vehicleName,
-      isActive: isVehicleReady === "on",
+      isActive: vehicleStatus === "on",
     };
     api("/v1/vehicles", "post", payload)
       .then((res) => {
@@ -105,6 +107,19 @@ export default function Dashboard() {
       .catch((error: Error) => {
         // handle error
         alert(error.message);
+      });
+  }
+
+  function updateVehicleData(vehicleId: number, payload: any) {
+    if (!vehicleName) return;
+
+    api(`/v1/vehicles/${vehicleId.toString()}`, "put", payload)
+      .then((res) => {
+        if (res.status !== "ok") throw new Error("Update nije uspeo");
+        getAndSetAvailableVehicles();
+      })
+      .catch(() => {
+        // handle error
       });
   }
 
@@ -145,15 +160,17 @@ export default function Dashboard() {
         <Vehicles
           availableVehicles={availableVehicles}
           setAvailableVehicles={setAvailableVehicles}
-          setIsSliderOpen={setIsSliderOpen}
+          setIsSliderOpen={setIsAddVehicleSliderOpen}
+          setIsUpdateVehicleSliderOpen={setIsUpdateVehicleSliderOpen}
+          setUpdateVehicle={setUpdateVehicle}
         />
       )}
       {showVehicles && (
-        <div className={`backdrop ${isSliderOpen ? "active" : ""}`}>
-          <Slider isSidebarOpen={isSliderOpen}>
+        <div className={`backdrop ${isAddVehicleSliderOpen ? "active" : ""}`}>
+          <Slider isSidebarOpen={isAddVehicleSliderOpen}>
             <div
               className="slider-header mt-2 ml-2"
-              onClick={() => setIsSliderOpen(false)}
+              onClick={() => setIsAddVehicleSliderOpen(false)}
             >
               <FontAwesomeIcon
                 className="btn-arrow-left font-lg"
@@ -166,19 +183,22 @@ export default function Dashboard() {
                 <label>Ime Vozila</label>
                 <input
                   type="text"
+                  value={vehicleName}
                   onChange={(e) => setVehicleName(e.target.value)}
                 />
               </div>
               <div>
-                <label>Da li je vozilo spremno za vožnju?</label>
-                <input
-                  type="checkbox"
-                  defaultChecked={true}
-                  onChange={(e) => setIsVehicleReady(e.target.value)}
-                />
+                <label className="checkbox-label">
+                  Da li je vozilo spremno za vožnju?
+                  <input
+                    className="ml-2"
+                    type="checkbox"
+                    defaultChecked={true}
+                    onChange={(e) => setVehicleStatus(e.target.value)}
+                  />
+                </label>
               </div>
               <div>
-                {/* <label htmlFor="vehicle-image">Dodaj sliku</label> */}
                 <input
                   type="file"
                   onChange={(e) => {
@@ -191,7 +211,12 @@ export default function Dashboard() {
               <div>
                 <button
                   className="btn-black text-white font-md"
-                  onClick={() => addVehicle()}
+                  onClick={() => {
+                    addVehicle();
+                    setIsAddVehicleSliderOpen(false);
+                    setVehicleName("");
+                    setVehicleStatus("on");
+                  }}
                 >
                   Dodaj Vozilo
                 </button>
@@ -201,6 +226,71 @@ export default function Dashboard() {
         </div>
       )}
 
+      {showVehicles && (
+        <div
+          className={`backdrop ${isUpdateVehicleSliderOpen ? "active" : ""}`}
+        >
+          <Slider isSidebarOpen={isUpdateVehicleSliderOpen}>
+            <div
+              className="slider-header mt-2 ml-2"
+              onClick={() => setIsUpdateVehicleSliderOpen(false)}
+            >
+              <FontAwesomeIcon
+                className="btn-arrow-left font-lg"
+                icon="arrow-left"
+              />
+              <h3>Izmeni Vozilo</h3>
+            </div>
+            <div className="slider-data">
+              <div>
+                <img
+                  src={
+                    updateVehicle === undefined
+                      ? ""
+                      : getVehicleImageUrl(updateVehicle.vehicleId)
+                  }
+                />
+              </div>
+              <div>
+                <label>Novo Ime Vozila</label>
+                <input
+                  type="text"
+                  onChange={(e) => setVehicleName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="checkbox-label">
+                  Status vozila
+                  <input
+                    className="ml-2"
+                    type="checkbox"
+                    defaultChecked={updateVehicle?.isActive}
+                    onChange={(e) => setVehicleStatus(e.target.value)}
+                  />
+                </label>
+              </div>
+              <div>
+                <button
+                  className="btn-black text-white font-md"
+                  onClick={() => {
+                    if (updateVehicle)
+                      updateVehicleData(updateVehicle.vehicleId, {
+                        vehicleName,
+                        isActive: vehicleStatus,
+                      });
+                    setIsUpdateVehicleSliderOpen(false);
+                    setVehicleName("");
+                  }}
+                >
+                  Izmeni Vozilo
+                </button>
+              </div>
+            </div>
+          </Slider>
+        </div>
+      )}
+
+      {/*
       {showEmployees && <Employees setIsSliderOpen={setIsSliderOpen} />}
       {showEmployees && (
         <div className={`backdrop ${isSliderOpen ? "active" : ""}`}>
@@ -237,7 +327,6 @@ export default function Dashboard() {
                 <input type="email" />
               </div>
               <div>
-                {/* <label htmlFor="vehicle-image">Dodaj sliku</label> */}
                 <input
                   type="file"
                   onChange={(e) => {
@@ -250,7 +339,7 @@ export default function Dashboard() {
               <div>
                 <button
                   className="btn-black text-white font-md"
-                  onClick={() => addVehicle()}
+                  onClick={() => alert("dodaj zaposlenog")}
                 >
                   Dodaj Zaposlenog
                 </button>
@@ -259,6 +348,7 @@ export default function Dashboard() {
           </Slider>
         </div>
       )}
+        */}
     </div>
   );
 }
