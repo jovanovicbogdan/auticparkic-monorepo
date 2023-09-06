@@ -67,7 +67,9 @@ export default function VehicleSelect({
       })
       .then((vehicles) => {
         setLoading(false);
-        setAvailableVehicles(vehicles);
+        setAvailableVehicles(() =>
+          vehicles.filter((vehicle) => vehicle.isActive)
+        );
       })
       .catch(() => {
         // handle error
