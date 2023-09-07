@@ -10,7 +10,7 @@
 
 ## TODO Frontend
 
-- [ ] Add delete functionality for vehicles in /dashboard page
+- [x] Add delete functionality for vehicles in /dashboard page
 - [ ] Add notifications for errors
 - [ ] Add loader/spinner
 
@@ -28,10 +28,16 @@ docker run --rm -it postgres:alpine bash
 psql -U postgres -d postgres -h awseb-e-hpqaxacpv6-stack-awsebrdsdatabase-dafkdvlt0qvd.cncflnnvajsx.eu-central-1.rds.amazonaws.com
 ```
 
-## Build React Docker Image
+## Build Frontend Docker Image
 
 ```shell
 docker build --no-cache --build-arg="API_BASE_URL=http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/api" -t bogdanjovanovic/auticparkic-frontend .
+```
+
+- Push to Docker Hub
+
+```shell
+docker push bogdanjovanovic/auticparkic-frontend:latest
 ```
 
 ### Docker Format
