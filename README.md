@@ -6,11 +6,13 @@
 
 - [x] Add Swagger
 - [x] Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level
+- [ ] Handle deleting vehicles that are in use and written in ride database table
 - [ ] Add deleteObject functionality for s3 service
 
 ## TODO Frontend
 
-- [x] Add delete functionality for vehicles in /dashboard page
+- [ ] Add delete functionality for vehicles in /dashboard page
+- [ ] Add when the ride has started and when it has ended
 - [ ] Add notifications for errors
 - [ ] Add loader/spinner
 
