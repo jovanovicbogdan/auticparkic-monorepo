@@ -11,13 +11,13 @@ export default function ActiveRides() {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [unfinishedRides, setUnfinishedRides] = useState<Ride[]>([]);
 
-  function formatTime(dateTime: Date) {
-    const hours = dateTime.getHours().toString().padStart(2, "0");
-    const minutes = dateTime.getMinutes().toString().padStart(2, "0");
-    const seconds = dateTime.getSeconds().toString().padStart(2, "0");
-
-    return `${hours}:${minutes}:${seconds}`;
-  }
+  // function formatTime(dateTime: Date) {
+  //   const hours = dateTime.getHours().toString().padStart(2, "0");
+  //   const minutes = dateTime.getMinutes().toString().padStart(2, "0");
+  //   const seconds = dateTime.getSeconds().toString().padStart(2, "0");
+  //
+  //   return `${hours}:${minutes}:${seconds}`;
+  // }
 
   const loadRunningRides = useCallback(() => {
     const controller = new AbortController();
@@ -231,9 +231,12 @@ export default function ActiveRides() {
               />
             </div>
             <div className="active-ride-stopwatch mt-3">
-              <p className="text-beige font-sm">
+              {/*
+                            <p className="text-beige font-sm">
                 Vožnja započeta u {formatTime(new Date(ride.createdAt))}
               </p>
+
+              */}
               <Stopwatch action={ride.status} ride={ride} />
             </div>
             {ride.status === Status.STOPPED && (
