@@ -72,6 +72,7 @@ export default function Form(props: FormProps) {
 
   function prevStep() {
     setStep((step) => step - 1);
+    setSelectedVehicleId(-1);
   }
 
   function close() {
