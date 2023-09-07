@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../api/api.ts";
 import Vehicle, { getVehicleImageUrl } from "../../models/VehicleModel.ts";
 import Spinner from "../Spinner.tsx";
+import { AnimatePresence, motion } from "framer-motion";
 
 type VehicleSelectProps = {
   setSelectedVehicleId: (vehicleId: number) => void;
@@ -85,21 +86,33 @@ export default function VehicleSelect({
   }, []);
 
   return (
-    <div className="vehicle-select mt-3">
-      <Spinner show={loading} />
-      {availableVehicles.map(
-        (vehicle) =>
-          vehicle.vehicleImageId && (
-            <ImageContainer
-              imageUrl={getVehicleImageUrl(vehicle.vehicleId)}
-              vehicleId={vehicle.vehicleId.toString()}
-              selectedImage={selectedImage}
-              setSelectedImage={setSelectedImage}
-              setSelectedVehicleId={setSelectedVehicleId}
-              key={vehicle.vehicleId}
-            />
-          )
-      )}
-    </div>
+    <AnimatePresence>
+      <motion.div
+        className="vehicle-select mt-3"
+        initial={{ x: 300, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: 300, opacity: 0 }}
+        transition={{
+          type: "spring",
+          stiffness: 260,
+          damping: 40,
+        }}
+      >
+        <Spinner show={loading} />
+        {availableVehicles.map(
+          (vehicle) =>
+            vehicle.vehicleImageId && (
+              <ImageContainer
+                imageUrl={getVehicleImageUrl(vehicle.vehicleId)}
+                vehicleId={vehicle.vehicleId.toString()}
+                selectedImage={selectedImage}
+                setSelectedImage={setSelectedImage}
+                setSelectedVehicleId={setSelectedVehicleId}
+                key={vehicle.vehicleId}
+              />
+            )
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 }

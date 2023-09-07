@@ -4,6 +4,7 @@ import Ride, { Status } from "../../models/RideModel.ts";
 import Stopwatch from "../Stopwatch/Stopwatch.tsx";
 import Form from "../Form/Form.tsx";
 import { getVehicleImageUrl } from "../../models/VehicleModel.ts";
+import { AnimatePresence } from "framer-motion";
 
 export default function ActiveRides() {
   // const [loading, setLoading] = useState<boolean>(false);
@@ -206,13 +207,15 @@ export default function ActiveRides() {
 
   return (
     <div>
-      {showForm && (
-        <Form
-          unfinishedRides={unfinishedRides}
-          setUnfinishedRides={setUnfinishedRides}
-          setShowForm={setShowForm}
-        />
-      )}
+      <AnimatePresence>
+        {showForm && (
+          <Form
+            unfinishedRides={unfinishedRides}
+            setUnfinishedRides={setUnfinishedRides}
+            setShowForm={setShowForm}
+          />
+        )}
+      </AnimatePresence>
       <div className="active-rides ml-3 mt-3">
         {unfinishedRides.map((ride) => (
           <div

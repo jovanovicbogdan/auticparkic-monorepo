@@ -3,6 +3,7 @@ import VehicleSelect from "./VehicleSelect.tsx";
 import VehicleChoicePreview from "./VehicleChoicePreview.tsx";
 import api from "../../api/api.ts";
 import Ride from "../../models/RideModel.ts";
+import { motion } from "framer-motion";
 
 type PageDisplayProps = {
   step: number;
@@ -78,7 +79,12 @@ export default function Form(props: FormProps) {
   }
 
   return (
-    <div className="multi-step-form">
+    <motion.div
+      className="multi-step-form"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="header">
         <h1>{stepPageTitles[step]}</h1>
         <div>
@@ -109,6 +115,6 @@ export default function Form(props: FormProps) {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

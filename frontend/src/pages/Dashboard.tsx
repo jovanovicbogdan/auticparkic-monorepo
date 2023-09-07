@@ -79,7 +79,11 @@ export default function Dashboard() {
   }
 
   function addVehicle() {
-    if (!vehicleName || !vehicleImage) return;
+    if (!vehicleName || !vehicleImage) {
+      alert("Proverite da li ste uneli ime i sliku vozila");
+      return;
+    }
+
     const payload = {
       vehicleName,
       isActive: isChecked,
@@ -114,7 +118,10 @@ export default function Dashboard() {
   }
 
   function updateVehicleData(vehicleId: number, payload: any) {
-    if (!vehicleName) return;
+    if (!vehicleName) {
+      alert("Proverite da li je ime vozila uneto");
+      return;
+    }
 
     api(`/v1/vehicles/${vehicleId.toString()}`, "put", payload)
       .then((res) => {
@@ -184,8 +191,13 @@ export default function Dashboard() {
               <h3>Dodaj Novo Vozilo</h3>
             </div>
             <div className="slider-data">
+              <p className="font-sm mb-1">
+                <span className="text-red">*</span> &mdash; obavezna polja
+              </p>
               <div>
-                <label>Ime Vozila</label>
+                <label>
+                  Ime Vozila <span className="text-red">*</span>
+                </label>
                 <input
                   type="text"
                   value={vehicleName}
@@ -194,7 +206,8 @@ export default function Dashboard() {
               </div>
               <div>
                 <label className="checkbox-label">
-                  Da li je vozilo spremno za vožnju?
+                  Da li je vozilo spremno za vožnju?{" "}
+                  <span className="text-red">*</span>
                   <input
                     className="ml-2"
                     type="checkbox"
@@ -204,7 +217,16 @@ export default function Dashboard() {
                 </label>
               </div>
               <div>
+                <label htmlFor="upload-image">
+                  Dodaj sliku
+                  {vehicleImage && (
+                    <span className="font-sm text-gray ml-1">
+                      {vehicleImage.name}
+                    </span>
+                  )}
+                </label>
                 <input
+                  id="upload-image"
                   type="file"
                   onChange={(e) => {
                     if (e.target.files) {
@@ -252,19 +274,22 @@ export default function Dashboard() {
                 />
               </div>
               <div>
-                <label>Novo Ime Vozila</label>
+                <label>
+                  Novo Ime Vozila <span className="text-red">*</span>
+                </label>
                 <input
                   type="text"
+                  value={updateVehicle ? updateVehicle.name : ""}
                   onChange={(e) => setVehicleName(e.target.value)}
                 />
               </div>
               <div>
                 <label className="checkbox-label">
-                  Da li je vozilo dostupno?
+                  Da li je vozilo dostupno? <span className="text-red">*</span>
                   <input
                     className="ml-2"
                     type="checkbox"
-                    checked={isChecked}
+                    checked={updateVehicle ? updateVehicle.isActive : false}
                     onChange={() => setIsChecked(!isChecked)}
                   />
                 </label>

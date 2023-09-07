@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Vehicle, { getVehicleImageUrl } from "../../models/VehicleModel.ts";
 import api from "../../api/api.ts";
+import { AnimatePresence, motion } from "framer-motion";
 
 type VehicleChoicePreviewProps = {
   selectedVehicleId: number;
@@ -42,16 +43,29 @@ export default function VehicleChoicePreview({
   }, [selectedVehicleId, fetchVehicle]);
 
   return (
-    <div className="vehicle-choice-preview mt-3" style={{ color: "#fff" }}>
-      {vehicle && (
-        <div>
-          <img src={getVehicleImageUrl(vehicle.vehicleId)} />
-          <div className="vehicle-choice-preview-info font-xxl">
-            <div className="name text-beige">{vehicle.name}</div>
-            <div className="price text-beige">40 RSD/min</div>
+    <AnimatePresence>
+      <motion.div
+        className="vehicle-choice-preview mt-3"
+        style={{ color: "#fff" }}
+        initial={{ x: 300, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: 300, opacity: 0 }}
+        transition={{
+          type: "spring",
+          stiffness: 260,
+          damping: 40,
+        }}
+      >
+        {vehicle && (
+          <div>
+            <img src={getVehicleImageUrl(vehicle.vehicleId)} />
+            <div className="vehicle-choice-preview-info font-xxl">
+              <div className="name text-beige">{vehicle.name}</div>
+              <div className="price text-beige">40 RSD/min</div>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 }

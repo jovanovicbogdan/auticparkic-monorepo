@@ -175,6 +175,14 @@
         label.checkbox-label {
           cursor: pointer;
         }
+
+        label[for="upload-image"] {
+          cursor: pointer;
+        }
+
+        label[for="upload-image"] ~ input {
+          display: none;
+        }
       }
     }
   }
