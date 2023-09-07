@@ -16,6 +16,7 @@ export default function Vehicles({
   setIsUpdateVehicleSliderOpen,
   setUpdateVehicle,
 }: VehiclesProps) {
+
   function deleteVehicle(vehicleId: number) {
     api(`/v1/vehicles/${vehicleId}`, "delete")
       .then((res) => {
@@ -99,12 +100,17 @@ export default function Vehicles({
                 >
                   Izmeni
                 </a>
-                <a
+                {
+                  /*
+                                                  <a
                   className="edit-btn text-red"
                   onClick={() => deleteVehicle(vehicle.vehicleId)}
                 >
                   Izbriši
                 </a>
+
+                  */
+                }
               </td>
             </tr>
           ))}

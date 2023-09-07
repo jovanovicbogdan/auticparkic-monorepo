@@ -58,13 +58,13 @@ export default function Dashboard() {
     return showEmployees ? (JSON.parse(showEmployees) as boolean) : false;
   });
   const [vehicleName, setVehicleName] = useState("");
-  const [isChecked, setIsChecked] = useState<boolean>(true);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
   const [vehicleImage, setVehicleImage] = useState<File>();
   const [updateVehicle, setUpdateVehicle] = useState<Vehicle>();
 
   function getAndSetAvailableVehicles(): AbortController {
     const controller = new AbortController();
-    api("/v1/vehicles/available", "get", undefined, controller.signal)
+    api("/v1/vehicles", "get", undefined, controller.signal)
       .then((res) => {
         if (res.status !== "ok")
           throw new Error("Could not fetch available vehicles");
@@ -118,7 +118,7 @@ export default function Dashboard() {
   }
 
   function updateVehicleData(vehicleId: number, payload: any) {
-    if (!vehicleName) {
+    if (!payload.vehicleName) {
       alert("Proverite da li je ime vozila uneto");
       return;
     }
@@ -128,7 +128,6 @@ export default function Dashboard() {
         if (res.status !== "ok") throw new Error("Update nije uspeo");
         getAndSetAvailableVehicles();
         setIsUpdateVehicleSliderOpen(false);
-        setVehicleName("");
       })
       .catch(() => {
         // handle error
@@ -144,6 +143,12 @@ export default function Dashboard() {
     localStorage.setItem("showVehicles", JSON.stringify(showVehicles));
     localStorage.setItem("showEmployees", JSON.stringify(showEmployees));
   }, [showVehicles, showEmployees]);
+
+  useEffect(() => {
+    setIsChecked(updateVehicle?.isActive || false);
+    setVehicleName(updateVehicle?.name || "");
+  }, [updateVehicle]);
+
 
   return (
     <div className="dashboard-root">
@@ -273,13 +278,16 @@ export default function Dashboard() {
                   }
                 />
               </div>
+              <p className="font-sm mb-1">
+                <span className="text-red">*</span> &mdash; obavezna polja
+              </p>
               <div>
                 <label>
                   Novo Ime Vozila <span className="text-red">*</span>
                 </label>
                 <input
                   type="text"
-                  value={updateVehicle ? updateVehicle.name : ""}
+                  value={vehicleName}
                   onChange={(e) => setVehicleName(e.target.value)}
                 />
               </div>
@@ -289,7 +297,7 @@ export default function Dashboard() {
                   <input
                     className="ml-2"
                     type="checkbox"
-                    checked={updateVehicle ? updateVehicle.isActive : false}
+                    checked={isChecked}
                     onChange={() => setIsChecked(!isChecked)}
                   />
                 </label>
@@ -303,6 +311,7 @@ export default function Dashboard() {
                         vehicleName,
                         isActive: isChecked,
                       });
+                    setVehicleName("");
                   }}
                 >
                   Izmeni Vozilo

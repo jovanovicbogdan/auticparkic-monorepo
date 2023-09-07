@@ -1,5 +1,5 @@
 ### Create vehicle
-POST http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/api/v1/vehicles
+POST http://localhost:10000/api/v1/vehicles
 Content-Type: application/json
 
 {
@@ -13,6 +13,9 @@ GET http://localhost:10000/api/v1/vehicles/1
 ### Get available vehicles
 GET http://localhost:10000/api/v1/vehicles/available
 
+### Get all vehicles
+GET http://localhost:10000/api/v1/vehicles
+
 ### Update vehicle name
 POST http://localhost:1000/api/v1/vehicles/1/update
 Content-Type: application/json
@@ -23,7 +26,7 @@ Content-Type: application/json
 }
 
 ### Delete vehicle
-DELETE http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/api/v1/vehicles/1
+DELETE http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/api/v1/vehicles/2
 
 ### Upload vehicle image
 POST http://localhost:10000/api/v1/vehicles/image/2/upload

@@ -48,6 +48,15 @@ public class VehicleService {
 
   public void updateVehicle(final long vehicleId, final VehicleRequestDTO request) {
     final Vehicle vehicle = findVehicleIfExistsOrThrow(vehicleId);
+
+    if (vehicle.isActive) {
+      final List<Long> vehiclesIdsInUse = getVehicleIdsInUse();
+
+      if (vehiclesIdsInUse.contains(vehicle.vehicleId)) {
+        throw new ConflictException("Vehicle is in use and cannot be updated.");
+      }
+    }
+
     vehicle.name = request.vehicleName().toUpperCase();
     vehicle.isActive = request.isActive();
     final Vehicle updatedVehicle = dao.update(vehicle);
@@ -55,17 +64,16 @@ public class VehicleService {
   }
 
   public List<Vehicle> getAvailableVehicles() {
-    final List<Long> activeVehicleIds = rideJdbcDao.findByStatuses(
-            List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
-                RideStatus.STOPPED.name()))
-        .stream()
-        .map(ride -> ride.vehicleId)
-        .toList();
+    final List<Long> vehicleIdsInUse = getVehicleIdsInUse();
 
     return dao.findAll()
         .stream()
-        .filter(vehicle -> !activeVehicleIds.contains(vehicle.vehicleId))
+        .filter(vehicle -> !vehicleIdsInUse.contains(vehicle.vehicleId))
         .toList();
+  }
+
+  public List<Vehicle> getAllVehicles() {
+    return dao.findAll();
   }
 
   public void uploadVehicleImage(final long vehicleId, final MultipartFile file) {
@@ -104,6 +112,15 @@ public class VehicleService {
     dao.delete(vehicle.vehicleId);
     // TODO: delete vehicle image from S3
     log.info("Deleted vehicle: {}", vehicle);
+  }
+
+  private List<Long> getVehicleIdsInUse() {
+    return rideJdbcDao.findByStatuses(
+            List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
+                RideStatus.STOPPED.name()))
+        .stream()
+        .map(ride -> ride.vehicleId)
+        .toList();
   }
 
   private Vehicle findVehicleIfExistsOrThrow(long vehicleId) {
