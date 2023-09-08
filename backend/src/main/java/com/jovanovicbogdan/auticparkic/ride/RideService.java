@@ -6,6 +6,8 @@ import com.jovanovicbogdan.auticparkic.vehicle.VehicleJdbcDataAccessService;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -64,6 +66,7 @@ public class RideService {
       ride.startedAt = LocalDateTime.now(clock);
     } else {
       ride.resumedAt = LocalDateTime.now(clock);
+      ride.pausedAt = null;
     }
 
     final Ride startedRide = dao.update(ride);
@@ -84,6 +87,7 @@ public class RideService {
     ride.elapsedTime = elapsedTime;
     ride.price = calculateRidePrice(ride.elapsedTime);
     ride.pausedAt = LocalDateTime.now(clock);
+    ride.resumedAt = null;
     final Ride pausedRide = dao.update(ride);
     log.info("Paused ride: {}", pausedRide);
 
@@ -146,20 +150,41 @@ public class RideService {
             RideStatus.STOPPED.name()));
   }
 
-  public void updateRideElapsedTime(final long rideId, final long elapsedTime) {
+  public long calculateRideElapsedTime(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (ride.status == RideStatus.FINISHED) {
       throw new BadRequestException("Ride is finished");
     }
 
-    if (Math.abs(ride.elapsedTime - elapsedTime) > 10) {
-      throw new BadRequestException("Ride's elapsed time is not valid");
+    final List<Long> pausedAt = Arrays.stream(ride.pausedAt)
+        .map(localDateTime -> localDateTime.toInstant(ZoneOffset.UTC).getEpochSecond()).toList();
+    final List<Long> resumedAt = Arrays.stream(ride.resumedAt)
+        .map(localDateTime -> localDateTime.toInstant(ZoneOffset.UTC).getEpochSecond()).toList();
+
+    return getElapsedTime(ride.startedAt.toInstant(ZoneOffset.UTC).getEpochSecond(), pausedAt,
+        resumedAt, LocalDateTime.now(clock).toInstant(ZoneOffset.UTC).getEpochSecond());
+  }
+
+  private long getElapsedTime(final long startedAt, final List<Long> pausedAt,
+      final List<Long> resumedAt, final long currentTimestamp) {
+    long elapsedTime = 0;
+
+    // Calculate the time between start and first pause
+    if (!pausedAt.isEmpty()) {
+      elapsedTime += pausedAt.get(0) - startedAt;
+    } else {
+      return currentTimestamp - startedAt;
     }
 
-    ride.elapsedTime = elapsedTime;
-    final Ride updatedRide = dao.update(ride);
-    log.info("Updated ride elapsed time: {}", updatedRide);
+    // Calculate the time between each resume and next pause
+    for (int i = 0; i < resumedAt.size(); i++) {
+      long resumeTime = resumedAt.get(i);
+      long nextPauseTime = (i < pausedAt.size() - 1) ? pausedAt.get(i + 1) : currentTimestamp;
+      elapsedTime += nextPauseTime - resumeTime;
+    }
+
+    return elapsedTime;
   }
 
   private void addElapsedTime(final Ride ride) {

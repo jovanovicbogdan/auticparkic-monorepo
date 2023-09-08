@@ -62,12 +62,12 @@ public class RideController {
     return service.finishRide(rideId);
   }
 
-  @PostMapping("{rideId}")
-  public void updateRideElapsedTime(@PathVariable final long rideId,
-      @RequestParam final long elapsedTime) {
-    log.info("Request to update ride with id: {} and elapsed time: {}", rideId, elapsedTime);
-    service.updateRideElapsedTime(rideId, elapsedTime);
-  }
+//  @PostMapping("{rideId}")
+//  public void updateRideElapsedTime(@PathVariable final long rideId,
+//      @RequestParam final long elapsedTime) {
+//    log.info("Request to update ride with id: {} and elapsed time: {}", rideId, elapsedTime);
+//    service.updateRideElapsedTime(rideId, elapsedTime);
+//  }
 
   @GetMapping("unfinished")
   public List<Ride> getUnfinishedRides() {

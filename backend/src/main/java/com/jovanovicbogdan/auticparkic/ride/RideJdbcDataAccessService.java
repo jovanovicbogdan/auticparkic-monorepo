@@ -28,6 +28,7 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
   @Override
   @Transactional
   public Ride create(final Ride ride) {
+    // TODO: Insert an array of pausedAt and resumedAt values
     final String sql = """
         INSERT INTO ride(status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id)
         VALUES (?::status, ?, ?::timestamp, ?::timestamp, ?::timestamp, ?::timestamp, ?::timestamp, ?, ?)
@@ -37,13 +38,14 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         .map(it -> it.format(Constants.FORMATTER))
         .orElse(null);
 
-    final String pausedAt = Optional.ofNullable(ride.pausedAt)
-        .map(it -> it.format(Constants.FORMATTER))
-        .orElse(null);
 
-    final String resumedAt = Optional.ofNullable(ride.resumedAt)
-        .map(it -> it.format(Constants.FORMATTER))
-        .orElse(null);
+//    final String pausedAt = Optional.ofNullable(ride.pausedAt)
+//        .map(it -> it.format(Constants.FORMATTER))
+//        .orElse(null);
+//
+//    final String resumedAt = Optional.ofNullable(ride.resumedAt)
+//        .map(it -> it.format(Constants.FORMATTER))
+//        .orElse(null);
 
     final String finishedAt = Optional.ofNullable(ride.finishedAt)
         .map(it -> it.format(Constants.FORMATTER))

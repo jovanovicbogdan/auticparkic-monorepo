@@ -1,6 +1,7 @@
 package com.jovanovicbogdan.auticparkic.ride;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.data.annotation.Id;
 
@@ -12,8 +13,8 @@ public class Ride {
   public long elapsedTime;
   public LocalDateTime createdAt = LocalDateTime.now();
   public LocalDateTime startedAt;
-  public LocalDateTime pausedAt;
-  public LocalDateTime resumedAt;
+  public LocalDateTime[] pausedAt;
+  public LocalDateTime[] resumedAt;
   public LocalDateTime finishedAt;
   public double price;
   public Long vehicleId;
@@ -22,8 +23,8 @@ public class Ride {
   }
 
   public Ride(final Long rideId, final RideStatus status, final long elapsedTime,
-      final LocalDateTime createdAt, final LocalDateTime startedAt, final LocalDateTime pausedAt,
-      final LocalDateTime resumedAt, final LocalDateTime finishedAt, final double price,
+      final LocalDateTime createdAt, final LocalDateTime startedAt, final LocalDateTime[] pausedAt,
+      final LocalDateTime[] resumedAt, final LocalDateTime finishedAt, final double price,
       final Long vehicleId) {
     this.rideId = rideId;
     this.status = status;
