@@ -19,7 +19,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
   private final RideRowMapper rideRowMapper;
   private final Logger log = LoggerFactory.getLogger(getClass());
 
-  public RideJdbcDataAccessService(final JdbcTemplate jdbcTemplate, final RideRowMapper rideRowMapper) {
+  public RideJdbcDataAccessService(final JdbcTemplate jdbcTemplate,
+      final RideRowMapper rideRowMapper) {
     this.jdbcTemplate = jdbcTemplate;
     this.rideRowMapper = rideRowMapper;
   }
@@ -28,10 +29,22 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
   @Transactional
   public Ride create(final Ride ride) {
     final String sql = """
-        INSERT INTO ride(status, elapsed_time, created_at, finished_at, price, vehicle_id)
-        VALUES (?::status, ?, ?::timestamp, ?::timestamp, ?, ?)
-        RETURNING ride_id, status, elapsed_time, created_at, finished_at, price, vehicle_id;
+        INSERT INTO ride(status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id)
+        VALUES (?::status, ?, ?::timestamp, ?::timestamp, ?::timestamp, ?::timestamp, ?::timestamp, ?, ?)
+        RETURNING ride_id, status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id;
         """;
+    final String startedAt = Optional.ofNullable(ride.startedAt)
+        .map(it -> it.format(Constants.FORMATTER))
+        .orElse(null);
+
+    final String pausedAt = Optional.ofNullable(ride.pausedAt)
+        .map(it -> it.format(Constants.FORMATTER))
+        .orElse(null);
+
+    final String resumedAt = Optional.ofNullable(ride.resumedAt)
+        .map(it -> it.format(Constants.FORMATTER))
+        .orElse(null);
+
     final String finishedAt = Optional.ofNullable(ride.finishedAt)
         .map(it -> it.format(Constants.FORMATTER))
         .orElse(null);
@@ -39,7 +52,7 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
     log.debug("Attempting to save ride to database: {}", ride);
 
     return jdbcTemplate.queryForObject(sql, rideRowMapper, ride.status.name(), ride.elapsedTime,
-        ride.createdAt, finishedAt, ride.price, ride.vehicleId);
+        ride.createdAt, startedAt, pausedAt, resumedAt, finishedAt, ride.price, ride.vehicleId);
   }
 
   @Override
@@ -47,21 +60,22 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
   public Ride update(final Ride ride) {
     final String sql = """
         UPDATE ride
-        SET status = ?, elapsed_time = ?, created_at = ?, finished_at = ?, price = ?, vehicle_id = ?
+        SET status = ?, elapsed_time = ?, created_at = ?, started_at = ?, paused_at = ?, resumed_at = ?, finished_at = ?, price = ?, vehicle_id = ?
         WHERE ride_id = ?
-        RETURNING ride_id, status, elapsed_time, created_at, finished_at, price, vehicle_id;
+        RETURNING ride_id, status, elapsed_time, created_at, started_at = ?, paused_at = ?, resumed_at = ?, finished_at, price, vehicle_id;
         """;
 
     log.debug("Attempting to update ride in database: {}", ride);
 
     return jdbcTemplate.queryForObject(sql, rideRowMapper, ride.status.name(), ride.elapsedTime,
-        ride.createdAt, ride.finishedAt, ride.price, ride.vehicleId, ride.rideId);
+        ride.createdAt, ride.startedAt, ride.pausedAt, ride.resumedAt, ride.finishedAt, ride.price,
+        ride.vehicleId, ride.rideId);
   }
 
   @Override
   public List<Ride> findAll() {
     final String sql = """
-        SELECT ride_id, status, elapsed_time, created_at, finished_at, price, vehicle_id
+        SELECT ride_id, status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id
         FROM ride
         ORDER BY ride_id DESC;
         """;
@@ -74,7 +88,7 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
   @Override
   public Optional<Ride> findById(final long rideId) {
     final String sql = """
-        SELECT ride_id, status, elapsed_time, created_at, finished_at, price, vehicle_id
+        SELECT ride_id, status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id
         FROM ride
         WHERE ride_id = ?;
         """;
@@ -109,7 +123,7 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
   public List<Ride> findByStatuses(final List<String> statuses) {
     final String inSql = String.join(", ", Collections.nCopies(statuses.size(), "?::status"));
     final String sql = """
-        SELECT ride_id, status, elapsed_time, created_at, finished_at, price, vehicle_id
+        SELECT ride_id, status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id
         FROM ride
         WHERE status IN (%s)
         ORDER BY ride_id DESC;
@@ -131,13 +145,14 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
     }
 
     final String sql = """
-        SELECT ride_id, status, elapsed_time, created_at, finished_at, price, vehicle_id
+        SELECT ride_id, status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id
         FROM ride
         WHERE vehicle_id = ? AND status IN (%s)
         ORDER BY ride_id DESC;
         """;
 
-    log.debug("Attempting to retrieve rides with statuses {} and vehicle id {} from database", statuses, vehicleId);
+    log.debug("Attempting to retrieve rides with statuses {} and vehicle id {} from database",
+        statuses, vehicleId);
 
     return jdbcTemplate.query(String.format(sql, inSql), rideRowMapper, params);
   }

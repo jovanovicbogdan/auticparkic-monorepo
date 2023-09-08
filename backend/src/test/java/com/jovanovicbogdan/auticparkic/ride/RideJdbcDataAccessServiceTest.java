@@ -36,7 +36,7 @@ class RideJdbcDataAccessServiceTest extends AbstractTestcontainers {
     // Given
     final Vehicle vehicle = createVehicle();
     final LocalDateTime createdAt = LocalDateTime.of(2021, 8, 20, 12, 30, 45);
-    final Ride ride = new Ride(null, RideStatus.RUNNING, 0L, createdAt, null, 0.0,
+    final Ride ride = new Ride(null, RideStatus.RUNNING, 0L, createdAt, null, null, null, null, 0.0,
         vehicle.vehicleId);
 
     // When

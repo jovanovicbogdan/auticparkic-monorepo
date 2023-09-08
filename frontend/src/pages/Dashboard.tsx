@@ -86,7 +86,7 @@ export default function Dashboard() {
 
     const payload = {
       vehicleName,
-      isActive: isChecked,
+      isActive: true,
     };
     api("/v1/vehicles", "post", payload)
       .then((res) => {
@@ -149,7 +149,6 @@ export default function Dashboard() {
     setVehicleName(updateVehicle?.name || "");
   }, [updateVehicle]);
 
-
   return (
     <div className="dashboard-root">
       <div className="dashboard-navbar">
@@ -209,6 +208,7 @@ export default function Dashboard() {
                   onChange={(e) => setVehicleName(e.target.value)}
                 />
               </div>
+              {/*
               <div>
                 <label className="checkbox-label">
                   Da li je vozilo spremno za vožnju?{" "}
@@ -216,11 +216,12 @@ export default function Dashboard() {
                   <input
                     className="ml-2"
                     type="checkbox"
-                    defaultChecked={true}
+                    checked={isChecked}
                     onChange={() => setIsChecked(!isChecked)}
                   />
                 </label>
               </div>
+              */}
               <div>
                 <label htmlFor="upload-image">
                   Dodaj sliku

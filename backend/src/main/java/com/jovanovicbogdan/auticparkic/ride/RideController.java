@@ -1,8 +1,11 @@
 package com.jovanovicbogdan.auticparkic.ride;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -71,4 +74,15 @@ public class RideController {
     log.info("Request to get unfinished rides");
     return service.getUnfinishedRides();
   }
+
+  @MessageMapping("/rides")
+  @SendTo("/topic/rides")
+  public Greeting greeting() throws InterruptedException {
+//    Thread.sleep(1000);
+    return new Greeting("Received at: " + LocalDateTime.now());
+  }
+
+  public record Greeting(String content) {
+  }
+
 }

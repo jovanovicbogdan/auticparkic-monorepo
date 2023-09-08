@@ -20,6 +20,10 @@ spring:
       max-request-size: "10MB"
   codec:
     max-in-memory-size: "10MB"
+#  task:
+#    scheduling:
+#      pool:
+#        size: 10
 
 logging:
   level:

@@ -59,6 +59,13 @@ public class RideService {
     }
 
     ride.status = RideStatus.RUNNING;
+
+    if (ride.startedAt == null) {
+      ride.startedAt = LocalDateTime.now(clock);
+    } else {
+      ride.resumedAt = LocalDateTime.now(clock);
+    }
+
     final Ride startedRide = dao.update(ride);
     log.info("Started ride: {}", startedRide);
 
@@ -72,9 +79,11 @@ public class RideService {
       throw new BadRequestException(
           "Ride can be paused only if it's previously started or resumed");
     }
+
     ride.status = RideStatus.PAUSED;
     ride.elapsedTime = elapsedTime;
     ride.price = calculateRidePrice(ride.elapsedTime);
+    ride.pausedAt = LocalDateTime.now(clock);
     final Ride pausedRide = dao.update(ride);
     log.info("Paused ride: {}", pausedRide);
 
@@ -151,6 +160,12 @@ public class RideService {
     ride.elapsedTime = elapsedTime;
     final Ride updatedRide = dao.update(ride);
     log.info("Updated ride elapsed time: {}", updatedRide);
+  }
+
+  private void addElapsedTime(final Ride ride) {
+    final Duration between = Duration.between(ride.startedAt, LocalDateTime.now());
+    final Duration totalElapsedTime = Duration.ofSeconds(ride.elapsedTime).plus(between);
+    ride.elapsedTime = totalElapsedTime.getSeconds();
   }
 
   private double calculateRidePrice(final long elapsedTime) {

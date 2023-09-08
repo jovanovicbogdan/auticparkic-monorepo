@@ -20,8 +20,10 @@ public class RideRowMapper implements RowMapper<Ride> {
         rs.getLong("ride_id"),
         RideStatus.valueOf(rs.getString("status")),
         rs.getLong("elapsed_time"),
-//        LocalDateTime.parse(rs.getString("started_at"), Constants.FORMATTER),
         LocalDateTime.parse(rs.getString("created_at"), Constants.FORMATTER),
+        LocalDateTime.parse(rs.getString("started_at"), Constants.FORMATTER),
+        LocalDateTime.parse(rs.getString("resumed_at"), Constants.FORMATTER),
+        LocalDateTime.parse(rs.getString("paused_at"), Constants.FORMATTER),
         finishedAt,
         rs.getDouble("price"),
         rs.getLong("vehicle_id")

@@ -1,5 +1,5 @@
 ### Create vehicle
-POST {{host}}/api/v1/vehicles
+POST {{host}}/v1/vehicles
 Content-Type: application/json
 
 {
@@ -8,16 +8,16 @@ Content-Type: application/json
 }
 
 ### Get vehicle by id
-GET {{host}}/api/v1/vehicles/1
+GET {{host}}/v1/vehicles/1
 
 ### Get available vehicles - vehicles that are either CREATED, RUNNING, PAUSED or STOPPED
 GET {{host}}/v1/vehicles/available
 
 ### Get all vehicles
-GET {{host}}/api/v1/vehicles
+GET {{host}}/v1/vehicles
 
 ### Update vehicle name
-POST http://localhost:1000/api/v1/vehicles/1/update
+POST http://localhost:1000/v1/vehicles/1/update
 Content-Type: application/json
 
 {
@@ -26,16 +26,16 @@ Content-Type: application/json
 }
 
 ### Delete vehicle
-DELETE {{host}}/api/v1/vehicles/2
+DELETE {{host}}/v1/vehicles/2
 
 ### Upload vehicle image
-POST {{host}}/api/v1/vehicles/image/2/upload
+POST {{host}}/v1/vehicles/image/3/upload
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="image"; filename="electric-vehicle-2.jpg"
+Content-Disposition: form-data; name="image"; filename="electric-vehicle-7.jpg"
 
-< /Users/bogdanjovanovic/Pictures/auticparkic images/electric-vehicle-2.jpg
+< /Users/bogdanjovanovic/Pictures/auticparkic images/electric-vehicle-7.jpg
 --boundary
 Content-Disposition: form-data; name="image"
 
@@ -43,22 +43,22 @@ Content-Disposition: form-data; name="image"
 --boundary
 
 ### Create ride
-POST {{host}}/api/v1/rides/create?vehicleId=2
+POST {{host}}/v1/rides/create?vehicleId=2
 
 ### Start ride
-POST {{host}}/api/v1/rides/13/start
+POST {{host}}/v1/rides/13/start
 
 ### Pause ride
-POST {{host}}/api/v1/rides/1/pause?elapsedTime=1000
+POST {{host}}/v1/rides/1/pause?elapsedTime=1000
 
 ### Stop ride
-POST {{host}}/api/v1/rides/1/stop?elapsedTime=1000
+POST {{host}}/v1/rides/1/stop?elapsedTime=1000
 
 ### Finish ride
-POST {{host}}/api/v1/rides/5/finish?elapsedTime=1000
+POST {{host}}/v1/rides/5/finish?elapsedTime=1000
 
 ### Get unfinished rides
-GET {{host}}/api/v1/rides/unfinished
+GET {{host}}/v1/rides/unfinished
 
 ### Update ride's elapsed time
-POST {{host}}/api/v1/rides/2?elapsedTime=500
+POST {{host}}/v1/rides/2?elapsedTime=500
