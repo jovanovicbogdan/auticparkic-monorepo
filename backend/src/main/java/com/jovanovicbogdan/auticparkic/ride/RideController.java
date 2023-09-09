@@ -27,9 +27,9 @@ public class RideController {
   }
 
   @PostMapping("create")
-  public void createRide(@RequestParam final long vehicleId) {
+  public RideDTO createRide(@RequestParam final long vehicleId) {
     log.info("Request to create ride with vehicle id: {}", vehicleId);
-    service.createRide(vehicleId);
+    return service.createRide(vehicleId);
   }
 
   @PostMapping("{rideId}/start")

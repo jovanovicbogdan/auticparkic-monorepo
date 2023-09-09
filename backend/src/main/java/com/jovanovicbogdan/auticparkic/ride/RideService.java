@@ -38,12 +38,9 @@ public class RideService {
           return vehicle;
         })
         .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found"));
-    final List<Ride> rides = dao.findByVehicleIdAndStatuses(vehicleId,
-        List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
-            RideStatus.STOPPED.name()));
-    if (!rides.isEmpty()) {
-      throw new BadRequestException("Vehicle is already in use");
-    }
+
+    throwIfVehicleInUse(vehicleId);
+
     final Ride ride = new Ride(vehicleId, RideStatus.CREATED);
     final Ride createdRide = dao.create(ride);
     log.info("Created ride: {}", createdRide);
@@ -111,6 +108,7 @@ public class RideService {
     }
 
     ride.status = RideStatus.STOPPED;
+    ride.elapsedTime = getRideElapsedTime(ride.rideId);
     ride.price = calculateRidePrice(ride.elapsedTime);
     dao.update(ride);
     log.info("Ride with id '{}' stopped", rideId);
@@ -119,13 +117,7 @@ public class RideService {
   public long restartRide(final long rideId) {
     final long vehicleId = finishRide(rideId);
 
-    final List<Ride> rides = dao.findByVehicleIdAndStatuses(vehicleId,
-        List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
-            RideStatus.STOPPED.name()));
-
-    if (!rides.isEmpty()) {
-      throw new BadRequestException("Vehicle is already in use");
-    }
+    throwIfVehicleInUse(vehicleId);
 
     final Ride ride = new Ride(vehicleId, RideStatus.CREATED);
     final Ride restartedRide = dao.create(ride);
@@ -159,35 +151,38 @@ public class RideService {
   public long getRideElapsedTime(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
-    if (ride.status == RideStatus.FINISHED) {
-      throw new BadRequestException("Ride is finished");
+    if (ride.status == RideStatus.FINISHED || ride.status == RideStatus.CREATED) {
+      throw new BadRequestException("Ride is not active");
+    }
+
+    if (ride.status == RideStatus.STOPPED) {
+      return ride.elapsedTime;
     }
 
     final LocalDateTime[] pausedAt = ride.pausedAt != null ? ride.pausedAt : new LocalDateTime[0];
-    final LocalDateTime[] resumedAt = ride.resumedAt != null ? ride.resumedAt : new LocalDateTime[0];
+    final LocalDateTime[] resumedAt =
+        ride.resumedAt != null ? ride.resumedAt : new LocalDateTime[0];
 
     return calculateRideElapsedTime(ride.startedAt, pausedAt, resumedAt,
         LocalDateTime.now(clock)).getSeconds();
   }
 
   private Duration calculateRideElapsedTime(final LocalDateTime startedAt,
-      final LocalDateTime[] pausedAt,
-      final LocalDateTime[] resumedAt, final LocalDateTime currentTimestamp) {
+      final LocalDateTime[] pausedAt, final LocalDateTime[] resumedAt,
+      final LocalDateTime currentTimestamp) {
     Duration elapsedTime = Duration.ZERO;
 
     // Calculate the time between start and first pause
     if (pausedAt.length > 0) {
       elapsedTime = elapsedTime.plus(Duration.between(startedAt, pausedAt[0]));
-      log.debug("Paused at entered here");
     } else {
-      log.debug("Paused at entered else");
       return Duration.between(startedAt, currentTimestamp);
     }
 
     // Calculate the time between each resume and next pause
     for (int i = 0; i < resumedAt.length; i++) {
-      LocalDateTime resumeTime = resumedAt[i];
-      LocalDateTime nextPauseTime = (i < pausedAt.length - 1) ? pausedAt[i + 1] : currentTimestamp;
+      final LocalDateTime resumeTime = resumedAt[i];
+      final LocalDateTime nextPauseTime = (i < pausedAt.length - 1) ? pausedAt[i + 1] : currentTimestamp;
       elapsedTime = elapsedTime.plus(Duration.between(resumeTime, nextPauseTime));
     }
 
@@ -219,6 +214,16 @@ public class RideService {
     return dao.findById(rideId)
         .orElseThrow(
             () -> new ResourceNotFoundException("Ride with id '" + rideId + "' not found"));
+  }
+
+  private void throwIfVehicleInUse(final long vehicleId) {
+    final List<Ride> rides = dao.findByVehicleIdAndStatuses(vehicleId,
+        List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
+            RideStatus.STOPPED.name()));
+
+    if (!rides.isEmpty()) {
+      throw new BadRequestException("Vehicle is already in use");
+    }
   }
 
   private boolean isCreated(final Ride ride) {
