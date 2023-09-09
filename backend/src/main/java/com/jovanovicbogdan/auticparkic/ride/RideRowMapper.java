@@ -3,6 +3,7 @@ package com.jovanovicbogdan.auticparkic.ride;
 import com.jovanovicbogdan.auticparkic.common.Constants;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
@@ -20,7 +21,8 @@ public class RideRowMapper implements RowMapper<Ride> {
     final LocalDateTime[] pausedAt = Optional.ofNullable(rs.getArray("paused_at"))
         .map(arr -> {
           try {
-            return (LocalDateTime[]) arr.getArray();
+            final Timestamp[] dbTimestampArr = (Timestamp[]) arr.getArray();
+            return convertArray(dbTimestampArr);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
@@ -29,7 +31,8 @@ public class RideRowMapper implements RowMapper<Ride> {
     final LocalDateTime[] resumedAt = Optional.ofNullable(rs.getArray("resumed_at"))
         .map(arr -> {
           try {
-            return (LocalDateTime[]) arr.getArray();
+            final Timestamp[] dbTimestampArr = (Timestamp[]) arr.getArray();
+            return convertArray(dbTimestampArr);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
@@ -50,5 +53,13 @@ public class RideRowMapper implements RowMapper<Ride> {
         rs.getDouble("price"),
         rs.getLong("vehicle_id")
     );
+  }
+
+  private LocalDateTime[] convertArray(final Timestamp[] arr) {
+    final LocalDateTime[] result = new LocalDateTime[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      result[i] = arr[i].toLocalDateTime();
+    }
+    return result;
   }
 }

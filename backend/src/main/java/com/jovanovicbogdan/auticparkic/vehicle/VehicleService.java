@@ -59,8 +59,8 @@ public class VehicleService {
 
     vehicle.name = request.vehicleName().toUpperCase();
     vehicle.isActive = request.isActive();
-    final Vehicle updatedVehicle = dao.update(vehicle);
-    log.info("Updated vehicle: {}", updatedVehicle);
+    dao.update(vehicle);
+    log.info("Vehicle with id '{}' updated}", vehicleId);
   }
 
   public List<Vehicle> getAvailableVehicles() {

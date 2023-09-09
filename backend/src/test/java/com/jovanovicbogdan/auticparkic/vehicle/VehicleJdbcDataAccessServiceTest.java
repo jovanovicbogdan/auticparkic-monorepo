@@ -72,7 +72,8 @@ class VehicleJdbcDataAccessServiceTest extends AbstractTestcontainers {
 
     // When
     createdVehicle.isActive = false;
-    final Vehicle actual = underTest.update(createdVehicle);
+    underTest.update(createdVehicle);
+    final Vehicle actual = underTest.findById(createdVehicle.vehicleId).orElseThrow();
 
     // Then
     assertThat(actual.name).isEqualTo(createdVehicle.name);

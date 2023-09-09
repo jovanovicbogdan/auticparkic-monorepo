@@ -38,7 +38,7 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
 
   @Override
   @Transactional
-  public Vehicle update(final Vehicle vehicle) {
+  public void update(final Vehicle vehicle) {
     final String sql = """
         UPDATE vehicle
         SET name = ?, created_at = ?, vehicle_image_id = ?, is_active = ?
@@ -48,7 +48,7 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
 
     log.debug("Attempting to update vehicle in database: {}", vehicle);
 
-    return jdbcTemplate.queryForObject(sql, vehicleRowMapper, vehicle.name,
+    jdbcTemplate.update(sql, vehicleRowMapper, vehicle.name,
         vehicle.createdAt, vehicle.vehicleImageId, vehicle.isActive, vehicle.vehicleId);
   }
 

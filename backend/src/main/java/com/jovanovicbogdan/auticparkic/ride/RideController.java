@@ -27,39 +27,39 @@ public class RideController {
   }
 
   @PostMapping("create")
-  public RideDTO createRide(@RequestParam final long vehicleId) {
+  public void createRide(@RequestParam final long vehicleId) {
     log.info("Request to create ride with vehicle id: {}", vehicleId);
-    return service.createRide(vehicleId);
+    service.createRide(vehicleId);
   }
 
   @PostMapping("{rideId}/start")
-  public RideDTO startRide(@PathVariable final long rideId) {
+  public void startRide(@PathVariable final long rideId) {
     log.info("Request to start ride with id: {}", rideId);
-    return service.startRide(rideId);
+    service.startRide(rideId);
   }
 
   @PostMapping("{rideId}/pause")
-  public RideDTO pauseRide(@PathVariable final long rideId) {
+  public void pauseRide(@PathVariable final long rideId) {
     log.info("Request to pause ride with id: {}", rideId);
-    return service.pauseRide(rideId);
+    service.pauseRide(rideId);
   }
 
   @PostMapping("{rideId}/stop")
-  public RideDTO stopRide(@PathVariable final long rideId) {
+  public void stopRide(@PathVariable final long rideId) {
     log.info("Request to stop ride with id: {}", rideId);
-    return service.stopRide(rideId);
+    service.stopRide(rideId);
   }
 
   @PostMapping("{rideId}/restart")
-  public RideDTO restartRide(@PathVariable final long rideId) {
+  public long restartRide(@PathVariable final long rideId) {
     log.info("Request to restart ride with id: {}", rideId);
     return service.restartRide(rideId);
   }
 
   @PostMapping("{rideId}/finish")
-  public RideDTO finishRide(@PathVariable final long rideId) {
+  public void finishRide(@PathVariable final long rideId) {
     log.info("Request to finish ride with id: {}", rideId);
-    return service.finishRide(rideId);
+    service.finishRide(rideId);
   }
 
 //  @PostMapping("{rideId}")
@@ -68,6 +68,12 @@ public class RideController {
 //    log.info("Request to update ride with id: {} and elapsed time: {}", rideId, elapsedTime);
 //    service.updateRideElapsedTime(rideId, elapsedTime);
 //  }
+
+  @GetMapping("{rideId}/elapsed-time")
+  public long getRideElapsedTime(@PathVariable final long rideId) {
+    log.info("Request to get ride's elapsed time with id: {}", rideId);
+    return service.getRideElapsedTime(rideId);
+  }
 
   @GetMapping("unfinished")
   public List<Ride> getUnfinishedRides() {
@@ -83,6 +89,7 @@ public class RideController {
   }
 
   public record Greeting(String content) {
+
   }
 
 }

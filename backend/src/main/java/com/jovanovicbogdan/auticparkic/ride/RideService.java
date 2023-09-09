@@ -6,8 +6,6 @@ import com.jovanovicbogdan.auticparkic.vehicle.VehicleJdbcDataAccessService;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -53,7 +51,7 @@ public class RideService {
     return rideDTOMapper.apply(createdRide);
   }
 
-  public RideDTO startRide(final long rideId) {
+  public void startRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (!isCreated(ride) && !isPaused(ride)) {
@@ -70,18 +68,17 @@ public class RideService {
         ride.resumedAt[0] = LocalDateTime.now(clock);
       } else {
         final LocalDateTime[] resumedAtTimestamps = new LocalDateTime[ride.resumedAt.length + 1];
+        System.arraycopy(ride.resumedAt, 0, resumedAtTimestamps, 0, ride.resumedAt.length);
         resumedAtTimestamps[resumedAtTimestamps.length - 1] = LocalDateTime.now(clock);
         ride.resumedAt = resumedAtTimestamps;
       }
     }
 
-    final Ride startedRide = dao.update(ride);
-    log.info("Started ride: {}", startedRide);
-
-    return rideDTOMapper.apply(startedRide);
+    dao.update(ride);
+    log.info("Ride with id '{}' started", rideId);
   }
 
-  public RideDTO pauseRide(final long rideId) {
+  public void pauseRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (!isRunning(ride)) {
@@ -97,17 +94,16 @@ public class RideService {
       ride.pausedAt[0] = LocalDateTime.now(clock);
     } else {
       final LocalDateTime[] pausedAtTimestamps = new LocalDateTime[ride.pausedAt.length + 1];
+      System.arraycopy(ride.pausedAt, 0, pausedAtTimestamps, 0, ride.pausedAt.length);
       pausedAtTimestamps[pausedAtTimestamps.length - 1] = LocalDateTime.now(clock);
       ride.pausedAt = pausedAtTimestamps;
     }
 
-    final Ride pausedRide = dao.update(ride);
-    log.info("Paused ride: {}", pausedRide);
-
-    return rideDTOMapper.apply(pausedRide);
+    dao.update(ride);
+    log.info("Ride with id '{}' paused", rideId);
   }
 
-  public RideDTO stopRide(final long rideId) {
+  public void stopRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (isStopped(ride) || isFinished(ride)) {
@@ -116,16 +112,14 @@ public class RideService {
 
     ride.status = RideStatus.STOPPED;
     ride.price = calculateRidePrice(ride.elapsedTime);
-    final Ride stoppedRide = dao.update(ride);
-    log.info("Stopped ride: {}", stoppedRide);
-
-    return rideDTOMapper.apply(stoppedRide);
+    dao.update(ride);
+    log.info("Ride with id '{}' stopped", rideId);
   }
 
-  public RideDTO restartRide(final long rideId) {
-    final RideDTO finishedRideDTO = finishRide(rideId);
+  public long restartRide(final long rideId) {
+    final long vehicleId = finishRide(rideId);
 
-    final List<Ride> rides = dao.findByVehicleIdAndStatuses(finishedRideDTO.vehicleId(),
+    final List<Ride> rides = dao.findByVehicleIdAndStatuses(vehicleId,
         List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
             RideStatus.STOPPED.name()));
 
@@ -133,14 +127,14 @@ public class RideService {
       throw new BadRequestException("Vehicle is already in use");
     }
 
-    final Ride ride = new Ride(finishedRideDTO.vehicleId(), RideStatus.CREATED);
+    final Ride ride = new Ride(vehicleId, RideStatus.CREATED);
     final Ride restartedRide = dao.create(ride);
-    log.info("Restarted/finished ride id '{}', created ride: {}", rideId, restartedRide);
+    log.info("Finished and restarted ride with id '{}'", rideId);
 
-    return rideDTOMapper.apply(restartedRide);
+    return restartedRide.rideId;
   }
 
-  public RideDTO finishRide(final long rideId) {
+  public long finishRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (ride.status != RideStatus.STOPPED) {
@@ -150,10 +144,10 @@ public class RideService {
     ride.status = RideStatus.FINISHED;
     ride.finishedAt = LocalDateTime.now(clock);
     ride.price = calculateRidePrice(ride.elapsedTime);
-    final Ride updatedRide = dao.update(ride);
-    log.info("Updated ride: {}", updatedRide);
+    dao.update(ride);
+    log.info("Ride with id '{}' finished", rideId);
 
-    return rideDTOMapper.apply(updatedRide);
+    return ride.vehicleId;
   }
 
   public List<Ride> getUnfinishedRides() {
@@ -162,38 +156,39 @@ public class RideService {
             RideStatus.STOPPED.name()));
   }
 
-  public long calculateRideElapsedTime(final long rideId) {
+  public long getRideElapsedTime(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (ride.status == RideStatus.FINISHED) {
       throw new BadRequestException("Ride is finished");
     }
 
-    final List<Long> pausedAt = Arrays.stream(ride.pausedAt)
-        .map(localDateTime -> localDateTime.toInstant(ZoneOffset.UTC).getEpochSecond()).toList();
-    final List<Long> resumedAt = Arrays.stream(ride.resumedAt)
-        .map(localDateTime -> localDateTime.toInstant(ZoneOffset.UTC).getEpochSecond()).toList();
+    final LocalDateTime[] pausedAt = ride.pausedAt != null ? ride.pausedAt : new LocalDateTime[0];
+    final LocalDateTime[] resumedAt = ride.resumedAt != null ? ride.resumedAt : new LocalDateTime[0];
 
-    return getElapsedTime(ride.startedAt.toInstant(ZoneOffset.UTC).getEpochSecond(), pausedAt,
-        resumedAt, LocalDateTime.now(clock).toInstant(ZoneOffset.UTC).getEpochSecond());
+    return calculateRideElapsedTime(ride.startedAt, pausedAt, resumedAt,
+        LocalDateTime.now(clock)).getSeconds();
   }
 
-  private long getElapsedTime(final long startedAt, final List<Long> pausedAt,
-      final List<Long> resumedAt, final long currentTimestamp) {
-    long elapsedTime = 0;
+  private Duration calculateRideElapsedTime(final LocalDateTime startedAt,
+      final LocalDateTime[] pausedAt,
+      final LocalDateTime[] resumedAt, final LocalDateTime currentTimestamp) {
+    Duration elapsedTime = Duration.ZERO;
 
     // Calculate the time between start and first pause
-    if (!pausedAt.isEmpty()) {
-      elapsedTime += pausedAt.get(0) - startedAt;
+    if (pausedAt.length > 0) {
+      elapsedTime = elapsedTime.plus(Duration.between(startedAt, pausedAt[0]));
+      log.debug("Paused at entered here");
     } else {
-      return currentTimestamp - startedAt;
+      log.debug("Paused at entered else");
+      return Duration.between(startedAt, currentTimestamp);
     }
 
     // Calculate the time between each resume and next pause
-    for (int i = 0; i < resumedAt.size(); i++) {
-      long resumeTime = resumedAt.get(i);
-      long nextPauseTime = (i < pausedAt.size() - 1) ? pausedAt.get(i + 1) : currentTimestamp;
-      elapsedTime += nextPauseTime - resumeTime;
+    for (int i = 0; i < resumedAt.length; i++) {
+      LocalDateTime resumeTime = resumedAt[i];
+      LocalDateTime nextPauseTime = (i < pausedAt.length - 1) ? pausedAt[i + 1] : currentTimestamp;
+      elapsedTime = elapsedTime.plus(Duration.between(resumeTime, nextPauseTime));
     }
 
     return elapsedTime;

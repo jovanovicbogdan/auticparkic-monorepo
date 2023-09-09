@@ -2,16 +2,18 @@ package com.jovanovicbogdan.auticparkic.ride;
 
 import com.jovanovicbogdan.auticparkic.common.Constants;
 import com.jovanovicbogdan.auticparkic.common.DAO;
-import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,33 +55,32 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
 
   @Override
   @Transactional
-  public Ride update(final Ride ride) {
+  public void update(final Ride ride) {
     final String sql = """
         UPDATE ride
-        SET status = ?::status, elapsed_time = ?, started_at = ?, paused_at = ?, resumed_at = ?, finished_at = ?, price = ?, vehicle_id = ?
-        WHERE ride_id = ?
-        RETURNING ride_id, status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id;
+        SET status = ?::status, elapsed_time = ?, started_at = ?::timestamp, paused_at = ?, resumed_at = ?, finished_at = ?::timestamp, price = ?, vehicle_id = ?
+        WHERE ride_id = ?;
         """;
-
-    LocalDateTime[] pausedAt = null;
-    if (pausedAt != null) {
-      pausedAt = Arrays.stream(ride.pausedAt)
-          .map(it -> it.format(Constants.FORMATTER))
-          .toArray(LocalDateTime[]::new);
-    }
-
-    LocalDateTime[] resumedAt = null;
-    if (resumedAt != null) {
-      resumedAt = Arrays.stream(ride.resumedAt)
-          .map(it -> it.format(Constants.FORMATTER))
-          .toArray(LocalDateTime[]::new);
-    }
 
     log.debug("Attempting to update ride in database: {}", ride);
 
-    return jdbcTemplate.queryForObject(sql, rideRowMapper, ride.status.name(), ride.elapsedTime,
-        ride.startedAt, pausedAt, resumedAt, ride.finishedAt, ride.price, ride.vehicleId,
-        ride.rideId);
+    jdbcTemplate.update(new PreparedStatementCreator() {
+      @Override
+      public PreparedStatement createPreparedStatement(final Connection con) throws SQLException {
+        final PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, ride.status.name());
+        ps.setLong(2, ride.elapsedTime);
+        ps.setString(3, ride.startedAt != null ? ride.startedAt.format(Constants.FORMATTER) : null);
+        ps.setArray(4, con.createArrayOf("timestamp", ride.pausedAt));
+        ps.setArray(5, con.createArrayOf("timestamp", ride.resumedAt));
+        ps.setString(6, ride.finishedAt != null ? ride.finishedAt.format(Constants.FORMATTER) : null);
+        ps.setDouble(7, ride.price);
+        ps.setLong(8, ride.vehicleId);
+        ps.setLong(9, ride.rideId);
+
+        return ps;
+      }
+    });
   }
 
   @Override

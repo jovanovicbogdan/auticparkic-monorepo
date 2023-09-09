@@ -7,7 +7,7 @@ public interface DAO<T> {
 
   T create(T t);
 
-  T update(T t);
+  void update(T t);
 
   List<T> findAll();
 
