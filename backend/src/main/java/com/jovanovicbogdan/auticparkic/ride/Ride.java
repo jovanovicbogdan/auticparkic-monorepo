@@ -1,17 +1,14 @@
 package com.jovanovicbogdan.auticparkic.ride;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
-import org.springframework.data.annotation.Id;
 
 public class Ride {
 
-  @Id
   public Long rideId;
   public RideStatus status;
   public long elapsedTime;
-  public LocalDateTime createdAt = LocalDateTime.now();
+  public LocalDateTime createdAt;
   public LocalDateTime startedAt;
   public LocalDateTime[] pausedAt;
   public LocalDateTime[] resumedAt;

@@ -65,8 +65,14 @@ public class RideService {
     if (ride.startedAt == null) {
       ride.startedAt = LocalDateTime.now(clock);
     } else {
-      ride.resumedAt = LocalDateTime.now(clock);
-      ride.pausedAt = null;
+      if (ride.resumedAt == null) {
+        ride.resumedAt = new LocalDateTime[1];
+        ride.resumedAt[0] = LocalDateTime.now(clock);
+      } else {
+        final LocalDateTime[] resumedAtTimestamps = new LocalDateTime[ride.resumedAt.length + 1];
+        resumedAtTimestamps[resumedAtTimestamps.length - 1] = LocalDateTime.now(clock);
+        ride.resumedAt = resumedAtTimestamps;
+      }
     }
 
     final Ride startedRide = dao.update(ride);
@@ -75,7 +81,7 @@ public class RideService {
     return rideDTOMapper.apply(startedRide);
   }
 
-  public RideDTO pauseRide(final long rideId, final long elapsedTime) {
+  public RideDTO pauseRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (!isRunning(ride)) {
@@ -84,17 +90,24 @@ public class RideService {
     }
 
     ride.status = RideStatus.PAUSED;
-    ride.elapsedTime = elapsedTime;
     ride.price = calculateRidePrice(ride.elapsedTime);
-    ride.pausedAt = LocalDateTime.now(clock);
-    ride.resumedAt = null;
+
+    if (ride.pausedAt == null) {
+      ride.pausedAt = new LocalDateTime[1];
+      ride.pausedAt[0] = LocalDateTime.now(clock);
+    } else {
+      final LocalDateTime[] pausedAtTimestamps = new LocalDateTime[ride.pausedAt.length + 1];
+      pausedAtTimestamps[pausedAtTimestamps.length - 1] = LocalDateTime.now(clock);
+      ride.pausedAt = pausedAtTimestamps;
+    }
+
     final Ride pausedRide = dao.update(ride);
     log.info("Paused ride: {}", pausedRide);
 
     return rideDTOMapper.apply(pausedRide);
   }
 
-  public RideDTO stopRide(final long rideId, final long elapsedTime) {
+  public RideDTO stopRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (isStopped(ride) || isFinished(ride)) {
@@ -102,7 +115,6 @@ public class RideService {
     }
 
     ride.status = RideStatus.STOPPED;
-    ride.elapsedTime = elapsedTime;
     ride.price = calculateRidePrice(ride.elapsedTime);
     final Ride stoppedRide = dao.update(ride);
     log.info("Stopped ride: {}", stoppedRide);
@@ -185,12 +197,6 @@ public class RideService {
     }
 
     return elapsedTime;
-  }
-
-  private void addElapsedTime(final Ride ride) {
-    final Duration between = Duration.between(ride.startedAt, LocalDateTime.now());
-    final Duration totalElapsedTime = Duration.ofSeconds(ride.elapsedTime).plus(between);
-    ride.elapsedTime = totalElapsedTime.getSeconds();
   }
 
   private double calculateRidePrice(final long elapsedTime) {

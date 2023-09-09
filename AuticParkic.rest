@@ -43,19 +43,19 @@ Content-Disposition: form-data; name="image"
 --boundary
 
 ### Create ride
-POST {{host}}/v1/rides/create?vehicleId=2
+POST {{host}}/v1/rides/create?vehicleId=1
 
 ### Start ride
-POST {{host}}/v1/rides/13/start
+POST {{host}}/v1/rides/6/start
 
 ### Pause ride
-POST {{host}}/v1/rides/1/pause?elapsedTime=1000
+POST {{host}}/v1/rides/6/pause
 
 ### Stop ride
-POST {{host}}/v1/rides/1/stop?elapsedTime=1000
+POST {{host}}/v1/rides/6/stop
 
 ### Finish ride
-POST {{host}}/v1/rides/5/finish?elapsedTime=1000
+POST {{host}}/v1/rides/6/finish
 
 ### Get unfinished rides
 GET {{host}}/v1/rides/unfinished

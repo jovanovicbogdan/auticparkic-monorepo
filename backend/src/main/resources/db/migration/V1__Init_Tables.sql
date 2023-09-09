@@ -1,5 +1,4 @@
 CREATE TYPE status AS ENUM ('CREATED', 'RUNNING', 'PAUSED', 'STOPPED', 'FINISHED');
-CREATE CAST (varchar AS status) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE vehicle (
     vehicle_id BIGSERIAL PRIMARY KEY,
@@ -18,10 +17,10 @@ CREATE TABLE ride (
     elapsed_time BIGINT DEFAULT 0,
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     started_at TIMESTAMP WITHOUT TIME ZONE,
-    paused_at TIMESTAMP[] WITHOUT TIME ZONE,
-    resumed_at TIMESTAMP[] WITHOUT TIME ZONE,
+    paused_at TIMESTAMP WITHOUT TIME ZONE[],
+    resumed_at TIMESTAMP WITHOUT TIME ZONE[],
     finished_at TIMESTAMP WITHOUT TIME ZONE,
-    price DECIMAL,
+    price DECIMAL(10, 2),
     vehicle_id BIGINT NOT NULL,
 
     CONSTRAINT fk_vehicle_id FOREIGN KEY (vehicle_id) REFERENCES vehicle(vehicle_id)

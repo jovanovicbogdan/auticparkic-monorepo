@@ -13,6 +13,28 @@ public class RideRowMapper implements RowMapper<Ride> {
 
   @Override
   public Ride mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+    final LocalDateTime startedAt = Optional.ofNullable(rs.getString("started_at"))
+        .map(str -> LocalDateTime.parse(str, Constants.FORMATTER))
+        .orElse(null);
+
+    final LocalDateTime[] pausedAt = Optional.ofNullable(rs.getArray("paused_at"))
+        .map(arr -> {
+          try {
+            return (LocalDateTime[]) arr.getArray();
+          } catch (SQLException e) {
+            throw new RuntimeException(e);
+          }
+        }).orElse(null);
+
+    final LocalDateTime[] resumedAt = Optional.ofNullable(rs.getArray("resumed_at"))
+        .map(arr -> {
+          try {
+            return (LocalDateTime[]) arr.getArray();
+          } catch (SQLException e) {
+            throw new RuntimeException(e);
+          }
+        }).orElse(null);
+
     final LocalDateTime finishedAt = Optional.ofNullable(rs.getString("finished_at"))
         .map(str -> LocalDateTime.parse(str, Constants.FORMATTER))
         .orElse(null);
@@ -21,9 +43,9 @@ public class RideRowMapper implements RowMapper<Ride> {
         RideStatus.valueOf(rs.getString("status")),
         rs.getLong("elapsed_time"),
         LocalDateTime.parse(rs.getString("created_at"), Constants.FORMATTER),
-        LocalDateTime.parse(rs.getString("started_at"), Constants.FORMATTER),
-        (LocalDateTime[]) rs.getArray("paused_at").getArray(),
-        (LocalDateTime[]) rs.getArray("resumed_at").getArray(),
+        startedAt,
+        pausedAt,
+        resumedAt,
         finishedAt,
         rs.getDouble("price"),
         rs.getLong("vehicle_id")

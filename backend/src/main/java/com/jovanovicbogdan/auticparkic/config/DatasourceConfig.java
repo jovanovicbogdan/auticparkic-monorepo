@@ -30,7 +30,7 @@ public class DatasourceConfig {
 //  public DefaultLockRepository defaultLockRepository(final HikariDataSource dataSource) {
 //    return new DefaultLockRepository(dataSource);
 //  }
-
+//
 //  @Bean
 //  public JdbcLockRegistry jdbcLockRegistry(final LockRepository lockRepository) {
 //    return new JdbcLockRegistry(lockRepository);

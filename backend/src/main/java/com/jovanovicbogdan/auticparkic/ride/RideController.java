@@ -39,15 +39,15 @@ public class RideController {
   }
 
   @PostMapping("{rideId}/pause")
-  public RideDTO pauseRide(@PathVariable final long rideId, @RequestParam final long elapsedTime) {
-    log.info("Request to pause ride with id: {} and elapsed time: {}", rideId, elapsedTime);
-    return service.pauseRide(rideId, elapsedTime);
+  public RideDTO pauseRide(@PathVariable final long rideId) {
+    log.info("Request to pause ride with id: {}", rideId);
+    return service.pauseRide(rideId);
   }
 
   @PostMapping("{rideId}/stop")
-  public RideDTO stopRide(@PathVariable final long rideId, @RequestParam final long elapsedTime) {
-    log.info("Request to stop ride with id: {} and elapsed time: {}", rideId, elapsedTime);
-    return service.stopRide(rideId, elapsedTime);
+  public RideDTO stopRide(@PathVariable final long rideId) {
+    log.info("Request to stop ride with id: {}", rideId);
+    return service.stopRide(rideId);
   }
 
   @PostMapping("{rideId}/restart")
@@ -75,8 +75,8 @@ public class RideController {
     return service.getUnfinishedRides();
   }
 
-  @MessageMapping("/rides")
-  @SendTo("/topic/rides")
+  @MessageMapping("/rides.getElapsedTime")
+  @SendTo("/topic/public")
   public Greeting greeting() throws InterruptedException {
 //    Thread.sleep(1000);
     return new Greeting("Received at: " + LocalDateTime.now());
