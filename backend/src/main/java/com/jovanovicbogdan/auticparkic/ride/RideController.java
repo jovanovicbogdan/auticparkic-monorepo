@@ -23,7 +23,6 @@ public class RideController {
   private final RideService service;
   private final CustomTaskScheduler taskScheduler;
   private final SimpMessagingTemplate simpMessagingTemplate;
-  private final static String SEND_RIDES_ELAPSED_TIME_TASK_ID_PREFIX = "sendRidesElapsedTimeTask_";
 
   public RideController(final RideService service, final CustomTaskScheduler taskScheduler,
       final SimpMessagingTemplate simpMessagingTemplate) {
@@ -42,14 +41,17 @@ public class RideController {
   public void startRide(@PathVariable final long rideId) {
     log.info("Request to start ride with id: {}", rideId);
 
-    taskScheduler.scheduleAtFixedRate(new SendRidesElapsedTimeTask(service, simpMessagingTemplate),
-        Duration.ofSeconds(1L),
-        SEND_RIDES_ELAPSED_TIME_TASK_ID_PREFIX.concat(String.valueOf(rideId)));
+    boolean isTaskRunning = taskScheduler.isTaskRunning(SendRidesElapsedTimeTask.TASK_ID);
 
-    if (!taskScheduler.isTaskScheduled(
-        SEND_RIDES_ELAPSED_TIME_TASK_ID_PREFIX.concat(String.valueOf(rideId)))) {
-      log.warn("Failed to schedule task with id: {}", rideId);
-      throw new RuntimeException("Failed to schedule task");
+    if (!isTaskRunning) {
+      taskScheduler.scheduleAtFixedRate(
+          new SendRidesElapsedTimeTask(service, simpMessagingTemplate),
+          Duration.ofSeconds(1L), SendRidesElapsedTimeTask.TASK_ID);
+
+      if (!taskScheduler.isTaskScheduled(SendRidesElapsedTimeTask.TASK_ID)) {
+        log.warn("Failed to schedule task with id: {}", rideId);
+        throw new RuntimeException("Failed to schedule task");
+      }
     }
 
     service.startRide(rideId);
@@ -59,12 +61,17 @@ public class RideController {
   public long pauseRide(@PathVariable final long rideId) {
     log.info("Request to pause ride with id: {}", rideId);
 
-    final boolean isCancelled = taskScheduler.cancelScheduledTask(
-        SEND_RIDES_ELAPSED_TIME_TASK_ID_PREFIX.concat(String.valueOf(rideId)));
+    final boolean areThereAnyRunningRides = service.areThereAnyRunningRides();
 
-    if (!isCancelled) {
-      log.warn("Failed to cancel task with id: {}", rideId);
-      throw new RuntimeException("Failed to cancel task");
+    // if there are no running rides, cancel the task (stop sending elapsed time to a topic)
+    if (!areThereAnyRunningRides) {
+      final boolean isCancelled = taskScheduler.cancelScheduledTask(
+          SendRidesElapsedTimeTask.TASK_ID);
+
+      if (!isCancelled) {
+        log.warn("Failed to cancel task with id: {}", rideId);
+        throw new RuntimeException("Failed to cancel task");
+      }
     }
 
     return service.pauseRide(rideId);

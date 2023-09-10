@@ -151,6 +151,11 @@ public class RideService {
             RideStatus.STOPPED.name()));
   }
 
+  public boolean areThereAnyRunningRides() {
+    return !dao.findByStatuses(
+        List.of(RideStatus.RUNNING.name())).isEmpty();
+  }
+
   public List<RideDTO> getAllRidesElapsedTime() {
     final List<Ride> activeRides = dao.findByStatuses(
         List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),

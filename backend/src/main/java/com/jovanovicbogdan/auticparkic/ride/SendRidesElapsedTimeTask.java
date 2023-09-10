@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class SendRidesElapsedTimeTask implements Runnable {
 
   private final Logger log = LoggerFactory.getLogger(SendRidesElapsedTimeTask.class);
-  private String taskId;
+  public static final String TASK_ID = "sendRidesElapsedTimeTask";
   private final RideService service;
   private final SimpMessagingTemplate simpMessagingTemplate;
 
@@ -23,15 +23,8 @@ public class SendRidesElapsedTimeTask implements Runnable {
   @Override
   public void run() {
     final List<RideDTO> rides = service.getAllRidesElapsedTime();
+    log.info("Sending rides elapsed time: {}", rides);
     simpMessagingTemplate.convertAndSend("/topic/public", rides);
-  }
-
-  public String getTaskId() {
-    return taskId;
-  }
-
-  public void setTaskId(final String taskId) {
-    this.taskId = taskId;
   }
 
 }
