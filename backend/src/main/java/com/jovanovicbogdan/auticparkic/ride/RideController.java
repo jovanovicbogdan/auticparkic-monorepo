@@ -1,10 +1,10 @@
 package com.jovanovicbogdan.auticparkic.ride;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,11 +69,11 @@ public class RideController {
 //    service.updateRideElapsedTime(rideId, elapsedTime);
 //  }
 
-  @GetMapping("{rideId}/elapsed-time")
-  public long getRideElapsedTime(@PathVariable final long rideId) {
-    log.info("Request to get ride's elapsed time with id: {}", rideId);
-    return service.getRideElapsedTime(rideId);
-  }
+//  @GetMapping("{rideId}/elapsed-time")
+//  public long getRideElapsedTime(@PathVariable final long rideId) {
+//    log.info("Request to get ride's elapsed time with id: {}", rideId);
+//    return service.getRideElapsedTime(rideId);
+//  }
 
   @GetMapping("unfinished")
   public List<Ride> getUnfinishedRides() {
@@ -83,13 +83,12 @@ public class RideController {
 
   @MessageMapping("/rides.getElapsedTime")
   @SendTo("/topic/public")
-  public Greeting greeting() throws InterruptedException {
-//    Thread.sleep(1000);
-    return new Greeting("Received at: " + LocalDateTime.now());
+  public RideElapsedTimeResponse getRideElapsedTime(@Payload RideElapsedTimePayload rideElapsedTime) {
+    final long elapsedTime = service.getRideElapsedTime(rideElapsedTime.rideId);
+    return new RideElapsedTimeResponse(elapsedTime);
   }
 
-  public record Greeting(String content) {
-
-  }
+  public record RideElapsedTimePayload(long rideId) { }
+  public record RideElapsedTimeResponse(long elapsedTime) { }
 
 }

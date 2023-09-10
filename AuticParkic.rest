@@ -46,7 +46,7 @@ Content-Disposition: form-data; name="image"
 POST {{host}}/v1/rides/create?vehicleId=1
 
 ### Start ride
-POST {{host}}/v1/rides/5/start
+POST {{host}}/v1/rides/6/start
 
 ### Pause ride
 POST {{host}}/v1/rides/5/pause
