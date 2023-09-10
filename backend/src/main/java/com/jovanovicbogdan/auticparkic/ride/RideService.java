@@ -52,7 +52,7 @@ public class RideService {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (!isCreated(ride) && !isPaused(ride)) {
-      throw new BadRequestException("Ride can start only if it's previously created or paused");
+      throw new BadRequestException("Ride can be started only if it's created or paused");
     }
 
     ride.status = RideStatus.RUNNING;
@@ -75,7 +75,7 @@ public class RideService {
     log.info("Ride with id '{}' started", rideId);
   }
 
-  public void pauseRide(final long rideId) {
+  public long pauseRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (!isRunning(ride)) {
@@ -96,8 +96,11 @@ public class RideService {
       ride.pausedAt = pausedAtTimestamps;
     }
 
+    ride.elapsedTime = getRideElapsedTime(ride.rideId);
     dao.update(ride);
     log.info("Ride with id '{}' paused", rideId);
+
+    return ride.elapsedTime;
   }
 
   public void stopRide(final long rideId) {
@@ -148,7 +151,19 @@ public class RideService {
             RideStatus.STOPPED.name()));
   }
 
-  public long getRideElapsedTime(final long rideId) {
+  public List<RideDTO> getAllRidesElapsedTime() {
+    final List<Ride> activeRides = dao.findByStatuses(
+        List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
+            RideStatus.STOPPED.name()));
+
+    return activeRides.stream()
+        .map(ride -> {
+          ride.elapsedTime = getRideElapsedTime(ride.rideId);
+          return rideDTOMapper.apply(ride);
+        }).toList();
+  }
+
+  private long getRideElapsedTime(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (ride.status == RideStatus.FINISHED || ride.status == RideStatus.CREATED) {
@@ -182,7 +197,8 @@ public class RideService {
     // Calculate the time between each resume and next pause
     for (int i = 0; i < resumedAt.length; i++) {
       final LocalDateTime resumeTime = resumedAt[i];
-      final LocalDateTime nextPauseTime = (i < pausedAt.length - 1) ? pausedAt[i + 1] : currentTimestamp;
+      final LocalDateTime nextPauseTime =
+          (i < pausedAt.length - 1) ? pausedAt[i + 1] : currentTimestamp;
       elapsedTime = elapsedTime.plus(Duration.between(resumeTime, nextPauseTime));
     }
 

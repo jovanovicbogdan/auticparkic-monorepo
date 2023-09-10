@@ -34,20 +34,17 @@ function connect() {
   stompClient.activate();
 }
 
-function disconnect(intervalId) {
+function disconnect() {
   stompClient.deactivate();
   setConnected(false);
-  clearInterval(intervalId);
   console.log("Disconnected");
 }
 
 function sendName() {
-  return setInterval(() => {
-    stompClient.publish({
-      destination: "/app/rides.getElapsedTime",
-      body: JSON.stringify({'rideId': $("#ride-id").val()})
-    });
-  }, 1000);
+  stompClient.publish({
+    destination: "/app/rides.getElapsedTime",
+    body: JSON.stringify({'rideId': $("#ride-id").val()})
+  });
 }
 
 function showElapsedTime(message) {
@@ -55,9 +52,8 @@ function showElapsedTime(message) {
 }
 
 $(function () {
-  let intervalId;
   $("form").on('submit', (e) => e.preventDefault());
   $("#connect").click(() => connect());
-  $("#disconnect").click(() => disconnect(intervalId));
-  $("#send").click(() => intervalId = sendName());
+  $("#disconnect").click(() => disconnect());
+  // $("#send").click(() => sendName());
 });

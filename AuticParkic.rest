@@ -49,7 +49,7 @@ POST {{host}}/v1/rides/create?vehicleId=1
 POST {{host}}/v1/rides/6/start
 
 ### Pause ride
-POST {{host}}/v1/rides/5/pause
+POST {{host}}/v1/rides/6/pause
 
 ### Stop ride
 POST {{host}}/v1/rides/5/stop
