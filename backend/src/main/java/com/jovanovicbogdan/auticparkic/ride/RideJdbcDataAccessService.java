@@ -55,7 +55,7 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
 
   @Override
   @Transactional
-  public void update(final Ride ride) {
+  public boolean update(final Ride ride) {
     final String sql = """
         UPDATE ride
         SET status = ?::status, elapsed_time = ?, started_at = ?::timestamp, paused_at = ?, resumed_at = ?, finished_at = ?::timestamp, price = ?, vehicle_id = ?
@@ -64,7 +64,7 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
 
     log.debug("Attempting to update ride in database: {}", ride);
 
-    jdbcTemplate.update(new PreparedStatementCreator() {
+    final int rowsAffected = jdbcTemplate.update(new PreparedStatementCreator() {
       @Override
       public PreparedStatement createPreparedStatement(final Connection con) throws SQLException {
         final PreparedStatement ps = con.prepareStatement(sql);
@@ -81,6 +81,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         return ps;
       }
     });
+
+    return rowsAffected == 1;
   }
 
   @Override

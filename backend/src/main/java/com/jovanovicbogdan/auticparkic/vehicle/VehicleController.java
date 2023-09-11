@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Validated
 public class VehicleController {
 
-  private final Logger log = LoggerFactory.getLogger(VehicleController.class);
+  private static final Logger log = LoggerFactory.getLogger(VehicleController.class);
   private final VehicleService service;
 
   public VehicleController(final VehicleService service) {

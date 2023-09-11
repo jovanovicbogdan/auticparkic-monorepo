@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
 
-  private final Logger log = LoggerFactory.getLogger(VehicleJdbcDataAccessService.class);
+  private static final Logger log = LoggerFactory.getLogger(VehicleJdbcDataAccessService.class);
   private final JdbcTemplate jdbcTemplate;
   private final VehicleRowMapper vehicleRowMapper;
 
@@ -38,7 +38,7 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
 
   @Override
   @Transactional
-  public void update(final Vehicle vehicle) {
+  public boolean update(final Vehicle vehicle) {
     final String sql = """
         UPDATE vehicle
         SET name = ?, created_at = ?, vehicle_image_id = ?, is_active = ?
@@ -48,8 +48,10 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
 
     log.debug("Attempting to update vehicle in database: {}", vehicle);
 
-    jdbcTemplate.update(sql, vehicleRowMapper, vehicle.name,
+    final int rowsAffected = jdbcTemplate.update(sql, vehicleRowMapper, vehicle.name,
         vehicle.createdAt, vehicle.vehicleImageId, vehicle.isActive, vehicle.vehicleId);
+
+    return rowsAffected == 1;
   }
 
   @Override

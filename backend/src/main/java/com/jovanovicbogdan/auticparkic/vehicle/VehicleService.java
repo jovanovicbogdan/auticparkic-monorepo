@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class VehicleService {
 
-  private final Logger log = LoggerFactory.getLogger(VehicleService.class);
+  private static final Logger log = LoggerFactory.getLogger(VehicleService.class);
   private final VehicleJdbcDataAccessService dao;
   private final RideJdbcDataAccessService rideJdbcDao;
   private final S3Service s3Service;

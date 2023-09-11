@@ -18,27 +18,25 @@ public class SendRidesElapsedTimeTask implements Runnable {
   private final RideService service;
   private final SimpMessagingTemplate simpMessagingTemplate;
   private final WebSocketEventListenerComponent webSocketEventListenerComponent;
-  private final CustomTaskScheduler taskScheduler;
 
   public SendRidesElapsedTimeTask(final RideService service,
       final SimpMessagingTemplate simpMessagingTemplate,
-      final WebSocketEventListenerComponent webSocketEventListenerComponent,
-      final CustomTaskScheduler taskScheduler) {
+      final WebSocketEventListenerComponent webSocketEventListenerComponent) {
     this.service = service;
     this.simpMessagingTemplate = simpMessagingTemplate;
     this.webSocketEventListenerComponent = webSocketEventListenerComponent;
-    this.taskScheduler = taskScheduler;
   }
 
   @Override
   public void run() {
     if (webSocketEventListenerComponent.hasActiveSessions()) {
       final List<RideDTO> rides = service.getAllRidesElapsedTime();
-      log.info("Sending rides elapsed time {} to a topic {}", rides, Constants.WEBSOCKET_BROKER_PUBLIC);
+      log.info("Sending rides elapsed time {} to a topic {}", rides,
+          Constants.WEBSOCKET_BROKER_PUBLIC);
       simpMessagingTemplate.convertAndSend(Constants.WEBSOCKET_BROKER_PUBLIC, rides);
     } else {
-      log.info("No active WebSocket sessions, cancelling task with id: {}", TASK_ID);
-      taskScheduler.cancelScheduledTask(TASK_ID);
+      log.info("No active WebSocket sessions, cancelling task {}", TASK_ID);
+      service.cancelSendRidesElapsedTimeTaskIfNoRunningRides();
     }
   }
 

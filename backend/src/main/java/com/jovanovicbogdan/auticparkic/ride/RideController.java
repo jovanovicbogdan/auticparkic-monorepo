@@ -1,13 +1,8 @@
 package com.jovanovicbogdan.auticparkic.ride;
 
-import com.jovanovicbogdan.auticparkic.components.WebSocketEventListenerComponent;
-import com.jovanovicbogdan.auticparkic.tasks.CustomTaskScheduler;
-import com.jovanovicbogdan.auticparkic.tasks.SendRidesElapsedTimeTask;
-import java.time.Duration;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,17 +18,9 @@ public class RideController {
 
   private static final Logger log = LoggerFactory.getLogger(RideController.class);
   private final RideService service;
-  private final CustomTaskScheduler taskScheduler;
-  private final SimpMessagingTemplate simpMessagingTemplate;
-  private final WebSocketEventListenerComponent webSocketEventListenerComponent;
 
-  public RideController(final RideService service, final CustomTaskScheduler taskScheduler,
-      final SimpMessagingTemplate simpMessagingTemplate,
-      final WebSocketEventListenerComponent webSocketEventListenerComponent) {
+  public RideController(final RideService service) {
     this.service = service;
-    this.taskScheduler = taskScheduler;
-    this.simpMessagingTemplate = simpMessagingTemplate;
-    this.webSocketEventListenerComponent = webSocketEventListenerComponent;
   }
 
   @PostMapping("create")
@@ -45,41 +32,12 @@ public class RideController {
   @PostMapping("{rideId}/start")
   public void startRide(@PathVariable final long rideId) {
     log.info("Request to start ride with id: {}", rideId);
-
-    boolean isTaskRunning = taskScheduler.isTaskRunning(SendRidesElapsedTimeTask.TASK_ID);
-
-    if (!isTaskRunning) {
-      taskScheduler.scheduleAtFixedRate(
-          new SendRidesElapsedTimeTask(service, simpMessagingTemplate,
-              webSocketEventListenerComponent, taskScheduler),
-          Duration.ofSeconds(1L), SendRidesElapsedTimeTask.TASK_ID);
-
-      if (!taskScheduler.isTaskScheduled(SendRidesElapsedTimeTask.TASK_ID)) {
-        log.warn("Failed to schedule task with id: {}", rideId);
-        throw new RuntimeException("Failed to schedule task");
-      }
-    }
-
     service.startRide(rideId);
   }
 
   @PostMapping("{rideId}/pause")
   public long pauseRide(@PathVariable final long rideId) {
     log.info("Request to pause ride with id: {}", rideId);
-
-    final boolean areThereAnyRunningRides = service.areThereAnyRunningRides();
-
-    // if there are no running rides, cancel the task (stop sending elapsed time to a topic)
-    if (!areThereAnyRunningRides) {
-      final boolean isCancelled = taskScheduler.cancelScheduledTask(
-          SendRidesElapsedTimeTask.TASK_ID);
-
-      if (!isCancelled) {
-        log.warn("Failed to cancel task with id: {}", SendRidesElapsedTimeTask.TASK_ID);
-        throw new RuntimeException("Failed to cancel task");
-      }
-    }
-
     return service.pauseRide(rideId);
   }
 

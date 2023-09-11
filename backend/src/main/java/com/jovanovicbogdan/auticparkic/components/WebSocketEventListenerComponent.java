@@ -21,9 +21,8 @@ public class WebSocketEventListenerComponent {
     final String sessionId = Objects.requireNonNull(
         event.getMessage().getHeaders().get("simpSessionId")).toString();
     activeSessions.add(sessionId);
-    log.info("Client successfully connected to the WebSocket");
+    log.info("Received Session Connected for session: {}", sessionId);
 
-    // schedule a task to send rides elapsed time
   }
 
   @EventListener

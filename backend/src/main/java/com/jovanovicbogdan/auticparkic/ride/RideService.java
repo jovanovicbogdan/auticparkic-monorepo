@@ -1,7 +1,10 @@
 package com.jovanovicbogdan.auticparkic.ride;
 
+import com.jovanovicbogdan.auticparkic.components.WebSocketEventListenerComponent;
 import com.jovanovicbogdan.auticparkic.exception.BadRequestException;
 import com.jovanovicbogdan.auticparkic.exception.ResourceNotFoundException;
+import com.jovanovicbogdan.auticparkic.tasks.CustomTaskScheduler;
+import com.jovanovicbogdan.auticparkic.tasks.SendRidesElapsedTimeTask;
 import com.jovanovicbogdan.auticparkic.vehicle.VehicleJdbcDataAccessService;
 import java.time.Clock;
 import java.time.Duration;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,13 +23,21 @@ public class RideService {
   private final RideDTOMapper rideDTOMapper;
   private final RideJdbcDataAccessService dao;
   private final VehicleJdbcDataAccessService vehicleJdbcDao;
+  private final CustomTaskScheduler taskScheduler;
+  private final SimpMessagingTemplate simpMessagingTemplate;
+  private final WebSocketEventListenerComponent webSocketEventListenerComponent;
   private final Clock clock;
 
   public RideService(final RideDTOMapper rideDTOMapper, final RideJdbcDataAccessService dao,
-      final VehicleJdbcDataAccessService vehicleJdbcDao, final Clock clock) {
+      final VehicleJdbcDataAccessService vehicleJdbcDao, final CustomTaskScheduler taskScheduler,
+      final SimpMessagingTemplate simpMessagingTemplate,
+      final WebSocketEventListenerComponent webSocketEventListenerComponent, final Clock clock) {
     this.rideDTOMapper = rideDTOMapper;
     this.dao = dao;
     this.vehicleJdbcDao = vehicleJdbcDao;
+    this.taskScheduler = taskScheduler;
+    this.simpMessagingTemplate = simpMessagingTemplate;
+    this.webSocketEventListenerComponent = webSocketEventListenerComponent;
     this.clock = clock;
   }
 
@@ -71,8 +83,14 @@ public class RideService {
       }
     }
 
-    dao.update(ride);
+    final boolean isUpdated = dao.update(ride);
+
+    if (!isUpdated) {
+      throw new RuntimeException("Failed to start ride");
+    }
+
     log.info("Ride with id '{}' started", rideId);
+    scheduleSendRidesElapsedTimeTaskIfNotRunning();
   }
 
   public long pauseRide(final long rideId) {
@@ -97,8 +115,14 @@ public class RideService {
     }
 
     ride.elapsedTime = getRideElapsedTime(ride.rideId);
-    dao.update(ride);
+    final boolean isUpdated = dao.update(ride);
+
+    if (!isUpdated) {
+      throw new RuntimeException("Failed to pause ride");
+    }
+
     log.info("Ride with id '{}' paused", rideId);
+    cancelSendRidesElapsedTimeTaskIfNoRunningRides();
 
     return ride.elapsedTime;
   }
@@ -113,8 +137,14 @@ public class RideService {
     ride.status = RideStatus.STOPPED;
     ride.elapsedTime = getRideElapsedTime(ride.rideId);
     ride.price = calculateRidePrice(ride.elapsedTime);
-    dao.update(ride);
+    final boolean isUpdated = dao.update(ride);
+
+    if (!isUpdated) {
+      throw new RuntimeException("Failed to stop ride");
+    }
+
     log.info("Ride with id '{}' stopped", rideId);
+    cancelSendRidesElapsedTimeTaskIfNoRunningRides();
   }
 
   public long restartRide(final long rideId) {
@@ -125,6 +155,8 @@ public class RideService {
     final Ride ride = new Ride(vehicleId, RideStatus.CREATED);
     final Ride restartedRide = dao.create(ride);
     log.info("Finished and restarted ride with id '{}'", rideId);
+
+    scheduleSendRidesElapsedTimeTaskIfNotRunning();
 
     return restartedRide.rideId;
   }
@@ -139,13 +171,19 @@ public class RideService {
     ride.status = RideStatus.FINISHED;
     ride.finishedAt = LocalDateTime.now(clock);
     ride.price = calculateRidePrice(ride.elapsedTime);
-    dao.update(ride);
+    final boolean isUpdated = dao.update(ride);
+
+    if (!isUpdated) {
+      throw new RuntimeException("Failed to finish ride");
+    }
+
     log.info("Ride with id '{}' finished", rideId);
 
     return ride.vehicleId;
   }
 
   public List<Ride> getUnfinishedRides() {
+    scheduleSendRidesElapsedTimeTaskIfNotRunning();
     return dao.findByStatuses(
         List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
             RideStatus.STOPPED.name()));
@@ -161,6 +199,31 @@ public class RideService {
           ride.elapsedTime = getRideElapsedTime(ride.rideId);
           return rideDTOMapper.apply(ride);
         }).toList();
+  }
+
+  public void scheduleSendRidesElapsedTimeTaskIfNotRunning() {
+    if (!taskScheduler.isTaskRunning(SendRidesElapsedTimeTask.TASK_ID)) {
+      taskScheduler.scheduleAtFixedRate(
+          new SendRidesElapsedTimeTask(this, simpMessagingTemplate, webSocketEventListenerComponent),
+          Duration.ofSeconds(1L), SendRidesElapsedTimeTask.TASK_ID);
+
+      if (!taskScheduler.isTaskScheduled(SendRidesElapsedTimeTask.TASK_ID)) {
+        log.warn("Failed to schedule task with id: {}", SendRidesElapsedTimeTask.TASK_ID);
+        throw new RuntimeException("Failed to schedule task");
+      }
+    }
+  }
+
+  public void cancelSendRidesElapsedTimeTaskIfNoRunningRides() {
+    if (!areThereAnyRunningRides() || !webSocketEventListenerComponent.hasActiveSessions()) {
+      final boolean isCancelled = taskScheduler.cancelScheduledTask(
+          SendRidesElapsedTimeTask.TASK_ID);
+
+      if (!isCancelled) {
+        log.warn("Failed to cancel task with id: {}", SendRidesElapsedTimeTask.TASK_ID);
+        throw new RuntimeException("Failed to cancel task");
+      }
+    }
   }
 
   private long getRideElapsedTime(final long rideId) {
@@ -242,7 +305,7 @@ public class RideService {
     }
   }
 
-  public boolean areThereAnyRunningRides() {
+  private boolean areThereAnyRunningRides() {
     return !dao.findByStatuses(
         List.of(RideStatus.RUNNING.name())).isEmpty();
   }
