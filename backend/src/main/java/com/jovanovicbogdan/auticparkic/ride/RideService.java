@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RideService {
 
-  private final Logger log = LoggerFactory.getLogger(RideService.class);
+  private static final Logger log = LoggerFactory.getLogger(RideService.class);
   private final RideDTOMapper rideDTOMapper;
   private final RideJdbcDataAccessService dao;
   private final VehicleJdbcDataAccessService vehicleJdbcDao;

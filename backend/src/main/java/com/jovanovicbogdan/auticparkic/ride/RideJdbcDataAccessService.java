@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class RideJdbcDataAccessService implements DAO<Ride> {
 
+  private static final Logger log = LoggerFactory.getLogger(RideJdbcDataAccessService.class);
   private final JdbcTemplate jdbcTemplate;
   private final RideRowMapper rideRowMapper;
-  private final Logger log = LoggerFactory.getLogger(getClass());
 
   public RideJdbcDataAccessService(final JdbcTemplate jdbcTemplate,
       final RideRowMapper rideRowMapper) {

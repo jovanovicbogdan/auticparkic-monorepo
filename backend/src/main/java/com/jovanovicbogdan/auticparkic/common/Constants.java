@@ -10,5 +10,9 @@ public class Constants {
       .appendLiteral(' ')
       .append(DateTimeFormatter.ISO_LOCAL_TIME)
       .toFormatter();
+  public static final String WEBSOCKET_ENDPOINT = "/ws";
+  public static final String WEBSOCKET_APPLICATION_DESTINATION_PREFIX = "/app";
+  public static final String WEBSOCKET_BROKER = "/topic";
+  public static final String WEBSOCKET_BROKER_PUBLIC = "/topic/public";
 
 }

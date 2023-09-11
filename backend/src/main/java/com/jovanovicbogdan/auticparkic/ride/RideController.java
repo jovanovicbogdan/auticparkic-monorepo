@@ -21,14 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class RideController {
 
-  private final Logger log = LoggerFactory.getLogger(RideController.class);
+  private static final Logger log = LoggerFactory.getLogger(RideController.class);
   private final RideService service;
   private final CustomTaskScheduler taskScheduler;
   private final SimpMessagingTemplate simpMessagingTemplate;
   private final WebSocketEventListenerComponent webSocketEventListenerComponent;
 
   public RideController(final RideService service, final CustomTaskScheduler taskScheduler,
-      final SimpMessagingTemplate simpMessagingTemplate, final WebSocketEventListenerComponent webSocketEventListenerComponent) {
+      final SimpMessagingTemplate simpMessagingTemplate,
+      final WebSocketEventListenerComponent webSocketEventListenerComponent) {
     this.service = service;
     this.taskScheduler = taskScheduler;
     this.simpMessagingTemplate = simpMessagingTemplate;
@@ -49,7 +50,8 @@ public class RideController {
 
     if (!isTaskRunning) {
       taskScheduler.scheduleAtFixedRate(
-          new SendRidesElapsedTimeTask(service, simpMessagingTemplate, webSocketEventListenerComponent),
+          new SendRidesElapsedTimeTask(service, simpMessagingTemplate,
+              webSocketEventListenerComponent, taskScheduler),
           Duration.ofSeconds(1L), SendRidesElapsedTimeTask.TASK_ID);
 
       if (!taskScheduler.isTaskScheduled(SendRidesElapsedTimeTask.TASK_ID)) {
@@ -73,7 +75,7 @@ public class RideController {
           SendRidesElapsedTimeTask.TASK_ID);
 
       if (!isCancelled) {
-        log.warn("Failed to cancel task with id: {}", rideId);
+        log.warn("Failed to cancel task with id: {}", SendRidesElapsedTimeTask.TASK_ID);
         throw new RuntimeException("Failed to cancel task");
       }
     }

@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @Service
 public class S3Service {
 
-  private final Logger log = LoggerFactory.getLogger(S3Service.class);
+  private static final Logger log = LoggerFactory.getLogger(S3Service.class);
   private final S3Client s3Client;
 
   public S3Service(final S3Client s3Client) {
