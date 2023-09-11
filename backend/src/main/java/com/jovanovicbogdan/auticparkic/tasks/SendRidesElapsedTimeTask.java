@@ -36,7 +36,7 @@ public class SendRidesElapsedTimeTask implements Runnable {
       simpMessagingTemplate.convertAndSend(Constants.WEBSOCKET_BROKER_PUBLIC, rides);
     } else {
       log.info("No active WebSocket sessions, cancelling task {}", TASK_ID);
-      service.cancelSendRidesElapsedTimeTaskIfNoRunningRides();
+      service.cancelSendRidesElapsedTimeTask();
     }
   }
 

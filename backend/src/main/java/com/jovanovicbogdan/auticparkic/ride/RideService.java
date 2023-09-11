@@ -90,7 +90,7 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' started", rideId);
-    scheduleSendRidesElapsedTimeTaskIfNotRunning();
+    scheduleSendRidesElapsedTimeTask();
   }
 
   public long pauseRide(final long rideId) {
@@ -122,7 +122,7 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' paused", rideId);
-    cancelSendRidesElapsedTimeTaskIfNoRunningRides();
+    cancelSendRidesElapsedTimeTask();
 
     return ride.elapsedTime;
   }
@@ -144,7 +144,7 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' stopped", rideId);
-    cancelSendRidesElapsedTimeTaskIfNoRunningRides();
+    cancelSendRidesElapsedTimeTask();
   }
 
   public long restartRide(final long rideId) {
@@ -156,7 +156,7 @@ public class RideService {
     final Ride restartedRide = dao.create(ride);
     log.info("Finished and restarted ride with id '{}'", rideId);
 
-    scheduleSendRidesElapsedTimeTaskIfNotRunning();
+    scheduleSendRidesElapsedTimeTask();
 
     return restartedRide.rideId;
   }
@@ -183,7 +183,7 @@ public class RideService {
   }
 
   public List<Ride> getUnfinishedRides() {
-    scheduleSendRidesElapsedTimeTaskIfNotRunning();
+    scheduleSendRidesElapsedTimeTask();
     return dao.findByStatuses(
         List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
             RideStatus.STOPPED.name()));
@@ -201,7 +201,7 @@ public class RideService {
         }).toList();
   }
 
-  public void scheduleSendRidesElapsedTimeTaskIfNotRunning() {
+  public void scheduleSendRidesElapsedTimeTask() {
     if (!taskScheduler.isTaskRunning(SendRidesElapsedTimeTask.TASK_ID)) {
       taskScheduler.scheduleAtFixedRate(
           new SendRidesElapsedTimeTask(this, simpMessagingTemplate, webSocketEventListenerComponent),
@@ -214,7 +214,7 @@ public class RideService {
     }
   }
 
-  public void cancelSendRidesElapsedTimeTaskIfNoRunningRides() {
+  public void cancelSendRidesElapsedTimeTask() {
     if (!areThereAnyRunningRides() || !webSocketEventListenerComponent.hasActiveSessions()) {
       final boolean isCancelled = taskScheduler.cancelScheduledTask(
           SendRidesElapsedTimeTask.TASK_ID);
