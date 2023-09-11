@@ -1,6 +1,8 @@
 package com.jovanovicbogdan.auticparkic.ride;
 
-import com.jovanovicbogdan.auticparkic.config.CustomTaskScheduler;
+import com.jovanovicbogdan.auticparkic.components.WebSocketEventListenerComponent;
+import com.jovanovicbogdan.auticparkic.tasks.CustomTaskScheduler;
+import com.jovanovicbogdan.auticparkic.tasks.SendRidesElapsedTimeTask;
 import java.time.Duration;
 import java.util.List;
 import org.slf4j.Logger;
@@ -23,12 +25,14 @@ public class RideController {
   private final RideService service;
   private final CustomTaskScheduler taskScheduler;
   private final SimpMessagingTemplate simpMessagingTemplate;
+  private final WebSocketEventListenerComponent webSocketEventListenerComponent;
 
   public RideController(final RideService service, final CustomTaskScheduler taskScheduler,
-      final SimpMessagingTemplate simpMessagingTemplate) {
+      final SimpMessagingTemplate simpMessagingTemplate, final WebSocketEventListenerComponent webSocketEventListenerComponent) {
     this.service = service;
     this.taskScheduler = taskScheduler;
     this.simpMessagingTemplate = simpMessagingTemplate;
+    this.webSocketEventListenerComponent = webSocketEventListenerComponent;
   }
 
   @PostMapping("create")
@@ -45,7 +49,7 @@ public class RideController {
 
     if (!isTaskRunning) {
       taskScheduler.scheduleAtFixedRate(
-          new SendRidesElapsedTimeTask(service, simpMessagingTemplate),
+          new SendRidesElapsedTimeTask(service, simpMessagingTemplate, webSocketEventListenerComponent),
           Duration.ofSeconds(1L), SendRidesElapsedTimeTask.TASK_ID);
 
       if (!taskScheduler.isTaskScheduled(SendRidesElapsedTimeTask.TASK_ID)) {

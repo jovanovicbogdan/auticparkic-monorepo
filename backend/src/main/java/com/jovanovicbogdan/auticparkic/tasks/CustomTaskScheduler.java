@@ -1,4 +1,4 @@
-package com.jovanovicbogdan.auticparkic.config;
+package com.jovanovicbogdan.auticparkic.tasks;
 
 import java.time.Duration;
 import java.util.IdentityHashMap;
