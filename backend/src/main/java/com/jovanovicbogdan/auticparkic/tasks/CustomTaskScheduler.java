@@ -34,16 +34,11 @@ public class CustomTaskScheduler extends ThreadPoolTaskScheduler {
     return future != null && !future.isDone();
   }
 
-  public boolean cancelScheduledTask(final String taskId) {
-    boolean result = false;
+  public void cancelScheduledTask(final String taskId) {
     log.info("Cancelling task with id: {}", taskId);
     final ScheduledFuture<?> future = scheduledTasks.get(taskId);
 
-    if (null != future) {
-      result = future.cancel(true);
-    }
-
-    return result;
+    future.cancel(true);
   }
 
 }

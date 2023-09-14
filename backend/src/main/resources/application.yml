@@ -34,20 +34,20 @@ logging:
       springframework:
         jdbc: debug
 
-  # spring boot actuator
-#management:
-  #  server:
-  #    port: 10000
-#  endpoints:
-#    web:
-#      exposure:
-#        include: "*"
-#        exclude: "env,beans"
+# spring boot actuator
+management:
+  server:
+      port: 10000
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: "env,beans"
 
 springdoc:
   swagger-ui:
     path: "/swagger"
-#  show-actuator: true
+  show-actuator: true
 
 aws:
   region: "eu-central-1"

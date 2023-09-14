@@ -90,7 +90,9 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' started", rideId);
-    scheduleSendRidesElapsedTimeTask();
+    if (shouldScheduleSendRidesElapsedTimeTask()) {
+      scheduleSendRidesElapsedTimeTask();
+    }
   }
 
   public long pauseRide(final long rideId) {
@@ -147,20 +149,6 @@ public class RideService {
     cancelSendRidesElapsedTimeTask();
   }
 
-  public long restartRide(final long rideId) {
-    final long vehicleId = finishRide(rideId);
-
-    throwIfVehicleInUse(vehicleId);
-
-    final Ride ride = new Ride(vehicleId, RideStatus.CREATED);
-    final Ride restartedRide = dao.create(ride);
-    log.info("Finished and restarted ride with id '{}'", rideId);
-
-    scheduleSendRidesElapsedTimeTask();
-
-    return restartedRide.rideId;
-  }
-
   public long finishRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
@@ -182,8 +170,27 @@ public class RideService {
     return ride.vehicleId;
   }
 
+  public long restartRide(final long rideId) {
+    final long vehicleId = finishRide(rideId);
+
+    throwIfVehicleInUse(vehicleId);
+
+    final Ride ride = new Ride(vehicleId, RideStatus.CREATED);
+    final Ride restartedRide = dao.create(ride);
+    log.info("Finished and restarted ride with id '{}'", rideId);
+
+    if (shouldScheduleSendRidesElapsedTimeTask()) {
+      scheduleSendRidesElapsedTimeTask();
+    }
+
+    return restartedRide.rideId;
+  }
+
   public List<Ride> getUnfinishedRides() {
-    scheduleSendRidesElapsedTimeTask();
+    if (shouldScheduleSendRidesElapsedTimeTask()) {
+      scheduleSendRidesElapsedTimeTask();
+    }
+
     return dao.findByStatuses(
         List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
             RideStatus.STOPPED.name()));
@@ -201,10 +208,17 @@ public class RideService {
         }).toList();
   }
 
-  public void scheduleSendRidesElapsedTimeTask() {
+  public void cancelSendRidesElapsedTimeTask() {
+    if (!areThereAnyRunningRides() || !webSocketEventListenerComponent.hasActiveSessions()) {
+      taskScheduler.cancelScheduledTask(SendRidesElapsedTimeTask.TASK_ID);
+    }
+  }
+
+  private void scheduleSendRidesElapsedTimeTask() {
     if (!taskScheduler.isTaskRunning(SendRidesElapsedTimeTask.TASK_ID)) {
       taskScheduler.scheduleAtFixedRate(
-          new SendRidesElapsedTimeTask(this, simpMessagingTemplate, webSocketEventListenerComponent),
+          new SendRidesElapsedTimeTask(this, simpMessagingTemplate,
+              webSocketEventListenerComponent),
           Duration.ofSeconds(1L), SendRidesElapsedTimeTask.TASK_ID);
 
       if (!taskScheduler.isTaskScheduled(SendRidesElapsedTimeTask.TASK_ID)) {
@@ -214,16 +228,13 @@ public class RideService {
     }
   }
 
-  public void cancelSendRidesElapsedTimeTask() {
-    if (!areThereAnyRunningRides() || !webSocketEventListenerComponent.hasActiveSessions()) {
-      final boolean isCancelled = taskScheduler.cancelScheduledTask(
-          SendRidesElapsedTimeTask.TASK_ID);
+  private boolean shouldScheduleSendRidesElapsedTimeTask() {
+    return areThereAnyRunningRides() && webSocketEventListenerComponent.hasActiveSessions();
+  }
 
-      if (!isCancelled) {
-        log.warn("Failed to cancel task with id: {}", SendRidesElapsedTimeTask.TASK_ID);
-        throw new RuntimeException("Failed to cancel task");
-      }
-    }
+  private boolean areThereAnyRunningRides() {
+    return !dao.findByStatuses(
+        List.of(RideStatus.RUNNING.name())).isEmpty();
   }
 
   private long getRideElapsedTime(final long rideId) {
@@ -303,11 +314,6 @@ public class RideService {
     if (!rides.isEmpty()) {
       throw new BadRequestException("Vehicle is already in use");
     }
-  }
-
-  private boolean areThereAnyRunningRides() {
-    return !dao.findByStatuses(
-        List.of(RideStatus.RUNNING.name())).isEmpty();
   }
 
   private boolean isCreated(final Ride ride) {

@@ -46,22 +46,22 @@ Content-Disposition: form-data; name="image"
 POST {{host}}/v1/rides/create?vehicleId=1
 
 ### Start ride
-POST {{host}}/v1/rides/6/start
+POST {{host}}/v1/rides/1/start
 
 ### Pause ride
-POST {{host}}/v1/rides/6/pause
+POST {{host}}/v1/rides/1/pause
 
 ### Stop ride
-POST {{host}}/v1/rides/5/stop
+POST {{host}}/v1/rides/1/stop
 
 ### Finish ride
-POST {{host}}/v1/rides/5/finish
+POST {{host}}/v1/rides/1/finish
 
 ### Restart ride
-POST {{host}}/v1/rides/5/restart
+POST {{host}}/v1/rides/1/restart
 
 ### Get ride's elapsed time
-GET {{host}}/v1/rides/5/elapsed-time
+GET {{host}}/v1/rides/1/elapsed-time
 
 ### Get unfinished rides
 GET {{host}}/v1/rides/unfinished
