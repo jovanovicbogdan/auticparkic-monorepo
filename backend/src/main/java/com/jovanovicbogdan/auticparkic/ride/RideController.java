@@ -3,12 +3,11 @@ package com.jovanovicbogdan.auticparkic.ride;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,46 +22,57 @@ public class RideController {
     this.service = service;
   }
 
-  @PostMapping("create")
-  public RideDTO createRide(@RequestParam final long vehicleId) {
-    log.info("Request to create ride with vehicle id: {}", vehicleId);
-    return service.createRide(vehicleId);
+  @MessageMapping("/rides.create")
+  @SendTo("/topic/public")
+  public RideDTO createRide(@Payload final CreateRidePayload payload) {
+    log.info("Request to create ride with vehicle id: {}", payload.vehicleId);
+    return service.createRide(payload.vehicleId);
   }
 
-  @PostMapping("{rideId}/start")
-  public void startRide(@PathVariable final long rideId) {
-    log.info("Request to start ride with id: {}", rideId);
-    service.startRide(rideId);
+  @MessageMapping("/rides.start")
+//  @SendTo("/topic/public")
+  public void startRide(@Payload final ManageRidePayload payload) {
+    log.info("Request to start ride with id: {}", payload.rideId);
+    service.startRide(payload.rideId);
   }
 
-  @PostMapping("{rideId}/pause")
-  public long pauseRide(@PathVariable final long rideId) {
-    log.info("Request to pause ride with id: {}", rideId);
-    return service.pauseRide(rideId);
+  @MessageMapping("/rides.pause")
+  @SendTo("/topic/public")
+  public long pauseRide(@Payload final ManageRidePayload payload) {
+    log.info("Request to pause ride with id: {}", payload.rideId);
+    return service.pauseRide(payload.rideId);
   }
 
-  @PostMapping("{rideId}/stop")
-  public void stopRide(@PathVariable final long rideId) {
-    log.info("Request to stop ride with id: {}", rideId);
-    service.stopRide(rideId);
+  @MessageMapping("/rides.stop")
+//  @SendTo("/topic/public")
+  public void stopRide(@Payload final ManageRidePayload payload) {
+    log.info("Request to stop ride with id: {}", payload.rideId);
+    service.stopRide(payload.rideId);
   }
 
-  @PostMapping("{rideId}/restart")
-  public long restartRide(@PathVariable final long rideId) {
-    log.info("Request to restart ride with id: {}", rideId);
-    return service.restartRide(rideId);
+  @MessageMapping("/rides.restart")
+  @SendTo("/topic/public")
+  public long restartRide(@Payload final ManageRidePayload payload) {
+    log.info("Request to restart ride with id: {}", payload.rideId);
+    return service.restartRide(payload.rideId);
   }
 
-  @PostMapping("{rideId}/finish")
-  public void finishRide(@PathVariable final long rideId) {
-    log.info("Request to finish ride with id: {}", rideId);
-    service.finishRide(rideId);
+  @MessageMapping("/rides.finish")
+//  @SendTo("/topic/public")
+  public void finishRide(@Payload final ManageRidePayload payload) {
+    log.info("Request to finish ride with id: {}", payload.rideId);
+    service.finishRide(payload.rideId);
   }
 
-  @GetMapping("unfinished")
-  public List<Ride> getUnfinishedRides() {
+  @MessageMapping("/rides.scheduleStreamingRidesElapsedTimeIfEligible")
+  @SendTo("/topic/public")
+  public void scheduleStreamingRidesElapsedTimeIfEligible() {
     log.info("Request to get unfinished rides");
-    return service.getUnfinishedRides();
+//    return service.scheduleStreamingRidesElapsedTimeIfEligible();
+    service.scheduleStreamingRidesElapsedTimeIfEligible();
   }
+
+  public record CreateRidePayload(long vehicleId) { }
+  public record ManageRidePayload(long rideId) { }
 
 }

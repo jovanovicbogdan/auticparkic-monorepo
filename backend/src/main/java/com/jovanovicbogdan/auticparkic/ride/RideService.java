@@ -193,14 +193,14 @@ public class RideService {
     return restartedRide.rideId;
   }
 
-  public List<Ride> getUnfinishedRides() {
+  public void scheduleStreamingRidesElapsedTimeIfEligible() {
     if (shouldScheduleSendRidesElapsedTimeTask()) {
       scheduleSendRidesElapsedTimeTask();
     }
 
-    return dao.findByStatuses(
-        List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
-            RideStatus.STOPPED.name()));
+//    return dao.findByStatuses(
+//        List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
+//            RideStatus.STOPPED.name()));
   }
 
   public List<RideDTO> getAllRidesElapsedTime() {
