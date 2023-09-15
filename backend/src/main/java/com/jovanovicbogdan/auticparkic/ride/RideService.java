@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RideService {
@@ -41,6 +42,7 @@ public class RideService {
     this.clock = clock;
   }
 
+  @Transactional
   public RideDTO createRide(final long vehicleId) {
     vehicleJdbcDao.findById(vehicleId)
         .map(vehicle -> {
@@ -60,6 +62,7 @@ public class RideService {
     return rideDTOMapper.apply(createdRide);
   }
 
+  @Transactional
   public void startRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
@@ -95,6 +98,7 @@ public class RideService {
     }
   }
 
+  @Transactional
   public long pauseRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
@@ -129,6 +133,7 @@ public class RideService {
     return ride.elapsedTime;
   }
 
+  @Transactional
   public void stopRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
@@ -149,6 +154,7 @@ public class RideService {
     cancelSendRidesElapsedTimeTask();
   }
 
+  @Transactional
   public long finishRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
@@ -170,6 +176,7 @@ public class RideService {
     return ride.vehicleId;
   }
 
+  @Transactional
   public long restartRide(final long rideId) {
     final long vehicleId = finishRide(rideId);
 

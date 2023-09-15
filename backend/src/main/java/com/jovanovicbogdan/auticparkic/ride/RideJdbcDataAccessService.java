@@ -5,7 +5,6 @@ import com.jovanovicbogdan.auticparkic.common.DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class RideJdbcDataAccessService implements DAO<Ride> {
@@ -31,7 +29,6 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
   }
 
   @Override
-  @Transactional
   public Ride create(final Ride ride) {
     final String sql = """
         INSERT INTO ride(status, elapsed_time, started_at, paused_at, resumed_at, finished_at, price, vehicle_id)
@@ -54,7 +51,6 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
   }
 
   @Override
-  @Transactional
   public boolean update(final Ride ride) {
     final String sql = """
         UPDATE ride
@@ -103,7 +99,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
     final String sql = """
         SELECT ride_id, status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id
         FROM ride
-        WHERE ride_id = ?;
+        WHERE ride_id = ?
+        FOR UPDATE;
         """;
 
     log.debug("Attempting to retrieve ride with id {} from database", rideId);
@@ -139,7 +136,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         SELECT ride_id, status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id
         FROM ride
         WHERE status IN (%s)
-        ORDER BY ride_id DESC;
+        ORDER BY ride_id DESC
+        FOR UPDATE;
         """;
 
     log.debug("Attempting to retrieve rides with statuses {} from database", statuses);
@@ -161,7 +159,8 @@ public class RideJdbcDataAccessService implements DAO<Ride> {
         SELECT ride_id, status, elapsed_time, created_at, started_at, paused_at, resumed_at, finished_at, price, vehicle_id
         FROM ride
         WHERE vehicle_id = ? AND status IN (%s)
-        ORDER BY ride_id DESC;
+        ORDER BY ride_id DESC
+        FOR UPDATE;
         """;
 
     log.debug("Attempting to retrieve rides with statuses {} and vehicle id {} from database",

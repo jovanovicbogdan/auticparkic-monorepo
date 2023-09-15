@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -35,6 +36,7 @@ public class VehicleService {
     return findVehicleIfExistsOrThrow(vehicleId);
   }
 
+  @Transactional
   public long createVehicleIfNotExists(final VehicleRequestDTO request) {
     dao.findVehicleByName(request.vehicleName().toUpperCase()).ifPresent(vehicle -> {
       throw new ConflictException("Vehicle with name '" + vehicle.name + "' already exists.");
@@ -46,6 +48,7 @@ public class VehicleService {
     return createdVehicle.vehicleId;
   }
 
+  @Transactional
   public void updateVehicle(final long vehicleId, final VehicleRequestDTO request) {
     final Vehicle vehicle = findVehicleIfExistsOrThrow(vehicleId);
 
@@ -76,6 +79,7 @@ public class VehicleService {
     return dao.findAll();
   }
 
+  @Transactional
   public void uploadVehicleImage(final long vehicleId, final MultipartFile file) {
     findVehicleIfExistsOrThrow(vehicleId);
     final String vehicleImageId = UUID.randomUUID().toString();

@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
@@ -22,7 +21,6 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
   }
 
   @Override
-  @Transactional
   public Vehicle create(final Vehicle vehicle) {
     final String sql = """
         INSERT INTO vehicle(name, created_at, vehicle_image_id, is_active)
@@ -37,7 +35,6 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
   }
 
   @Override
-  @Transactional
   public boolean update(final Vehicle vehicle) {
     final String sql = """
         UPDATE vehicle
@@ -72,7 +69,8 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
     final String sql = """
         SELECT vehicle_id, name, created_at, vehicle_image_id, is_active
         FROM vehicle
-        WHERE vehicle_id = ?;
+        WHERE vehicle_id = ?
+        FOR UPDATE;
         """;
 
     log.debug("Attempting to retrieve vehicle with id '{}' from database", vehicleId);
@@ -108,7 +106,8 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
     final String sql = """
         SELECT vehicle_id, name, created_at, vehicle_image_id, is_active
         FROM vehicle
-        WHERE name = ?;
+        WHERE name = ?
+        FOR UPDATE;
         """;
 
     log.debug("Attempting to retrieve vehicle with name '{}' from database", name);
