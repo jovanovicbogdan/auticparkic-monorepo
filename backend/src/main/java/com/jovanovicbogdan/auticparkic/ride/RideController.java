@@ -1,6 +1,5 @@
 package com.jovanovicbogdan.auticparkic.ride;
 
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -68,7 +67,6 @@ public class RideController {
   @SendTo("/topic/public")
   public void scheduleStreamingRidesElapsedTimeIfEligible() {
     log.info("Request to get unfinished rides");
-//    return service.scheduleStreamingRidesElapsedTimeIfEligible();
     service.scheduleStreamingRidesElapsedTimeIfEligible();
   }
 

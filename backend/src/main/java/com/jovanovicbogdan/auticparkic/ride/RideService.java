@@ -197,13 +197,9 @@ public class RideService {
     if (shouldScheduleSendRidesElapsedTimeTask()) {
       scheduleSendRidesElapsedTimeTask();
     }
-
-//    return dao.findByStatuses(
-//        List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
-//            RideStatus.STOPPED.name()));
   }
 
-  public List<RideDTO> getAllRidesElapsedTime() {
+  public List<RideDTO> getUnfinishedRides() {
     final List<Ride> activeRides = dao.findByStatuses(
         List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
             RideStatus.STOPPED.name()));

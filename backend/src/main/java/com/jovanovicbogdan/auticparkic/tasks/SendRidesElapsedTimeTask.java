@@ -30,9 +30,8 @@ public class SendRidesElapsedTimeTask implements Runnable {
   @Override
   public void run() {
     if (webSocketEventListenerComponent.hasActiveSessions()) {
-      final List<RideDTO> rides = service.getAllRidesElapsedTime();
-      log.debug("Sending rides elapsed time {} to a topic {}", rides,
-          Constants.WEBSOCKET_BROKER_PUBLIC);
+      final List<RideDTO> rides = service.getUnfinishedRides();
+      log.debug("Sending rides {} to a topic {}", rides, Constants.WEBSOCKET_BROKER_PUBLIC);
       simpMessagingTemplate.convertAndSend(Constants.WEBSOCKET_BROKER_PUBLIC, rides);
     } else {
       service.cancelSendRidesElapsedTimeTask();
