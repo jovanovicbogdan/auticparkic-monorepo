@@ -13,5 +13,4 @@ export default interface Ride {
   elapsedTime: number;
   price: number;
   createdAt: string;
-  intervalId: number;
 }

@@ -1,5 +1,6 @@
 package com.jovanovicbogdan.auticparkic.ride;
 
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -23,7 +24,7 @@ public class RideController {
 
   @MessageMapping("/rides.create")
   @SendTo("/topic/public")
-  public RideDTO createRide(@Payload final VehicleIdPayload payload) {
+  public List<RideDTO> createRide(@Payload final VehicleIdPayload payload) {
     log.info("Request to create ride with vehicle id: {}", payload.vehicleId);
     return service.createRide(payload.vehicleId);
   }
@@ -37,37 +38,37 @@ public class RideController {
 
   @MessageMapping("/rides.pause")
   @SendTo("/topic/public")
-  public long pauseRide(@Payload final RideIdPayload payload) {
+  public List<RideDTO> pauseRide(@Payload final RideIdPayload payload) {
     log.info("Request to pause ride with id: {}", payload.rideId);
     return service.pauseRide(payload.rideId);
   }
 
   @MessageMapping("/rides.stop")
 //  @SendTo("/topic/public")
-  public void stopRide(@Payload final RideIdPayload payload) {
+  public List<RideDTO> stopRide(@Payload final RideIdPayload payload) {
     log.info("Request to stop ride with id: {}", payload.rideId);
-    service.stopRide(payload.rideId);
+    return service.stopRide(payload.rideId);
   }
 
   @MessageMapping("/rides.restart")
   @SendTo("/topic/public")
-  public long restartRide(@Payload final RideIdPayload payload) {
+  public List<RideDTO> restartRide(@Payload final RideIdPayload payload) {
     log.info("Request to restart ride with id: {}", payload.rideId);
     return service.restartRide(payload.rideId);
   }
 
   @MessageMapping("/rides.finish")
 //  @SendTo("/topic/public")
-  public void finishRide(@Payload final RideIdPayload payload) {
+  public List<RideDTO> finishRide(@Payload final RideIdPayload payload) {
     log.info("Request to finish ride with id: {}", payload.rideId);
-    service.finishRide(payload.rideId);
+    return service.finishRide(payload.rideId);
   }
 
   @MessageMapping("/rides.streamUnfinishedRidesData")
   @SendTo("/topic/public")
-  public void streamUnfinishedRidesData() {
+  public List<RideDTO> streamUnfinishedRidesData() {
     log.info("Request to stream unfinished rides");
-    service.scheduleStreamingRidesDataTaskIfEligible();
+    return service.scheduleStreamRidesDataTaskIfEligible();
   }
 
   public record VehicleIdPayload(long vehicleId) { }

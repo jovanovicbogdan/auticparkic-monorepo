@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import Ride, { Status } from "../../models/RideModel.ts";
 
-type Props = {
+type StopwatchProps = {
   action: Status;
   ride: Ride;
 };
 
-export default function Stopwatch({ action, ride }: Props) {
+export default function Stopwatch({ action, ride }: StopwatchProps) {
   // elapsed time in seconds
   const [elapsedTime, setElapsedTime] = useState<number>(ride.elapsedTime);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -16,22 +16,9 @@ export default function Stopwatch({ action, ride }: Props) {
 
   useEffect(() => {
     if (isRunning) {
-      const intervalId = setInterval(() => {
-        setElapsedTime((prevElapsedTime) => {
-          const nextElapsedTime = prevElapsedTime + 1;
-          localStorage.setItem(
-            `elapsedTime-${ride.rideId}`,
-            nextElapsedTime.toString()
-          );
-          return nextElapsedTime;
-        });
-      }, 1000);
-
       setHours(Math.floor(elapsedTime / 3600));
       setMinutes(Math.floor((elapsedTime % 3600) / 60));
       setSeconds(elapsedTime % 60);
-
-      return () => clearInterval(intervalId);
     }
   }, [elapsedTime, isRunning, ride.rideId]);
 

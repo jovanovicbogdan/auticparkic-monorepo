@@ -43,7 +43,7 @@ public class RideService {
   }
 
   @Transactional
-  public RideDTO createRide(final long vehicleId) {
+  public List<RideDTO> createRide(final long vehicleId) {
     vehicleJdbcDao.findById(vehicleId)
         .map(vehicle -> {
           if (!vehicle.isActive) {
@@ -59,7 +59,7 @@ public class RideService {
     final Ride createdRide = dao.create(ride);
     log.info("Created ride: {}", createdRide);
 
-    return rideDTOMapper.apply(createdRide);
+    return getUnfinishedRides();
   }
 
   @Transactional
@@ -93,11 +93,11 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' started", rideId);
-    scheduleStreamingRidesDataTaskIfEligible();
+    scheduleStreamRidesDataTaskIfEligible();
   }
 
   @Transactional
-  public long pauseRide(final long rideId) {
+  public List<RideDTO> pauseRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (!isRunning(ride)) {
@@ -128,11 +128,11 @@ public class RideService {
     log.info("Ride with id '{}' paused", rideId);
     cancelStreamRidesDataTask();
 
-    return ride.elapsedTime;
+    return getUnfinishedRides();
   }
 
   @Transactional
-  public void stopRide(final long rideId) {
+  public List<RideDTO> stopRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (isStopped(ride) || isFinished(ride)) {
@@ -150,10 +150,12 @@ public class RideService {
 
     log.info("Ride with id '{}' stopped", rideId);
     cancelStreamRidesDataTask();
+
+    return getUnfinishedRides();
   }
 
   @Transactional
-  public long finishRide(final long rideId) {
+  public List<RideDTO> finishRide(final long rideId) {
     final Ride ride = findRideIfExistsOrThrow(rideId);
 
     if (ride.status != RideStatus.STOPPED) {
@@ -171,22 +173,27 @@ public class RideService {
 
     log.info("Ride with id '{}' finished", rideId);
 
-    return ride.vehicleId;
+    return getUnfinishedRides();
   }
 
   @Transactional
-  public long restartRide(final long rideId) {
-    final long vehicleId = finishRide(rideId);
-
+  public List<RideDTO> restartRide(final long rideId) {
+    final List<RideDTO> unfinishedRides = finishRide(rideId);
+    final long vehicleId = unfinishedRides
+        .stream()
+        .filter(ride -> ride.rideId() == rideId)
+        .findFirst().orElseThrow(() -> new ResourceNotFoundException("Ride not found"))
+        .vehicleId();
     throwIfVehicleInUse(vehicleId);
 
     final Ride ride = new Ride(vehicleId, RideStatus.CREATED);
     final Ride restartedRide = dao.create(ride);
-    log.info("Finished and restarted ride with id '{}'", rideId);
+    log.info("Finished and restarted ride with id '{}', and created a new one with id {}", rideId,
+        restartedRide.rideId);
 
-    scheduleStreamingRidesDataTaskIfEligible();
+    scheduleStreamRidesDataTaskIfEligible();
 
-    return restartedRide.rideId;
+    return getUnfinishedRides();
   }
 
   public List<RideDTO> getUnfinishedRides() {
@@ -201,8 +208,9 @@ public class RideService {
         }).toList();
   }
 
-  public void scheduleStreamingRidesDataTaskIfEligible() {
-    if (shouldScheduleStreamRidesDataTask() && !taskScheduler.isTaskRunning(StreamRidesDataTask.TASK_ID)) {
+  public List<RideDTO> scheduleStreamRidesDataTaskIfEligible() {
+    if (shouldScheduleStreamRidesDataTask() && !taskScheduler.isTaskRunning(
+        StreamRidesDataTask.TASK_ID)) {
       taskScheduler.scheduleAtFixedRate(
           new StreamRidesDataTask(this, simpMessagingTemplate,
               webSocketEventListenerComponent),
@@ -213,6 +221,8 @@ public class RideService {
         throw new RuntimeException("Failed to schedule task");
       }
     }
+
+    return getUnfinishedRides();
   }
 
   public void cancelStreamRidesDataTask() {
