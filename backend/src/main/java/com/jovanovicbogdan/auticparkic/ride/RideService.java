@@ -4,7 +4,7 @@ import com.jovanovicbogdan.auticparkic.components.WebSocketEventListenerComponen
 import com.jovanovicbogdan.auticparkic.exception.BadRequestException;
 import com.jovanovicbogdan.auticparkic.exception.ResourceNotFoundException;
 import com.jovanovicbogdan.auticparkic.tasks.CustomTaskScheduler;
-import com.jovanovicbogdan.auticparkic.tasks.SendRidesElapsedTimeTask;
+import com.jovanovicbogdan.auticparkic.tasks.StreamRidesDataTask;
 import com.jovanovicbogdan.auticparkic.vehicle.VehicleJdbcDataAccessService;
 import java.time.Clock;
 import java.time.Duration;
@@ -93,9 +93,7 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' started", rideId);
-    if (shouldScheduleSendRidesElapsedTimeTask()) {
-      scheduleSendRidesElapsedTimeTask();
-    }
+    scheduleStreamingRidesDataTaskIfEligible();
   }
 
   @Transactional
@@ -128,7 +126,7 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' paused", rideId);
-    cancelSendRidesElapsedTimeTask();
+    cancelStreamRidesDataTask();
 
     return ride.elapsedTime;
   }
@@ -151,7 +149,7 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' stopped", rideId);
-    cancelSendRidesElapsedTimeTask();
+    cancelStreamRidesDataTask();
   }
 
   @Transactional
@@ -186,17 +184,9 @@ public class RideService {
     final Ride restartedRide = dao.create(ride);
     log.info("Finished and restarted ride with id '{}'", rideId);
 
-    if (shouldScheduleSendRidesElapsedTimeTask()) {
-      scheduleSendRidesElapsedTimeTask();
-    }
+    scheduleStreamingRidesDataTaskIfEligible();
 
     return restartedRide.rideId;
-  }
-
-  public void scheduleStreamingRidesElapsedTimeIfEligible() {
-    if (shouldScheduleSendRidesElapsedTimeTask()) {
-      scheduleSendRidesElapsedTimeTask();
-    }
   }
 
   public List<RideDTO> getUnfinishedRides() {
@@ -211,27 +201,27 @@ public class RideService {
         }).toList();
   }
 
-  public void cancelSendRidesElapsedTimeTask() {
-    if (!areThereAnyRunningRides() || !webSocketEventListenerComponent.hasActiveSessions()) {
-      taskScheduler.cancelScheduledTask(SendRidesElapsedTimeTask.TASK_ID);
-    }
-  }
-
-  private void scheduleSendRidesElapsedTimeTask() {
-    if (!taskScheduler.isTaskRunning(SendRidesElapsedTimeTask.TASK_ID)) {
+  public void scheduleStreamingRidesDataTaskIfEligible() {
+    if (shouldScheduleStreamRidesDataTask() && !taskScheduler.isTaskRunning(StreamRidesDataTask.TASK_ID)) {
       taskScheduler.scheduleAtFixedRate(
-          new SendRidesElapsedTimeTask(this, simpMessagingTemplate,
+          new StreamRidesDataTask(this, simpMessagingTemplate,
               webSocketEventListenerComponent),
-          Duration.ofSeconds(1L), SendRidesElapsedTimeTask.TASK_ID);
+          Duration.ofSeconds(1L), StreamRidesDataTask.TASK_ID);
 
-      if (!taskScheduler.isTaskScheduled(SendRidesElapsedTimeTask.TASK_ID)) {
-        log.warn("Failed to schedule task with id: {}", SendRidesElapsedTimeTask.TASK_ID);
+      if (!taskScheduler.isTaskScheduled(StreamRidesDataTask.TASK_ID)) {
+        log.warn("Failed to schedule task with id: {}", StreamRidesDataTask.TASK_ID);
         throw new RuntimeException("Failed to schedule task");
       }
     }
   }
 
-  private boolean shouldScheduleSendRidesElapsedTimeTask() {
+  public void cancelStreamRidesDataTask() {
+    if (!areThereAnyRunningRides() || !webSocketEventListenerComponent.hasActiveSessions()) {
+      taskScheduler.cancelScheduledTask(StreamRidesDataTask.TASK_ID);
+    }
+  }
+
+  private boolean shouldScheduleStreamRidesDataTask() {
     return areThereAnyRunningRides() && webSocketEventListenerComponent.hasActiveSessions();
   }
 

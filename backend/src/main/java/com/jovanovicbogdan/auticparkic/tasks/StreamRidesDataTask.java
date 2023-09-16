@@ -11,15 +11,15 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SendRidesElapsedTimeTask implements Runnable {
+public class StreamRidesDataTask implements Runnable {
 
-  private static final Logger log = LoggerFactory.getLogger(SendRidesElapsedTimeTask.class);
+  private static final Logger log = LoggerFactory.getLogger(StreamRidesDataTask.class);
   public static final String TASK_ID = "sendRidesElapsedTimeTask";
   private final RideService service;
   private final SimpMessagingTemplate simpMessagingTemplate;
   private final WebSocketEventListenerComponent webSocketEventListenerComponent;
 
-  public SendRidesElapsedTimeTask(final RideService service,
+  public StreamRidesDataTask(final RideService service,
       final SimpMessagingTemplate simpMessagingTemplate,
       final WebSocketEventListenerComponent webSocketEventListenerComponent) {
     this.service = service;
@@ -34,7 +34,7 @@ public class SendRidesElapsedTimeTask implements Runnable {
       log.debug("Sending rides {} to a topic {}", rides, Constants.WEBSOCKET_BROKER_PUBLIC);
       simpMessagingTemplate.convertAndSend(Constants.WEBSOCKET_BROKER_PUBLIC, rides);
     } else {
-      service.cancelSendRidesElapsedTimeTask();
+      service.cancelStreamRidesDataTask();
     }
   }
 

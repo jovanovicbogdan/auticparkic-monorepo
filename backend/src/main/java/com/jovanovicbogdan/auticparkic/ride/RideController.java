@@ -23,54 +23,54 @@ public class RideController {
 
   @MessageMapping("/rides.create")
   @SendTo("/topic/public")
-  public RideDTO createRide(@Payload final CreateRidePayload payload) {
+  public RideDTO createRide(@Payload final VehicleIdPayload payload) {
     log.info("Request to create ride with vehicle id: {}", payload.vehicleId);
     return service.createRide(payload.vehicleId);
   }
 
   @MessageMapping("/rides.start")
 //  @SendTo("/topic/public")
-  public void startRide(@Payload final ManageRidePayload payload) {
+  public void startRide(@Payload final RideIdPayload payload) {
     log.info("Request to start ride with id: {}", payload.rideId);
     service.startRide(payload.rideId);
   }
 
   @MessageMapping("/rides.pause")
   @SendTo("/topic/public")
-  public long pauseRide(@Payload final ManageRidePayload payload) {
+  public long pauseRide(@Payload final RideIdPayload payload) {
     log.info("Request to pause ride with id: {}", payload.rideId);
     return service.pauseRide(payload.rideId);
   }
 
   @MessageMapping("/rides.stop")
 //  @SendTo("/topic/public")
-  public void stopRide(@Payload final ManageRidePayload payload) {
+  public void stopRide(@Payload final RideIdPayload payload) {
     log.info("Request to stop ride with id: {}", payload.rideId);
     service.stopRide(payload.rideId);
   }
 
   @MessageMapping("/rides.restart")
   @SendTo("/topic/public")
-  public long restartRide(@Payload final ManageRidePayload payload) {
+  public long restartRide(@Payload final RideIdPayload payload) {
     log.info("Request to restart ride with id: {}", payload.rideId);
     return service.restartRide(payload.rideId);
   }
 
   @MessageMapping("/rides.finish")
 //  @SendTo("/topic/public")
-  public void finishRide(@Payload final ManageRidePayload payload) {
+  public void finishRide(@Payload final RideIdPayload payload) {
     log.info("Request to finish ride with id: {}", payload.rideId);
     service.finishRide(payload.rideId);
   }
 
-  @MessageMapping("/rides.scheduleStreamingRidesElapsedTimeIfEligible")
+  @MessageMapping("/rides.streamUnfinishedRidesData")
   @SendTo("/topic/public")
-  public void scheduleStreamingRidesElapsedTimeIfEligible() {
-    log.info("Request to get unfinished rides");
-    service.scheduleStreamingRidesElapsedTimeIfEligible();
+  public void streamUnfinishedRidesData() {
+    log.info("Request to stream unfinished rides");
+    service.scheduleStreamingRidesDataTaskIfEligible();
   }
 
-  public record CreateRidePayload(long vehicleId) { }
-  public record ManageRidePayload(long rideId) { }
+  public record VehicleIdPayload(long vehicleId) { }
+  public record RideIdPayload(long rideId) { }
 
 }
