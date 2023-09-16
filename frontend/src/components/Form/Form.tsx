@@ -1,27 +1,32 @@
 import { useState } from "react";
 import VehicleSelect from "./VehicleSelect.tsx";
 import VehicleChoicePreview from "./VehicleChoicePreview.tsx";
-import api from "../../api/api.ts";
 import Ride from "../../models/RideModel.ts";
 import { motion } from "framer-motion";
+import { Client } from "@stomp/stompjs";
 
 type PageDisplayProps = {
   step: number;
   selectedVehicleId: number;
   setSelectedVehicleId: (vehicleId: number) => void;
+  setShowForm: (showForm: boolean) => void;
 };
 
 type FormProps = {
   unfinishedRides: Ride[];
   setUnfinishedRides: (rides: Ride[]) => void;
   setShowForm: (showForm: boolean) => void;
+  stompClient: Client;
 };
 
 function PageDisplay(props: PageDisplayProps) {
   switch (props.step) {
     case 0:
       return (
-        <VehicleSelect setSelectedVehicleId={props.setSelectedVehicleId} />
+        <VehicleSelect
+          setSelectedVehicleId={props.setSelectedVehicleId}
+          setShowForm={props.setShowForm}
+        />
       );
     case 1:
       return (
@@ -37,23 +42,10 @@ export default function Form(props: FormProps) {
   const stepPageTitles = ["Izaberi Autić", "Pregled Izbora"];
 
   function createNewRide(vehicleId: number) {
-    const params = new URLSearchParams();
-    params.set("vehicleId", vehicleId.toString());
-
-    api(`/v1/rides/create?${params.toString()}`, "post")
-      .then((res) => {
-        if (res.status !== "ok")
-          throw new Error("Nije uspelo kreiranje vožnje");
-        return res.data as Ride;
-      })
-      .then((ride) => {
-        // ride.elapsedTime = 0;
-        const updatedRides = [...props.unfinishedRides, ride];
-        props.setUnfinishedRides(updatedRides);
-      })
-      .catch(() => {
-        // handle error message
-      });
+    props.stompClient.publish({
+      destination: "/app/rides.create",
+      body: JSON.stringify({ vehicleId }),
+    });
   }
 
   function nextStep() {
@@ -102,6 +94,7 @@ export default function Form(props: FormProps) {
           step={step}
           selectedVehicleId={selectedVehicleId}
           setSelectedVehicleId={setSelectedVehicleId}
+          setShowForm={props.setShowForm}
         />
         <div className="mt-2">
           <button className="btn-beige font-md mr-1" onClick={() => nextStep()}>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../../api/api.ts";
 import Vehicle, { getVehicleImageUrl } from "../../models/VehicleModel.ts";
 import Spinner from "../Spinner.tsx";
@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 type VehicleSelectProps = {
   setSelectedVehicleId: (vehicleId: number) => void;
+  setShowForm: (showForm: boolean) => void;
 };
 
 type ImageContainerProps = {
@@ -50,12 +51,13 @@ function ImageContainer({
 
 export default function VehicleSelect({
   setSelectedVehicleId,
+  setShowForm,
 }: VehicleSelectProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [availableVehicles, setAvailableVehicles] = useState<Vehicle[]>([]);
   const [selectedImage, setSelectedImage] = useState<string>("");
 
-  function getAndSetAvailableVehicles(): AbortController {
+  const getAndSetAvailableVehicles = useCallback(() => {
     const controller = new AbortController();
 
     setLoading(true);
@@ -71,6 +73,10 @@ export default function VehicleSelect({
         setAvailableVehicles(() =>
           vehicles.filter((vehicle) => vehicle.isActive)
         );
+        if (vehicles.length === 0) {
+          alert("Svi autići su zauzeti");
+          setShowForm(false);
+        }
       })
       .catch(() => {
         // handle error
@@ -78,12 +84,12 @@ export default function VehicleSelect({
       });
 
     return controller;
-  }
+  }, [setShowForm]);
 
   useEffect(() => {
     const controller = getAndSetAvailableVehicles();
     return () => controller.abort();
-  }, []);
+  }, [getAndSetAvailableVehicles]);
 
   return (
     <AnimatePresence>

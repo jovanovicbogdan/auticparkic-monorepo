@@ -118,7 +118,7 @@ public class RideService {
       ride.pausedAt = pausedAtTimestamps;
     }
 
-    ride.elapsedTime = getRideElapsedTime(ride.rideId);
+    ride.elapsedTime = getRideElapsedTime(ride);
     final boolean isUpdated = dao.update(ride);
 
     if (!isUpdated) {
@@ -140,7 +140,7 @@ public class RideService {
     }
 
     ride.status = RideStatus.STOPPED;
-    ride.elapsedTime = getRideElapsedTime(ride.rideId);
+    ride.elapsedTime = getRideElapsedTime(ride);
     ride.price = calculateRidePrice(ride.elapsedTime);
     final boolean isUpdated = dao.update(ride);
 
@@ -203,7 +203,7 @@ public class RideService {
 
     return activeRides.stream()
         .map(ride -> {
-          ride.elapsedTime = getRideElapsedTime(ride.rideId);
+          ride.elapsedTime = getRideElapsedTime(ride);
           return rideDTOMapper.apply(ride);
         }).toList();
   }
@@ -240,11 +240,13 @@ public class RideService {
         List.of(RideStatus.RUNNING.name())).isEmpty();
   }
 
-  private long getRideElapsedTime(final long rideId) {
-    final Ride ride = findRideIfExistsOrThrow(rideId);
-
-    if (ride.status == RideStatus.FINISHED || ride.status == RideStatus.CREATED) {
+  private long getRideElapsedTime(final Ride ride) {
+    if (ride.status == RideStatus.FINISHED) {
       throw new BadRequestException("Ride is not active");
+    }
+
+    if (ride.status == RideStatus.CREATED) {
+      return 0L;
     }
 
     if (ride.status == RideStatus.STOPPED) {

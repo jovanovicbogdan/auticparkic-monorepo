@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
-import api from "../../api/api.ts";
+import { useEffect, useState } from "react";
 import Ride, { Status } from "../../models/RideModel.ts";
 import Stopwatch from "../Stopwatch/Stopwatch.tsx";
 import Form from "../Form/Form.tsx";
@@ -94,6 +93,7 @@ export default function ActiveRides() {
             unfinishedRides={unfinishedRides}
             setUnfinishedRides={setUnfinishedRides}
             setShowForm={setShowForm}
+            stompClient={stompClient}
           />
         )}
       </AnimatePresence>

@@ -44,7 +44,7 @@ public class RideController {
   }
 
   @MessageMapping("/rides.stop")
-//  @SendTo("/topic/public")
+  @SendTo("/topic/public")
   public List<RideDTO> stopRide(@Payload final RideIdPayload payload) {
     log.info("Request to stop ride with id: {}", payload.rideId);
     return service.stopRide(payload.rideId);
@@ -58,7 +58,7 @@ public class RideController {
   }
 
   @MessageMapping("/rides.finish")
-//  @SendTo("/topic/public")
+  @SendTo("/topic/public")
   public List<RideDTO> finishRide(@Payload final RideIdPayload payload) {
     log.info("Request to finish ride with id: {}", payload.rideId);
     return service.finishRide(payload.rideId);
