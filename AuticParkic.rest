@@ -29,7 +29,7 @@ Content-Type: application/json
 DELETE {{host}}/v1/vehicles/1
 
 ### Upload vehicle image
-POST {{host}}/v1/vehicles/image/2/upload
+POST {{host}}/v1/vehicles/image/1/upload
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
