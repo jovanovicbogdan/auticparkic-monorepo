@@ -10,6 +10,6 @@ COPY package*.json .
 RUN npm install --silent
 COPY . .
 RUN echo "VITE_API_BASE_URL=${API_BASE_URL}" > .env
-RUN echo "VITE_WS_BASE_URL=${WS_BASE_URL}" > .env
+RUN echo "VITE_WS_BASE_URL=${WS_BASE_URL}" >> .env
 EXPOSE 3000
 CMD ["npm", "run", "start:dev"]
