@@ -8,6 +8,7 @@
 - [x] Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level
 - [ ] Handle deleting vehicles that are in use and written in ride database table
 - [ ] Add deleteObject functionality for s3 service
+- [ ] Convert REST API endpoint `/api/v1/vehicles/available` to WebSocket
 
 ## TODO Frontend
 
