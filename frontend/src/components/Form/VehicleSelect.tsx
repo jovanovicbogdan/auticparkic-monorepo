@@ -64,13 +64,8 @@ export default function VehicleSelect({
 
     api("/v1/vehicles/available", "get", undefined, controller.signal)
       .then((res) => {
-        if (res.status !== "ok") {
-          alert(
-            "Greška pri dohvatanju dostupnih autića. Proverite da li postoje autići u bazi."
-          );
-          setShowForm(false);
+        if (res.status !== "ok")
           throw new Error("Could not fetch available vehicles");
-        }
         return res.data as Vehicle[];
       })
       .then((vehicles) => {
