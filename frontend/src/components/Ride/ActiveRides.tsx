@@ -5,6 +5,7 @@ import Form from "../Form/Form.tsx";
 import { getVehicleImageUrl } from "../../models/VehicleModel.ts";
 import { AnimatePresence } from "framer-motion";
 import { Client } from "@stomp/stompjs";
+import { WsConfig } from "../../config/ws.config.ts";
 
 export default function ActiveRides() {
   // const [loading, setLoading] = useState<boolean>(false);
@@ -12,8 +13,8 @@ export default function ActiveRides() {
   const [unfinishedRides, setUnfinishedRides] = useState<Ride[]>([]);
   const [stompClient, setStompClient] = useState<Client>(
     new Client({
-      brokerURL: "ws://localhost:10000/ws",
-      reconnectDelay: 5000,
+      brokerURL: WsConfig.WS_URL,
+      reconnectDelay: WsConfig.RECONNECT_DELAY,
       // heartbeatIncoming: 4000,
       // heartbeatOutgoing: 4000,
     })
@@ -30,7 +31,6 @@ export default function ActiveRides() {
   useEffect(() => {
     stompClient.onConnect = () => {
       stompClient.subscribe("/topic/public", (message) => {
-        // console.log(`Received: ${message.body}`);
         setUnfinishedRides(JSON.parse(message.body) as Ride[]);
       });
       stompClient.publish({

@@ -24,7 +24,7 @@
 docker run --rm -it postgres:alpine bash
 ```
 
-- Create database in RDS
+- To create database in RDS first connect to the database using `psql`
 
 ```shell
 psql -U postgres -d postgres -h awseb-e-hpqaxacpv6-stack-awsebrdsdatabase-dafkdvlt0qvd.cncflnnvajsx.eu-central-1.rds.amazonaws.com
@@ -33,7 +33,7 @@ psql -U postgres -d postgres -h awseb-e-hpqaxacpv6-stack-awsebrdsdatabase-dafkdv
 ## Build Frontend Docker Image
 
 ```shell
-docker build --no-cache --build-arg="API_BASE_URL=http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/api" -t bogdanjovanovic/auticparkic-frontend .
+docker build --no-cache --build-arg="API_BASE_URL=http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/api" --build-arg="WS_BASE_URL=ws://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com/ws" -t bogdanjovanovic/auticparkic-frontend .
 ```
 
 - Push to Docker Hub
