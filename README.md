@@ -10,7 +10,7 @@
 - [ ] Convert REST API endpoint `/api/v1/vehicles/available` to WebSocket
 - [ ] Convert REST API endpoint `/api/v1/vehicles/{vehicleId}` to WebSocket
 - [ ] Handle case where deleting a vehicle in use 
-- [ ] Handle vehicles written in ride database table (db constraints)
+- [ ] Handle deleting vehicles written in ride database table (db constraints)
 - [ ] Add deleteObject functionality for s3 service
 
 ## TODO Frontend
