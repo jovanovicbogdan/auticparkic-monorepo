@@ -196,6 +196,8 @@
 @media (max-width: 1024px) {
   .dashboard-root {
     flex-direction: column;
+    overflow: hidden;
+    position: relative;
 
     .dashboard-slider {
       width: 100vw;

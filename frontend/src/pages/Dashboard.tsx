@@ -125,7 +125,12 @@ export default function Dashboard() {
 
     api(`/v1/vehicles/${vehicleId.toString()}`, "put", payload)
       .then((res) => {
-        if (res.status !== "ok") throw new Error("Update nije uspeo");
+        if (res.status !== "ok") {
+          alert(
+            "Došlo je do greške, proverite da li se vozilo trenutno koristi u vožnji"
+          );
+          throw new Error("Update nije uspeo");
+        }
         getAndSetAvailableVehicles();
         setIsUpdateVehicleSliderOpen(false);
       })

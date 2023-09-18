@@ -39,13 +39,12 @@ public class VehicleJdbcDataAccessService implements DAO<Vehicle> {
     final String sql = """
         UPDATE vehicle
         SET name = ?, created_at = ?, vehicle_image_id = ?, is_active = ?
-        WHERE vehicle_id = ?
-        RETURNING vehicle_id, name, created_at, vehicle_image_id, is_active;
+        WHERE vehicle_id = ?;
         """;
 
     log.debug("Attempting to update vehicle in database: {}", vehicle);
 
-    final int rowsAffected = jdbcTemplate.update(sql, vehicleRowMapper, vehicle.name,
+    final int rowsAffected = jdbcTemplate.update(sql, vehicle.name,
         vehicle.createdAt, vehicle.vehicleImageId, vehicle.isActive, vehicle.vehicleId);
 
     return rowsAffected == 1;

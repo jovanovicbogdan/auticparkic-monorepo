@@ -236,3 +236,51 @@ $active-ride-image-height: 200px;
     }
   }
 }
+
+@media (max-width: 1024px) {
+  .multi-step-form {
+    .header {
+      h1 {
+        font-size: 26px;
+      }
+    }
+
+    .body {
+      > div {
+        text-align: center;
+      }
+
+      .vehicle-select {
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .vehicle-choice-preview {
+        overflow: hidden;
+
+        div {
+          flex-direction: column;
+          align-items: center;
+
+          img {
+            width: 50vw;
+            margin-bottom: 20px;
+          }
+
+          .vehicle-choice-preview-info {
+            gap: 1rem;
+            flex-direction: column;
+            font-size: 16px;
+
+            div {
+              padding: 0;
+              margin: 0;
+              width: 50vw;
+              height: 40px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

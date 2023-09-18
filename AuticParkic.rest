@@ -3,7 +3,7 @@ POST {{host}}/v1/vehicles
 Content-Type: application/json
 
 {
-  "vehicleName": "hyundai",
+  "vehicleName": "mercede",
   "isActive": true
 }
 
@@ -17,11 +17,11 @@ GET {{host}}/v1/vehicles/available
 GET {{host}}/v1/vehicles
 
 ### Update vehicle name
-POST http://localhost:1000/v1/vehicles/1/update
+PUT {{host}}/v1/vehicles/1
 Content-Type: application/json
 
 {
-  "vehicleName": "hyundai",
+  "vehicleName": "mercedes",
   "isActive": true
 }
 
