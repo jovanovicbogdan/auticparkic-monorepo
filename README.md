@@ -6,9 +6,12 @@
 
 - [x] Add Swagger
 - [x] Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level
-- [ ] Handle deleting vehicles that are in use and written in ride database table
-- [ ] Add deleteObject functionality for s3 service
+- [ ] Upon scheduling a task to send rides data, do not read every time from a database but rather from a cache (it can be simple HashMap as temporary solution)
 - [ ] Convert REST API endpoint `/api/v1/vehicles/available` to WebSocket
+- [ ] Convert REST API endpoint `/api/v1/vehicles/{vehicleId}` to WebSocket
+- [ ] Handle case where deleting a vehicle in use 
+- [ ] Handle vehicles written in ride database table (db constraints)
+- [ ] Add deleteObject functionality for s3 service
 
 ## TODO Frontend
 
