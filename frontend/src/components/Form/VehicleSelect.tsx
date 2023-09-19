@@ -70,11 +70,10 @@ export default function VehicleSelect({
       })
       .then((vehicles) => {
         setLoading(false);
-        setAvailableVehicles(() =>
-          vehicles.filter((vehicle) => vehicle.isActive)
-        );
-        if (vehicles.length === 0) {
-          alert("Svi autići su zauzeti");
+        const activeVehicles = vehicles.filter((vehicle) => vehicle.isActive);
+        setAvailableVehicles(() => activeVehicles);
+        if (activeVehicles.length === 0) {
+          alert("Svi autići su zauzeti ili su označeni kao nedostupni");
           setShowForm(false);
         }
       })
