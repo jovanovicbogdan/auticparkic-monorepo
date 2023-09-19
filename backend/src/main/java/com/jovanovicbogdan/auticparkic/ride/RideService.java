@@ -178,12 +178,13 @@ public class RideService {
 
   @Transactional
   public List<RideDTO> restartRide(final long rideId) {
-    final List<RideDTO> unfinishedRides = finishRide(rideId);
-    final long vehicleId = unfinishedRides
+    final long vehicleId = getUnfinishedRides()
         .stream()
         .filter(ride -> ride.rideId() == rideId)
-        .findFirst().orElseThrow(() -> new ResourceNotFoundException("Ride not found"))
+        .findFirst()
+        .orElseThrow(() -> new ResourceNotFoundException("Ride not found"))
         .vehicleId();
+    finishRide(rideId);
     throwIfVehicleInUse(vehicleId);
 
     final Ride ride = new Ride(vehicleId, RideStatus.CREATED);
@@ -203,7 +204,9 @@ public class RideService {
 
     return activeRides.stream()
         .map(ride -> {
-          ride.elapsedTime = getRideElapsedTime(ride);
+          if (ride.status != RideStatus.STOPPED) {
+            ride.elapsedTime = getRideElapsedTime(ride);
+          }
           return rideDTOMapper.apply(ride);
         }).toList();
   }
@@ -247,10 +250,6 @@ public class RideService {
 
     if (ride.status == RideStatus.CREATED) {
       return 0L;
-    }
-
-    if (ride.status == RideStatus.STOPPED) {
-      return ride.elapsedTime;
     }
 
     final LocalDateTime[] pausedAt = ride.pausedAt != null ? ride.pausedAt : new LocalDateTime[0];
