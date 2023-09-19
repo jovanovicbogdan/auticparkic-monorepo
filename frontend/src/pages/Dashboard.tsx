@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
+import { Button, ChakraProvider, Input, useDisclosure } from "@chakra-ui/react";
 import Vehicle, { getVehicleImageUrl } from "../models/VehicleModel.ts";
 import api, { apiForm } from "../api/api.ts";
-import Slider from "../components/Dashboard/Slider.tsx";
+import {
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+} from "@chakra-ui/react";
 import Vehicles from "../components/Dashboard/Vehicles.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -45,6 +54,16 @@ function NavItem({
 }
 
 export default function Dashboard() {
+  const {
+    isOpen: isOpenAddVehicleDrawer,
+    onOpen: onOpenAddVehicleDrawer,
+    onClose: onCloseAddVehicleDrawer,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenUpdateVehicleDrawer,
+    onOpen: onOpenUpdateVehicleDrawer,
+    onClose: onCloseUpdateVehicleDrawer,
+  } = useDisclosure();
   const [availableVehicles, setAvailableVehicles] = useState<Vehicle[]>([]);
   const [isAddVehicleSliderOpen, setIsAddVehicleSliderOpen] = useState(false);
   const [isUpdateVehicleSliderOpen, setIsUpdateVehicleSliderOpen] =
@@ -155,162 +174,170 @@ export default function Dashboard() {
   }, [updateVehicle]);
 
   return (
-    <div className="dashboard-root">
-      <div className="dashboard-navbar">
-        <h1>Autić Parkić</h1>
-        <nav>
-          <ul>
-            <NavItem
-              text="Vozila"
-              icon={"fa-car-side"}
-              setShowVehicles={setShowVehicles}
-              setShowEmployees={setShowEmployees}
-              isActive={showVehicles}
-            />
-            <NavItem
-              text="Zaposleni"
-              icon={"fa-user-group"}
-              setShowVehicles={setShowVehicles}
-              setShowEmployees={setShowEmployees}
-              isActive={showEmployees}
-            />
-          </ul>
-        </nav>
-      </div>
-      {showVehicles && (
-        <Vehicles
-          availableVehicles={availableVehicles}
-          setAvailableVehicles={setAvailableVehicles}
-          setIsSliderOpen={setIsAddVehicleSliderOpen}
-          setIsUpdateVehicleSliderOpen={setIsUpdateVehicleSliderOpen}
-          setUpdateVehicle={setUpdateVehicle}
-        />
-      )}
-      {showVehicles && (
-        <div className={`backdrop ${isAddVehicleSliderOpen ? "active" : ""}`}>
-          <Slider isSidebarOpen={isAddVehicleSliderOpen}>
-            <div
-              className="slider-header mt-2 ml-2"
-              onClick={() => setIsAddVehicleSliderOpen(false)}
-            >
-              <FontAwesomeIcon
-                className="btn-arrow-left font-lg"
-                icon="arrow-left"
+    <ChakraProvider>
+      <div className="dashboard-root">
+        <div className="dashboard-navbar">
+          <h1>Autić Parkić</h1>
+          <nav>
+            <ul>
+              <NavItem
+                text="Vozila"
+                icon={"fa-car-side"}
+                setShowVehicles={setShowVehicles}
+                setShowEmployees={setShowEmployees}
+                isActive={showVehicles}
               />
-              <h3>Dodaj Novo Vozilo</h3>
-            </div>
-            <div className="slider-data">
-              <p className="font-sm mb-1">
-                <span className="text-red">*</span> &mdash; obavezna polja
-              </p>
-              <div>
-                <label>
-                  Ime Vozila <span className="text-red">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={vehicleName}
-                  onChange={(e) => setVehicleName(e.target.value)}
-                />
-              </div>
-              {/*
-              <div>
-                <label className="checkbox-label">
-                  Da li je vozilo spremno za vožnju?{" "}
-                  <span className="text-red">*</span>
-                  <input
-                    className="ml-2"
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => setIsChecked(!isChecked)}
-                  />
-                </label>
-              </div>
-              */}
-              <div>
-                <label htmlFor="upload-image">
-                  Dodaj sliku
-                  {vehicleImage && (
-                    <span className="font-sm text-gray ml-1">
-                      {vehicleImage.name}
-                    </span>
-                  )}
-                </label>
-                <input
-                  id="upload-image"
-                  type="file"
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      setVehicleImage(e.target.files[0]);
-                    }
-                  }}
-                />
-              </div>
-              <div>
-                <button
-                  className="btn-black text-white font-md"
-                  onClick={() => addVehicle()}
-                >
-                  Dodaj Vozilo
-                </button>
-              </div>
-            </div>
-          </Slider>
+              <NavItem
+                text="Zaposleni"
+                icon={"fa-user-group"}
+                setShowVehicles={setShowVehicles}
+                setShowEmployees={setShowEmployees}
+                isActive={showEmployees}
+              />
+            </ul>
+          </nav>
         </div>
-      )}
-
-      {showVehicles && (
-        <div
-          className={`backdrop ${isUpdateVehicleSliderOpen ? "active" : ""}`}
-        >
-          <Slider isSidebarOpen={isUpdateVehicleSliderOpen}>
-            <div
-              className="slider-header mt-2 ml-2"
-              onClick={() => setIsUpdateVehicleSliderOpen(false)}
+        {showVehicles && (
+          <Vehicles
+            availableVehicles={availableVehicles}
+            setAvailableVehicles={setAvailableVehicles}
+            setIsUpdateVehicleSliderOpen={setIsUpdateVehicleSliderOpen}
+            setUpdateVehicle={setUpdateVehicle}
+            onOpenAddVehicleDrawer={onOpenAddVehicleDrawer}
+            onOpenUpdateVehicleDrawer={onOpenUpdateVehicleDrawer}
+          />
+        )}
+        {showVehicles && (
+          <div className={`backdrop ${isAddVehicleSliderOpen ? "active" : ""}`}>
+            <Drawer
+              isOpen={isOpenAddVehicleDrawer}
+              placement="right"
+              onClose={onCloseAddVehicleDrawer}
+              size="lg"
             >
-              <FontAwesomeIcon
-                className="btn-arrow-left font-lg"
-                icon="arrow-left"
-              />
-              <h3>Izmeni Vozilo</h3>
-            </div>
-            <div className="slider-data">
-              <div>
-                <img
-                  src={
-                    updateVehicle === undefined
-                      ? ""
-                      : getVehicleImageUrl(updateVehicle.vehicleId)
-                  }
-                />
-              </div>
-              <p className="font-sm mb-1">
-                <span className="text-red">*</span> &mdash; obavezna polja
-              </p>
-              <div>
-                <label>
-                  Novo Ime Vozila <span className="text-red">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={vehicleName}
-                  onChange={(e) => setVehicleName(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="checkbox-label">
-                  Da li je vozilo dostupno? <span className="text-red">*</span>
-                  <input
-                    className="ml-2"
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => setIsChecked(!isChecked)}
+              <DrawerOverlay />
+              <DrawerContent>
+                <DrawerCloseButton />
+                <DrawerHeader>Dodaj novo vozilo</DrawerHeader>
+
+                <DrawerBody>
+                  <p className="font-sm mb-1">
+                    <span className="text-red">*</span> &mdash; obavezna polja
+                  </p>
+                  <div>
+                    <label>
+                      Ime Vozila <span className="text-red">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      value={vehicleName}
+                      onChange={(e) => setVehicleName(e.target.value)}
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <label htmlFor="upload-image">
+                      Dodaj sliku <span className="text-red">*</span>
+                      {vehicleImage && (
+                        <span className="font-sm text-gray ml-1">
+                          {vehicleImage.name}
+                        </span>
+                      )}
+                    </label>
+                    <Input
+                      type="file"
+                      className="mt-1"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          setVehicleImage(e.target.files[0]);
+                        }
+                      }}
+                    />
+                  </div>
+                </DrawerBody>
+
+                <DrawerFooter>
+                  <Button
+                    variant="outline"
+                    mr={3}
+                    onClick={onCloseAddVehicleDrawer}
+                  >
+                    Otkaži
+                  </Button>
+                  <Button
+                    colorScheme="blue"
+                    onClick={() => {
+                      addVehicle();
+                      onCloseAddVehicleDrawer();
+                    }}
+                  >
+                    Sačuvaj
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+          </div>
+        )}
+
+        {showVehicles && (
+          <Drawer
+            isOpen={isOpenUpdateVehicleDrawer}
+            placement="right"
+            onClose={onCloseUpdateVehicleDrawer}
+            size="lg"
+          >
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerCloseButton />
+              <DrawerHeader>Izmeni vozilo</DrawerHeader>
+
+              <DrawerBody>
+                <div>
+                  <img
+                    src={
+                      updateVehicle === undefined
+                        ? ""
+                        : getVehicleImageUrl(updateVehicle.vehicleId)
+                    }
                   />
-                </label>
-              </div>
-              <div>
-                <button
-                  className="btn-black text-white font-md"
+                </div>
+                <p className="font-sm mb-1">
+                  <span className="text-red">*</span> &mdash; obavezna polja
+                </p>
+                <div>
+                  <label>
+                    Novo Ime Vozila <span className="text-red">*</span>
+                  </label>
+                  <Input
+                    type="text"
+                    value={vehicleName}
+                    onChange={(e) => setVehicleName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="checkbox-label">
+                    Da li je vozilo dostupno?{" "}
+                    <span className="text-red">*</span>
+                    <input
+                      className="ml-2"
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => setIsChecked(!isChecked)}
+                    />
+                  </label>
+                </div>
+                <div></div>
+              </DrawerBody>
+
+              <DrawerFooter>
+                <Button
+                  variant="outline"
+                  mr={3}
+                  onClick={onCloseUpdateVehicleDrawer}
+                >
+                  Otkaži
+                </Button>
+                <Button
+                  colorScheme="blue"
                   onClick={() => {
                     if (updateVehicle)
                       updateVehicleData(updateVehicle.vehicleId, {
@@ -318,75 +345,16 @@ export default function Dashboard() {
                         isActive: isChecked,
                       });
                     setVehicleName("");
+                    onCloseUpdateVehicleDrawer();
                   }}
                 >
-                  Izmeni Vozilo
-                </button>
-              </div>
-            </div>
-          </Slider>
-        </div>
-      )}
-
-      {/*
-      {showEmployees && <Employees setIsSliderOpen={setIsSliderOpen} />}
-      {showEmployees && (
-        <div className={`backdrop ${isSliderOpen ? "active" : ""}`}>
-          <Slider isSidebarOpen={isSliderOpen}>
-            <div
-              className="slider-header mt-2 ml-2"
-              onClick={() => setIsSliderOpen(false)}
-            >
-              <FontAwesomeIcon
-                className="btn-arrow-left font-lg"
-                icon="arrow-left"
-              />
-              <h3>Dodaj Novog Zaposlenog</h3>
-            </div>
-            <div className="slider-data">
-              <div>
-                <label>Ime</label>
-                <input type="text" />
-              </div>
-              <div>
-                <label>Prezime</label>
-                <input type="text" />
-              </div>
-              <div>
-                <label>Username</label>
-                <input type="text" />
-              </div>
-              <div>
-                <label>Broj Telefona</label>
-                <input type="text" />
-              </div>
-              <div>
-                <label>E-Mail</label>
-                <input type="email" />
-              </div>
-              <div>
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      setVehicleImage(e.target.files[0]);
-                    }
-                  }}
-                />
-              </div>
-              <div>
-                <button
-                  className="btn-black text-white font-md"
-                  onClick={() => alert("dodaj zaposlenog")}
-                >
-                  Dodaj Zaposlenog
-                </button>
-              </div>
-            </div>
-          </Slider>
-        </div>
-      )}
-        */}
-    </div>
+                  Sačuvaj
+                </Button>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+        )}
+      </div>
+    </ChakraProvider>
   );
 }

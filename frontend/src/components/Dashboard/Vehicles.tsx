@@ -4,19 +4,20 @@ import Vehicle, { getVehicleImageUrl } from "../../models/VehicleModel.ts";
 type VehiclesProps = {
   availableVehicles: Vehicle[];
   setAvailableVehicles: (vehicles: Vehicle[]) => void;
-  setIsSliderOpen: (isSidebarOpen: boolean) => void;
   setIsUpdateVehicleSliderOpen: (isSidebarOpen: boolean) => void;
   setUpdateVehicle: (vehicle: Vehicle) => void;
+  onOpenAddVehicleDrawer: () => void;
+  onOpenUpdateVehicleDrawer: () => void;
 };
 
 export default function Vehicles({
   availableVehicles,
   setAvailableVehicles,
-  setIsSliderOpen,
   setIsUpdateVehicleSliderOpen,
   setUpdateVehicle,
+  onOpenAddVehicleDrawer,
+  onOpenUpdateVehicleDrawer,
 }: VehiclesProps) {
-
   function deleteVehicle(vehicleId: number) {
     api(`/v1/vehicles/${vehicleId}`, "delete")
       .then((res) => {
@@ -52,7 +53,7 @@ export default function Vehicles({
         <h2>Vozila</h2>
         <button
           className="btn-outlined-black text-hover-white font-sm"
-          onClick={() => setIsSliderOpen(true)}
+          onClick={onOpenAddVehicleDrawer}
         >
           Dodaj Vozilo
         </button>
@@ -95,22 +96,11 @@ export default function Vehicles({
                   className="edit-btn text-blue"
                   onClick={() => {
                     fetchVehicle(vehicle.vehicleId);
-                    setIsUpdateVehicleSliderOpen(true);
+                    onOpenUpdateVehicleDrawer();
                   }}
                 >
                   Izmeni
                 </a>
-                {
-                  /*
-                                                  <a
-                  className="edit-btn text-red"
-                  onClick={() => deleteVehicle(vehicle.vehicleId)}
-                >
-                  Izbriši
-                </a>
-
-                  */
-                }
               </td>
             </tr>
           ))}
