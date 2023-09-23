@@ -2,8 +2,7 @@
 
 This application handles real-time ride tracking, allowing users to stream elapsed time for rides and manage vehicle-related operations.
 
-🔗 [Live Application](http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com/)
-📝 [Swagger API Documentation](http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/swagger-ui/index.html)
+## 🔗 [Live Application](http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com/) | 📝 [Swagger API Documentation](http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/swagger-ui/index.html)
 
 ## 🌟 Features
 - 🕐 Real-time ride tracking using WebSockets
