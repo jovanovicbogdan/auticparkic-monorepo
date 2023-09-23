@@ -4,10 +4,10 @@
 
 ## TODO Backend
 
-- [x] Add Swagger
+- [x] Add Swagger UI
 - [x] Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level
 - [ ] Upon scheduling a task to send rides data, do not read every time from a database but rather from a cache (it can be simple HashMap as temporary solution)
-- [ ] Convert REST API endpoint `/api/v1/vehicles/available` to WebSocket
+- [ ] ~~Convert REST API endpoint `/api/v1/vehicles/available` to WebSocket~~
 - [ ] Convert REST API endpoint `/api/v1/vehicles/{vehicleId}` to WebSocket (check if possible since this REST endpoint will be used in the dashboard)
 - [ ] Handle case where deleting a vehicle in use
 - [ ] Handle deleting vehicles written in ride database table (db constraints)
@@ -15,9 +15,9 @@
 
 ## TODO Frontend
 
-- [ ] Add delete functionality for vehicles in /dashboard page
+- [ ] Add delete functionality for vehicles in /dashboard page once it's ready on the backend
 - [ ] Add when the ride has started and when it has ended
-- [ ] Add notifications for errors
+- [ ] Add notifications/alerts for errors
 - [ ] Add loader/spinner
 
 ## AWS Beanstalk
