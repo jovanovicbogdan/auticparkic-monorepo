@@ -7,8 +7,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
     servers = {
-        @Server(url = "http://localhost:10000", description = "Local server"),
-        @Server(url = "http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com", description = "Test server")
+        // @Server(url = "http://localhost:10000", description = "Local server"),
+        @Server(url = "http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000", description = "Test server")
     },
     info = @Info(
     contact = @Contact(
