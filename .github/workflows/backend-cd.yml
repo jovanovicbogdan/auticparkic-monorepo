@@ -1,7 +1,6 @@
 name: CD - Deploy Backend
 
 on:
-  worlflow_dispatch:
   push:
     branches:
       - master
