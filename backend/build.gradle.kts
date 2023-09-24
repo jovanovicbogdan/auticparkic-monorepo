@@ -6,7 +6,7 @@ plugins {
     `java-library`
     id("org.springframework.boot") version "3.1.0"
     id("io.spring.dependency-management") version "1.1.0"
-    id("com.google.cloud.tools.jib") version "3.3.2"
+    id("com.google.cloud.tools.jib") version "3.4.0"
 }
 
 group = "com.jovanovicbogdan"
@@ -15,7 +15,7 @@ version = "1.0.0"
 jib.to {
     val appImageName: String = findProperty("appImageName") as String? ?: "auticparkic-api"
     val appImageTag: String = findProperty("appImageTag") as String? ?: "latest"
-    image = "bogdanjovanovic/${appImageName}:${appImageTag}"
+    image = "bogdanjovanovic/${appImageName}:${appImageTag}" // bogdanjovanovic/auticparkic-api:latest
 }
 
 jib.from {
@@ -52,14 +52,12 @@ repositories {
 
 dependencies {
     val springBootStarterVersion = "3.1.4"
-//    val springIntegrationJdbcVersion = "6.1.2"
+    val springIntegrationJdbcVersion = "6.1.2"
     val flywayCoreVersion = "9.16.3"
     val javaFakerVersion = "1.0.2"
     val springdocOpenapiVersion = "2.2.0"
     val mockitoCoreVersion = "5.5.0"
-//    val junitJupiterVersion = "5.8.1"
     val testcontainersVersion = "1.17.6"
-//    val assertJCoreVersion = "3.24.2"
 
     implementation(platform("software.amazon.awssdk:bom:2.20.128"))
     implementation("software.amazon.awssdk:s3")
@@ -69,7 +67,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-web:${springBootStarterVersion}")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc:${springBootStarterVersion}")
-    implementation("org.springframework.integration:spring-integration-jdbc:${springBootStarterVersion}")
+    implementation("org.springframework.integration:spring-integration-jdbc:${springIntegrationJdbcVersion}")
     implementation("org.springframework.boot:spring-boot-starter-integration:${springBootStarterVersion}")
     implementation("org.springframework.boot:spring-boot-starter-validation:${springBootStarterVersion}")
     implementation("org.springframework.boot:spring-boot-starter-websocket:${springBootStarterVersion}")

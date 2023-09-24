@@ -46,7 +46,7 @@ management:
 
 springdoc:
   swagger-ui:
-    path: "/swagger"
+    path: "/"
   show-actuator: true
 
 aws:
