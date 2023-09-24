@@ -42,7 +42,7 @@ jobs:
       - name: Set build number
         id: build-number
         run: echo "BUILD_NUMBER=$(date '+%d.%m.%Y.%H.%M.%S')" >> $GITHUB_OUTPUT
-      - name: Build Package and Push with Gradle Jib
+      - name: Build Package, Containerize and push to Docker Hub with Gradle Jib
         run: ./gradlew build -PappImageTag=${{steps.build-number.outputs.BUILD_NUMBER}} jib --no-daemon
       - name: Update Dockerrun.aws.json api image tag with new build number
         run: |
