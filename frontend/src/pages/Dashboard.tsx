@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, ChakraProvider, Input, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  ChakraProvider,
+  Input,
+  Spinner,
+  useDisclosure,
+} from "@chakra-ui/react";
 import Vehicle, { getVehicleImageUrl } from "../models/VehicleModel.ts";
 import api, { apiForm } from "../api/api.ts";
 import {
@@ -14,6 +20,7 @@ import {
 import Vehicles from "../components/Dashboard/Vehicles.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { warningNotification } from "../services/notification.ts";
 
 type NavItemProps = {
   text: string;
@@ -80,9 +87,11 @@ export default function Dashboard() {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [vehicleImage, setVehicleImage] = useState<File>();
   const [updateVehicle, setUpdateVehicle] = useState<Vehicle>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   function getAndSetAvailableVehicles(): AbortController {
     const controller = new AbortController();
+    setLoading(true);
     api("/v1/vehicles", "get", undefined, controller.signal)
       .then((res) => {
         if (res.status !== "ok")
@@ -92,14 +101,18 @@ export default function Dashboard() {
       .then((vehicles) => setAvailableVehicles(vehicles))
       .catch(() => {
         // handle error
-      });
+      })
+      .finally(() => setLoading(false));
 
     return controller;
   }
 
   function addVehicle() {
     if (!vehicleName || !vehicleImage) {
-      alert("Proverite da li ste uneli ime i sliku vozila");
+      warningNotification(
+        "Greška",
+        "Proverite da li ste uneli ime i sliku vozila"
+      );
       return;
     }
 
@@ -107,6 +120,7 @@ export default function Dashboard() {
       vehicleName,
       isActive: true,
     };
+    setLoading(true);
     api("/v1/vehicles", "post", payload)
       .then((res) => {
         if (res.status !== "ok")
@@ -132,20 +146,23 @@ export default function Dashboard() {
       })
       .catch((error: Error) => {
         // handle error
-        alert(error.message);
-      });
+        // errorNotification("Greška", error.message);
+      })
+      .finally(() => setLoading(false));
   }
 
   function updateVehicleData(vehicleId: number, payload: any) {
     if (!payload.vehicleName) {
-      alert("Proverite da li je ime vozila uneto");
+      warningNotification("Greška", "Proverite da li je ime vozila uneto");
       return;
     }
 
+    setLoading(true);
     api(`/v1/vehicles/${vehicleId.toString()}`, "put", payload)
       .then((res) => {
         if (res.status !== "ok") {
-          alert(
+          warningNotification(
+            "Greška",
             "Došlo je do greške, proverite da li se vozilo trenutno koristi u vožnji"
           );
           throw new Error("Update nije uspeo");
@@ -155,7 +172,8 @@ export default function Dashboard() {
       })
       .catch(() => {
         // handle error
-      });
+      })
+      .finally(() => setLoading(false));
   }
 
   useEffect(() => {
@@ -176,6 +194,7 @@ export default function Dashboard() {
   return (
     <ChakraProvider>
       <div className="dashboard-root">
+        {loading && <Spinner />}
         <div className="dashboard-navbar">
           <h1>Autić Parkić</h1>
           <nav>
@@ -309,7 +328,9 @@ export default function Dashboard() {
                   </label>
                   <Input
                     type="text"
-                    value={vehicleName}
+                    placeholder={
+                      vehicleName[0] + vehicleName.slice(1).toLowerCase()
+                    }
                     onChange={(e) => setVehicleName(e.target.value)}
                   />
                 </div>

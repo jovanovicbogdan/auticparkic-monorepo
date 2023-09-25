@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "../../api/api.ts";
 import Vehicle, { getVehicleImageUrl } from "../../models/VehicleModel.ts";
-import Spinner from "../Spinner.tsx";
+// import Spinner from "../Spinner.tsx";
 import { AnimatePresence, motion } from "framer-motion";
+import { warningNotification } from "../../services/notification.ts";
+import { Spinner } from "@chakra-ui/react";
 
 type VehicleSelectProps = {
   setSelectedVehicleId: (vehicleId: number) => void;
@@ -69,18 +71,20 @@ export default function VehicleSelect({
         return res.data as Vehicle[];
       })
       .then((vehicles) => {
-        setLoading(false);
         const activeVehicles = vehicles.filter((vehicle) => vehicle.isActive);
         setAvailableVehicles(() => activeVehicles);
         if (activeVehicles.length === 0) {
-          alert("Svi autići su zauzeti ili su označeni kao nedostupni");
+          warningNotification(
+            "Greška",
+            "Svi autići su zauzeti ili su označeni kao nedostupni"
+          );
           setShowForm(false);
         }
       })
       .catch(() => {
         // handle error
-        setLoading(false);
-      });
+      })
+      .finally(() => setLoading(false));
 
     return controller;
   }, [setShowForm]);
@@ -103,7 +107,7 @@ export default function VehicleSelect({
           damping: 40,
         }}
       >
-        <Spinner show={loading} />
+        {loading && <Spinner />}
         {availableVehicles.map(
           (vehicle) =>
             vehicle.vehicleImageId && (

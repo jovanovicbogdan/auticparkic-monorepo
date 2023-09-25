@@ -13,7 +13,7 @@ import "./assets/sass/index.scss";
 
 library.add(faCarSide, faUserGroup, faArrowLeft);
 
-const { ToastContainer, toast } = createStandaloneToast();
+const { ToastContainer } = createStandaloneToast();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -21,11 +21,3 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <ToastContainer />
   </React.StrictMode>
 );
-
-toast({
-  title: "Nema dostupnih autića",
-  description: "Svi autići su zauzeti ili su označeni kao nedostupni",
-  status: "warning",
-  duration: 9000,
-  isClosable: true,
-});

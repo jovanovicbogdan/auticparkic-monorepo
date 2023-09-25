@@ -13,4 +13,6 @@ export default interface Ride {
   elapsedTime: number;
   price: number;
   createdAt: string;
+  startedAt?: string;
+  stoppedAt?: string;
 }

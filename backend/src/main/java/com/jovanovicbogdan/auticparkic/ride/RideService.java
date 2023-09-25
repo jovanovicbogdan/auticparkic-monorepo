@@ -142,6 +142,7 @@ public class RideService {
     ride.status = RideStatus.STOPPED;
     ride.elapsedTime = getRideElapsedTime(ride);
     ride.price = calculateRidePrice(ride.elapsedTime);
+    ride.stoppedAt = LocalDateTime.now(clock);
     final boolean isUpdated = dao.update(ride);
 
     if (!isUpdated) {

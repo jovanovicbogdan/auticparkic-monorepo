@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import Vehicle, { getVehicleImageUrl } from "../../models/VehicleModel.ts";
 import api from "../../api/api.ts";
 import { AnimatePresence, motion } from "framer-motion";
+import { Spinner } from "@chakra-ui/react";
 
 type VehicleChoicePreviewProps = {
   selectedVehicleId: number;
@@ -11,10 +12,12 @@ export default function VehicleChoicePreview({
   selectedVehicleId,
 }: VehicleChoicePreviewProps) {
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchVehicle = useCallback((vehicleId: number): AbortController => {
     const controller = new AbortController();
 
+    setLoading(true);
     api(`/v1/vehicles/${vehicleId}`, "get", undefined, controller.signal)
       .then((res) => {
         if (res.status !== "ok")
@@ -26,7 +29,8 @@ export default function VehicleChoicePreview({
       })
       .catch(() => {
         // handle error message
-      });
+      })
+      .finally(() => setLoading(false));
 
     return controller;
   }, []);
@@ -56,6 +60,7 @@ export default function VehicleChoicePreview({
           damping: 40,
         }}
       >
+        {loading && <Spinner />}
         {vehicle && (
           <div>
             <img src={getVehicleImageUrl(vehicle.vehicleId)} />

@@ -20,13 +20,13 @@ export default function ActiveRides() {
     })
   );
 
-  // function formatTime(dateTime: Date) {
-  //   const hours = dateTime.getHours().toString().padStart(2, "0");
-  //   const minutes = dateTime.getMinutes().toString().padStart(2, "0");
-  //   const seconds = dateTime.getSeconds().toString().padStart(2, "0");
-  //
-  //   return `${hours}:${minutes}:${seconds}`;
-  // }
+  function formatTime(dateTime: Date) {
+    const hours = dateTime.getHours().toString().padStart(2, "0");
+    const minutes = dateTime.getMinutes().toString().padStart(2, "0");
+    const seconds = dateTime.getSeconds().toString().padStart(2, "0");
+
+    return `${hours}:${minutes}:${seconds}`;
+  }
 
   useEffect(() => {
     stompClient.onConnect = () => {
@@ -112,12 +112,21 @@ export default function ActiveRides() {
               />
             </div>
             <div className="active-ride-stopwatch mt-3">
-              {/*
-                            <p className="text-beige font-sm">
-                Vožnja započeta u {formatTime(new Date(ride.createdAt))}
-              </p>
-
-              */}
+              {ride.status !== Status.STOPPED &&
+                ride.startedAt !== null &&
+                ride.startedAt !== undefined && (
+                  <p className="text-beige font-sm">
+                    Vožnja započeta u{" "}
+                    {new Date(ride.startedAt).toLocaleString("sr-RS")}
+                  </p>
+                )}
+              {ride.status === Status.STOPPED &&
+                ride.stoppedAt !== undefined && (
+                  <p className="text-beige font-sm">
+                    Vožnja zaustavljena u{" "}
+                    {new Date(ride.stoppedAt).toLocaleString("sr-RS")}
+                  </p>
+                )}
               <Stopwatch action={ride.status} ride={ride} />
             </div>
             {ride.status === Status.STOPPED && (

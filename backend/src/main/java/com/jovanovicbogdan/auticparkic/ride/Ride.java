@@ -12,6 +12,7 @@ public class Ride {
   public LocalDateTime startedAt;
   public LocalDateTime[] pausedAt;
   public LocalDateTime[] resumedAt;
+  public LocalDateTime stoppedAt;
   public LocalDateTime finishedAt;
   public double price;
   public Long vehicleId;
@@ -21,7 +22,8 @@ public class Ride {
 
   public Ride(final Long rideId, final RideStatus status, final long elapsedTime,
       final LocalDateTime createdAt, final LocalDateTime startedAt, final LocalDateTime[] pausedAt,
-      final LocalDateTime[] resumedAt, final LocalDateTime finishedAt, final double price,
+      final LocalDateTime[] resumedAt, final LocalDateTime stoppedAt,
+      final LocalDateTime finishedAt, final double price,
       final Long vehicleId) {
     this.rideId = rideId;
     this.status = status;
@@ -30,6 +32,7 @@ public class Ride {
     this.startedAt = startedAt;
     this.pausedAt = pausedAt;
     this.resumedAt = resumedAt;
+    this.stoppedAt = stoppedAt;
     this.finishedAt = finishedAt;
     this.price = price;
     this.vehicleId = vehicleId;

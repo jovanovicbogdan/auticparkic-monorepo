@@ -4,6 +4,7 @@ import VehicleChoicePreview from "./VehicleChoicePreview.tsx";
 import Ride from "../../models/RideModel.ts";
 import { motion } from "framer-motion";
 import { Client } from "@stomp/stompjs";
+import { warningNotification } from "../../services/notification.ts";
 
 type PageDisplayProps = {
   step: number;
@@ -50,7 +51,7 @@ export default function Form(props: FormProps) {
 
   function nextStep() {
     if (selectedVehicleId === -1) {
-      alert("Molimo izaberite autić");
+      warningNotification("Greška", "Molimo izaberite autić");
       return;
     }
 

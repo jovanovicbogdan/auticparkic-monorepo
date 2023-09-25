@@ -1,5 +1,7 @@
+import { useState } from "react";
 import api from "../../api/api.ts";
 import Vehicle, { getVehicleImageUrl } from "../../models/VehicleModel.ts";
+import { Spinner } from "@chakra-ui/react";
 
 type VehiclesProps = {
   availableVehicles: Vehicle[];
@@ -18,7 +20,10 @@ export default function Vehicles({
   onOpenAddVehicleDrawer,
   onOpenUpdateVehicleDrawer,
 }: VehiclesProps) {
+  const [loading, setLoading] = useState<boolean>(false);
+
   function deleteVehicle(vehicleId: number) {
+    setLoading(true);
     api(`/v1/vehicles/${vehicleId}`, "delete")
       .then((res) => {
         if (res.status !== "ok") throw new Error("Brisanje vozila nije uspelo");
@@ -29,10 +34,12 @@ export default function Vehicles({
       })
       .catch(() => {
         // handle error
-      });
+      })
+      .finally(() => setLoading(false));
   }
 
   function fetchVehicle(vehicleId: number) {
+    setLoading(true);
     api(`/v1/vehicles/${vehicleId}`, "get")
       .then((res) => {
         if (res.status !== "ok")
@@ -44,7 +51,8 @@ export default function Vehicles({
       })
       .catch(() => {
         // handle error message
-      });
+      })
+      .finally(() => setLoading(false));
   }
 
   return (
@@ -58,6 +66,7 @@ export default function Vehicles({
           Dodaj Vozilo
         </button>
       </div>
+      {loading && <Spinner />}
       <table>
         <thead>
           <tr className="font-sm">

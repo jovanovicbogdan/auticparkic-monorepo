@@ -38,9 +38,14 @@ public class RideRowMapper implements RowMapper<Ride> {
           }
         }).orElse(null);
 
+    final LocalDateTime stoppedAt = Optional.ofNullable(rs.getString("stopped_at"))
+        .map(str -> LocalDateTime.parse(str, Constants.FORMATTER))
+        .orElse(null);
+
     final LocalDateTime finishedAt = Optional.ofNullable(rs.getString("finished_at"))
         .map(str -> LocalDateTime.parse(str, Constants.FORMATTER))
         .orElse(null);
+
     return new Ride(
         rs.getLong("ride_id"),
         RideStatus.valueOf(rs.getString("status")),
@@ -49,6 +54,7 @@ public class RideRowMapper implements RowMapper<Ride> {
         startedAt,
         pausedAt,
         resumedAt,
+        stoppedAt,
         finishedAt,
         rs.getDouble("price"),
         rs.getLong("vehicle_id")
