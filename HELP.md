@@ -12,6 +12,7 @@
 ## TODO Frontend
 
 - [ ] Add delete functionality for vehicles in /dashboard page once it's ready on the backend
+- [ ] Turn off React Strict Mode
 - [x] ~~Add when the ride has started and when it has ended~~
 - [x] ~~Add notifications/toasts for errors~~
 - [x] ~~Add loader/spinner~~
