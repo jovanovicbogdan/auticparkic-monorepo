@@ -8,11 +8,14 @@
 - [ ] Handle case where deleting a vehicle in use
 - [ ] Handle deleting vehicles written in ride database table (db constraints)
 - [ ] Add deleteObject functionality for s3 service
+- [ ] Enable S3 in production
 
 ## TODO Frontend
 
 - [ ] Add delete functionality for vehicles in /dashboard page once it's ready on the backend
 - [ ] Turn off React Strict Mode
+- [x] ~~Fix Dashboard page, not loading vehicle status badge~~
+- [x] ~~Handle 4xx pages~~
 - [x] ~~Add when the ride has started and when it has ended~~
 - [x] ~~Add notifications/toasts for errors~~
 - [x] ~~Add loader/spinner~~

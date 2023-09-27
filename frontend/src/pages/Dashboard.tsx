@@ -249,7 +249,6 @@ export default function Dashboard() {
                     </label>
                     <Input
                       type="text"
-                      value={vehicleName}
                       onChange={(e) => setVehicleName(e.target.value)}
                     />
                   </div>

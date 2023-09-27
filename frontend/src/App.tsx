@@ -16,9 +16,18 @@ const router = createBrowserRouter(
       <Route index element={<Home />}></Route>
       <Route path="login" element={<Login />}></Route>
       <Route path="dashboard" element={<Dashboard />}></Route>
+      <Route path="*" element={<PageNotFound />}></Route>
     </Route>
   )
 );
+
+function PageNotFound() {
+  return (
+    <div>
+      <h1>Stranica nije pronađena 🚫</h1>
+    </div>
+  );
+}
 
 function App() {
   return (
