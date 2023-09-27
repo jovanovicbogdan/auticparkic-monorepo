@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../../api/api.ts";
 import Vehicle, { getVehicleImageUrl } from "../../models/VehicleModel.ts";
-import { Spinner } from "@chakra-ui/react";
+import { Badge, Spinner } from "@chakra-ui/react";
 
 type VehiclesProps = {
   availableVehicles: Vehicle[];
@@ -91,13 +91,12 @@ export default function Vehicles({
                 {vehicle.name[0] + vehicle.name.slice(1).toLowerCase()}
               </td>
               <td>
-                <span
-                  className={`vehicle-status vehicle-status-${
-                    vehicle.isActive ? "active" : "inactive"
-                  } text-white br-md`}
+                <Badge
+                  variant="solid"
+                  colorScheme={`${vehicle.isActive ? "blue" : "red"}`}
                 >
                   {vehicle.isActive ? "DOSTUPNO" : "NEDOSTUPNO"}
-                </span>
+                </Badge>
               </td>
               <td>{new Date(vehicle.createdAt).toLocaleDateString()}</td>
               <td>
