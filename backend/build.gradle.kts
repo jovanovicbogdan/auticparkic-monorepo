@@ -61,6 +61,7 @@ dependencies {
 
     implementation(platform("software.amazon.awssdk:bom:2.20.128"))
     implementation("software.amazon.awssdk:s3")
+    implementation("com.amazonaws.secretsmanager:aws-secretsmanager-jdbc:1.0.12")
 
     implementation("commons-io:commons-io:2.13.0")
 

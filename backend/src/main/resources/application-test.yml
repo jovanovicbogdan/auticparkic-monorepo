@@ -3,4 +3,12 @@
 
 spring:
   datasource:
-    jdbc-url: "jdbc:postgresql://postgres:5432/autic_parkic" # postgres is the name of the container
+    jdbc-url: "jdbc:secretsmanager:postgresql//awseb-e-hpqaxacpv6-stack-awsebrdsdatabase-dafkdvlt0qvd.cncflnnvajsx.eu-central-1.rds.amazonaws.com:5432/autic_parkic"
+    username: test/auticparkic/postgresql
+    driver-class-name: com.amazonaws.secretsmanager.sql.AWSSecretsManagerPostgreSQLDriver
+
+aws:
+  s3:
+    mock: false
+    buckets:
+      vehicles: "auticparkic-vehicles-test"
