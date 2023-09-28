@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -30,7 +31,7 @@ public class RideService {
   private final SimpMessagingTemplate simpMessagingTemplate;
   private final WebSocketEventListenerComponent webSocketEventListenerComponent;
   private final Clock clock;
-  private static List<Ride> unfinishedRides = Collections.synchronizedList(new ArrayList<>());
+  private static final List<Ride> unfinishedRides = Collections.synchronizedList(new ArrayList<>());
 
   public RideService(final RideDTOMapper rideDTOMapper, final RideJdbcDataAccessService dao,
       final VehicleJdbcDataAccessService vehicleJdbcDao, final CustomTaskScheduler taskScheduler,
@@ -62,7 +63,7 @@ public class RideService {
     final Ride createdRide = dao.create(ride);
     log.info("Created ride: {}", createdRide);
 
-    setUnfinishedRides();
+    unfinishedRides.add(createdRide);
 
     return getUnfinishedRidesWithCalculatedElapsedTime();
   }
@@ -74,6 +75,9 @@ public class RideService {
     if (!isCreated(ride) && !isPaused(ride)) {
       throw new BadRequestException("Ride can be started only if it's created or paused");
     }
+
+    final int index = unfinishedRides.stream().filter(r -> Objects.equals(r.rideId, rideId))
+        .findFirst().map(unfinishedRides::indexOf).orElse(-1);
 
     ride.status = RideStatus.RUNNING;
 
@@ -99,7 +103,9 @@ public class RideService {
 
     log.info("Ride with id '{}' started", rideId);
 
-    setUnfinishedRides();
+    if (index != -1) {
+      unfinishedRides.set(index, ride);
+    }
 
     scheduleStreamRidesDataTaskIfEligible();
   }
@@ -112,6 +118,9 @@ public class RideService {
       throw new BadRequestException(
           "Ride can be paused only if it's previously started or resumed");
     }
+
+    final int index = unfinishedRides.stream().filter(r -> Objects.equals(r.rideId, rideId))
+        .findFirst().map(unfinishedRides::indexOf).orElse(-1);
 
     ride.status = RideStatus.PAUSED;
     ride.price = calculateRidePrice(ride.elapsedTime);
@@ -135,7 +144,10 @@ public class RideService {
 
     log.info("Ride with id '{}' paused", rideId);
 
-    setUnfinishedRides();
+    if (index != -1) {
+      unfinishedRides.set(index, ride);
+      log.debug("Ride with id '{}' updated in unfinishedRides list", rideId);
+    }
 
     cancelStreamRidesDataTask();
 
@@ -150,6 +162,9 @@ public class RideService {
       throw new BadRequestException("Ride is not active");
     }
 
+    final int index = unfinishedRides.stream().filter(r -> Objects.equals(r.rideId, rideId))
+        .findFirst().map(unfinishedRides::indexOf).orElse(-1);
+
     ride.status = RideStatus.STOPPED;
     ride.elapsedTime = getRideElapsedTime(ride);
     ride.price = calculateRidePrice(ride.elapsedTime);
@@ -162,7 +177,10 @@ public class RideService {
 
     log.info("Ride with id '{}' stopped", rideId);
 
-    setUnfinishedRides();
+    if (index != -1) {
+      unfinishedRides.set(index, ride);
+      log.debug("Ride with id '{}' updated in unfinishedRides list", rideId);
+    }
 
     cancelStreamRidesDataTask();
 
@@ -186,9 +204,9 @@ public class RideService {
       throw new RuntimeException("Failed to finish ride");
     }
 
-    log.info("Ride with id '{}' finished", rideId);
+    unfinishedRides.removeIf(r -> Objects.equals(r.rideId, ride.rideId));
 
-    setUnfinishedRides();
+    log.info("Ride with id '{}' finished", rideId);
 
     return getUnfinishedRidesWithCalculatedElapsedTime();
   }
@@ -209,7 +227,7 @@ public class RideService {
     log.info("Finished and restarted ride with id '{}', and created a new one with id {}", rideId,
         restartedRide.rideId);
 
-    setUnfinishedRides();
+    unfinishedRides.add(restartedRide);
 
     scheduleStreamRidesDataTaskIfEligible();
 
@@ -217,13 +235,15 @@ public class RideService {
   }
 
   public List<RideDTO> getUnfinishedRidesWithCalculatedElapsedTime() {
-    return unfinishedRides.stream()
-        .map(ride -> {
-          if (!isStopped(ride)) {
-            ride.elapsedTime = getRideElapsedTime(ride);
-          }
-          return rideDTOMapper.apply(ride);
-        }).toList();
+    synchronized (unfinishedRides) {
+      return unfinishedRides.stream()
+          .map(ride -> {
+            if (!isStopped(ride)) {
+              ride.elapsedTime = getRideElapsedTime(ride);
+            }
+            return rideDTOMapper.apply(ride);
+          }).toList();
+    }
   }
 
   public List<RideDTO> scheduleStreamRidesDataTaskIfEligible() {
@@ -240,7 +260,9 @@ public class RideService {
       }
     }
 
-    setUnfinishedRides();
+    if (unfinishedRides.isEmpty()) {
+      setUnfinishedRides();
+    }
 
     return getUnfinishedRidesWithCalculatedElapsedTime();
   }
@@ -251,11 +273,11 @@ public class RideService {
     }
   }
 
- private void setUnfinishedRides() {
-   unfinishedRides = dao.findByStatuses(
-       List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
-           RideStatus.STOPPED.name()));
- }
+  private void setUnfinishedRides() {
+    unfinishedRides.addAll(dao.findByStatuses(
+        List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
+            RideStatus.STOPPED.name())));
+  }
 
   private boolean shouldScheduleStreamRidesDataTask() {
     return areThereAnyRunningRides() && webSocketEventListenerComponent.hasActiveSessions();
