@@ -6,6 +6,7 @@ import { getVehicleImageUrl } from "../../models/VehicleModel.ts";
 import { AnimatePresence } from "framer-motion";
 import { Client } from "@stomp/stompjs";
 import { WsConfig } from "../../config/ws.config.ts";
+import { convertUTCDateToLocalDate } from "../../services/helpers.ts";
 
 export default function ActiveRides() {
   // const [loading, setLoading] = useState<boolean>(false);
@@ -20,13 +21,13 @@ export default function ActiveRides() {
     })
   );
 
-  function formatTime(dateTime: Date) {
-    const hours = dateTime.getHours().toString().padStart(2, "0");
-    const minutes = dateTime.getMinutes().toString().padStart(2, "0");
-    const seconds = dateTime.getSeconds().toString().padStart(2, "0");
-
-    return `${hours}:${minutes}:${seconds}`;
-  }
+  // function formatTime(dateTime: Date) {
+  //   const hours = dateTime.getHours().toString().padStart(2, "0");
+  //   const minutes = dateTime.getMinutes().toString().padStart(2, "0");
+  //   const seconds = dateTime.getSeconds().toString().padStart(2, "0");
+  //
+  //   return `${hours}:${minutes}:${seconds}`;
+  // }
 
   useEffect(() => {
     stompClient.onConnect = () => {
@@ -117,14 +118,14 @@ export default function ActiveRides() {
                 ride.startedAt !== undefined && (
                   <p className="text-beige font-sm">
                     Vožnja započeta u{" "}
-                    {new Date(ride.startedAt).toLocaleString("sr-RS")}
+                    {convertUTCDateToLocalDate(new Date(ride.startedAt))}
                   </p>
                 )}
               {ride.status === Status.STOPPED &&
                 ride.stoppedAt !== undefined && (
                   <p className="text-beige font-sm">
                     Vožnja zaustavljena u{" "}
-                    {new Date(ride.stoppedAt).toLocaleString("sr-RS")}
+                    {convertUTCDateToLocalDate(new Date(ride.stoppedAt))}
                   </p>
                 )}
               <Stopwatch action={ride.status} ride={ride} />
