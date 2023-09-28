@@ -40,7 +40,7 @@ export FORMAT=ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports}
 - [ ] Handle case where deleting a vehicle in use
 - [ ] Handle deleting vehicles written in ride database table (db constraints)
 - [ ] Add deleteObject functionality for s3 service
-- [ ] Enable S3 in production
+- [x] ~~Turn off mocking S3 in test environment~~
 
 ## TODO Frontend
 

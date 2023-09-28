@@ -54,4 +54,4 @@ aws:
   s3:
     mock: true
     buckets:
-      vehicles: "auticparkic-vehicles-test"
+      vehicles: "auticparkic-vehicles"
