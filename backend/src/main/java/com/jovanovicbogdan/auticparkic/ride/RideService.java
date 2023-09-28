@@ -9,6 +9,7 @@ import com.jovanovicbogdan.auticparkic.vehicle.VehicleJdbcDataAccessService;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ public class RideService {
   private final SimpMessagingTemplate simpMessagingTemplate;
   private final WebSocketEventListenerComponent webSocketEventListenerComponent;
   private final Clock clock;
+  private List<Ride> unfinishedRides = new ArrayList<>();
 
   public RideService(final RideDTOMapper rideDTOMapper, final RideJdbcDataAccessService dao,
       final VehicleJdbcDataAccessService vehicleJdbcDao, final CustomTaskScheduler taskScheduler,
@@ -59,7 +61,9 @@ public class RideService {
     final Ride createdRide = dao.create(ride);
     log.info("Created ride: {}", createdRide);
 
-    return getUnfinishedRides();
+    setUnfinishedRides();
+
+    return getUnfinishedRidesWithCalculatedElapsedTime();
   }
 
   @Transactional
@@ -93,6 +97,9 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' started", rideId);
+
+    setUnfinishedRides();
+
     scheduleStreamRidesDataTaskIfEligible();
   }
 
@@ -126,9 +133,12 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' paused", rideId);
+
+    setUnfinishedRides();
+
     cancelStreamRidesDataTask();
 
-    return getUnfinishedRides();
+    return getUnfinishedRidesWithCalculatedElapsedTime();
   }
 
   @Transactional
@@ -150,9 +160,12 @@ public class RideService {
     }
 
     log.info("Ride with id '{}' stopped", rideId);
+
+    setUnfinishedRides();
+
     cancelStreamRidesDataTask();
 
-    return getUnfinishedRides();
+    return getUnfinishedRidesWithCalculatedElapsedTime();
   }
 
   @Transactional
@@ -174,12 +187,14 @@ public class RideService {
 
     log.info("Ride with id '{}' finished", rideId);
 
-    return getUnfinishedRides();
+    setUnfinishedRides();
+
+    return getUnfinishedRidesWithCalculatedElapsedTime();
   }
 
   @Transactional
   public List<RideDTO> restartRide(final long rideId) {
-    final long vehicleId = getUnfinishedRides()
+    final long vehicleId = getUnfinishedRidesWithCalculatedElapsedTime()
         .stream()
         .filter(ride -> ride.rideId() == rideId)
         .findFirst()
@@ -193,19 +208,17 @@ public class RideService {
     log.info("Finished and restarted ride with id '{}', and created a new one with id {}", rideId,
         restartedRide.rideId);
 
+    setUnfinishedRides();
+
     scheduleStreamRidesDataTaskIfEligible();
 
-    return getUnfinishedRides();
+    return getUnfinishedRidesWithCalculatedElapsedTime();
   }
 
-  public List<RideDTO> getUnfinishedRides() {
-    final List<Ride> activeRides = dao.findByStatuses(
-        List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
-            RideStatus.STOPPED.name()));
-
-    return activeRides.stream()
+  public List<RideDTO> getUnfinishedRidesWithCalculatedElapsedTime() {
+    return unfinishedRides.stream()
         .map(ride -> {
-          if (ride.status != RideStatus.STOPPED) {
+          if (!isStopped(ride)) {
             ride.elapsedTime = getRideElapsedTime(ride);
           }
           return rideDTOMapper.apply(ride);
@@ -226,7 +239,9 @@ public class RideService {
       }
     }
 
-    return getUnfinishedRides();
+    setUnfinishedRides();
+
+    return getUnfinishedRidesWithCalculatedElapsedTime();
   }
 
   public void cancelStreamRidesDataTask() {
@@ -234,6 +249,12 @@ public class RideService {
       taskScheduler.cancelScheduledTask(StreamRidesDataTask.TASK_ID);
     }
   }
+
+ private void setUnfinishedRides() {
+   unfinishedRides = dao.findByStatuses(
+       List.of(RideStatus.CREATED.name(), RideStatus.RUNNING.name(), RideStatus.PAUSED.name(),
+           RideStatus.STOPPED.name()));
+ }
 
   private boolean shouldScheduleStreamRidesDataTask() {
     return areThereAnyRunningRides() && webSocketEventListenerComponent.hasActiveSessions();
@@ -245,11 +266,11 @@ public class RideService {
   }
 
   private long getRideElapsedTime(final Ride ride) {
-    if (ride.status == RideStatus.FINISHED) {
+    if (isFinished(ride)) {
       throw new BadRequestException("Ride is not active");
     }
 
-    if (ride.status == RideStatus.CREATED) {
+    if (isCreated(ride)) {
       return 0L;
     }
 

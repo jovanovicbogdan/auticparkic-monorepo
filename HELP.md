@@ -1,25 +1,3 @@
-## TODO Backend
-
-- [x] ~~Add Swagger UI~~
-- [x] ~~Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level~~
-- [ ] Upon scheduling a task to send rides data, do not read every time from a database but rather from a cache (it can be simple HashMap as temporary solution)
-- [ ] ~~Convert REST API endpoint `/api/v1/vehicles/available` to WebSocket~~ - Won't Do
-- [ ] Convert REST API endpoint `/api/v1/vehicles/{vehicleId}` to WebSocket (check if possible since this REST endpoint will be used in the dashboard)
-- [ ] Handle case where deleting a vehicle in use
-- [ ] Handle deleting vehicles written in ride database table (db constraints)
-- [ ] Add deleteObject functionality for s3 service
-- [ ] Enable S3 in production
-
-## TODO Frontend
-
-- [ ] Add delete functionality for vehicles in /dashboard page once it's ready on the backend
-- [ ] Turn off React Strict Mode
-- [x] ~~Fix Dashboard page, not loading vehicle status badge~~
-- [x] ~~Handle 4xx pages~~
-- [x] ~~Add when the ride has started and when it has ended~~
-- [x] ~~Add notifications/toasts for errors~~
-- [x] ~~Add loader/spinner~~
-
 ## AWS Beanstalk
 
 - We need `psql` to connect to the database, so create docker container with `psql` installed
@@ -51,3 +29,25 @@ docker push bogdanjovanovic/auticparkic-frontend:latest
 ```shell
 export FORMAT=ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports}}\nCOMMAND\t{{.Command}}\nCREATED\t{{.CreatedAt}}\nSTATUS\t{{.Status}}\n
 ```
+
+## TODO Backend
+
+- [x] ~~Add Swagger UI~~
+- [x] ~~Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level~~
+- [x] ~~Upon scheduling a task to send rides data, do not read every time from a database but rather from a cache (it can be simple List as temporary solution, mind the memory!)~~
+- [ ] ~~Convert REST API endpoint `/api/v1/vehicles/available` to WebSocket~~ - Won't Do
+- [ ] Convert REST API endpoint `/api/v1/vehicles/{vehicleId}` to WebSocket (check if possible since this REST endpoint will be used in the dashboard)
+- [ ] Handle case where deleting a vehicle in use
+- [ ] Handle deleting vehicles written in ride database table (db constraints)
+- [ ] Add deleteObject functionality for s3 service
+- [ ] Enable S3 in production
+
+## TODO Frontend
+
+- [ ] Add delete functionality for vehicles in /dashboard page once it's ready on the backend
+- [x] ~~Turn off React Strict Mode~~ - Won't Do (AbortController is used to cancel fetch requests on unmount)
+- [x] ~~Fix Dashboard page, not loading vehicle status badge~~
+- [x] ~~Handle 404 page in React Router~~
+- [x] ~~Add when the ride has started and when it has ended~~
+- [x] ~~Add notifications/toasts for errors~~
+- [x] ~~Add loader/spinner~~

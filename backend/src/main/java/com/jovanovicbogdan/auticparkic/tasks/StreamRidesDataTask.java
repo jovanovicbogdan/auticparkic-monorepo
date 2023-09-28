@@ -30,7 +30,7 @@ public class StreamRidesDataTask implements Runnable {
   @Override
   public void run() {
     if (webSocketEventListenerComponent.hasActiveSessions()) {
-      final List<RideDTO> rides = service.getUnfinishedRides();
+      final List<RideDTO> rides = service.getUnfinishedRidesWithCalculatedElapsedTime();
       log.debug("Sending rides {} to a topic {}", rides, Constants.WEBSOCKET_BROKER_PUBLIC);
       simpMessagingTemplate.convertAndSend(Constants.WEBSOCKET_BROKER_PUBLIC, rides);
     } else {
