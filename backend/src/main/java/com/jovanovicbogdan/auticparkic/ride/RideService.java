@@ -10,6 +10,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public class RideService {
   private final SimpMessagingTemplate simpMessagingTemplate;
   private final WebSocketEventListenerComponent webSocketEventListenerComponent;
   private final Clock clock;
-  private List<Ride> unfinishedRides = new ArrayList<>();
+  private static List<Ride> unfinishedRides = Collections.synchronizedList(new ArrayList<>());
 
   public RideService(final RideDTOMapper rideDTOMapper, final RideJdbcDataAccessService dao,
       final VehicleJdbcDataAccessService vehicleJdbcDao, final CustomTaskScheduler taskScheduler,
