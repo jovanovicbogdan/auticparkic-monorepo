@@ -335,9 +335,9 @@ public class RideService {
     final double minutes = seconds > 10
         ? elapsedTimeCalculated.get("minutes") + 1
         : elapsedTimeCalculated.get("minutes");
-    final double hours = elapsedTimeCalculated.get("hours");
+    final double hoursInMinutes = elapsedTimeCalculated.get("hours") * 60;
 
-    return pricePerMinute * minutes * (hours * 60);
+    return pricePerMinute * (minutes + hoursInMinutes);
   }
 
   private Map<String, Long> convertSecondsToTimeComponents(final long elapsedTime) {

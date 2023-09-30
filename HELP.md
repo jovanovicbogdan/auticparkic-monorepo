@@ -41,6 +41,9 @@ export FORMAT=ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports}
 - [ ] Handle deleting vehicles written in ride database table (db constraints)
 - [ ] Add deleteObject functionality for s3 service
 - [x] ~~Turn off mocking S3 in test environment~~
+- [ ] Cover all services with unit tests
+- [ ] Cover all controllers with integration tests
+- [x] ~~Fix ride price calculator (it's not working properly when incorporating hours in calculation)~~
 
 ## TODO Frontend
 
