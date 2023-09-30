@@ -1,18 +1,33 @@
-## AWS Beanstalk
+## How to Run Locally
+- Clone the repo
+- Run `docker-compose up -d` to start local PostgreSQL database on port 5432 
+- Create `autic_parkic` database
+- Run `./gradlew bootRun` in `backend` directory to start the backend on port 10000
+- Run `npm install` in `frontend` directory to install dependencies
+- Run `npm start:dev` in `frontend` directory to start the frontend on port 3000
 
-- We need `psql` to connect to the database, so create docker container with `psql` installed
+## AWS Beanstalk Environment Configuration
+
+- Connect to EC2 instance via SSH. Assuming key pair is already created, run:
+```shell
+ssh -i /path/to/keypair.pem ec2-user@EC2_INSTANCE_PUBLIC_IP
+```
+
+- We need `psql` to connect to the database, so create ephemeral docker container:
 
 ```shell
 docker run --rm -it postgres:alpine bash
 ```
 
-- To create database in RDS first connect to the database using `psql`
+- Connect to RDS database via `psql`:
 
 ```shell
 psql -U postgres -d postgres -h awseb-e-hpqaxacpv6-stack-awsebrdsdatabase-dafkdvlt0qvd.cncflnnvajsx.eu-central-1.rds.amazonaws.com
 ```
 
-## Build Frontend Docker Image
+## Build Frontend Docker Image (for AWS Beanstalk)
+
+- **Note**: Frontend won't be deployed to AWS Beanstalk it's used only for testing the integration between frontend and backend
 
 ```shell
 docker build --no-cache --build-arg="API_BASE_URL=http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com/api" --build-arg="WS_BASE_URL=ws://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com/ws" -t bogdanjovanovic/auticparkic-frontend .
@@ -24,25 +39,17 @@ docker build --no-cache --build-arg="API_BASE_URL=http://auticparkic-api-test.eb
 docker push bogdanjovanovic/auticparkic-frontend:latest
 ```
 
-### Docker Format
-
-```shell
-export FORMAT=ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports}}\nCOMMAND\t{{.Command}}\nCREATED\t{{.CreatedAt}}\nSTATUS\t{{.Status}}\n
-```
-
 ## TODO Backend
 
 - [x] ~~Add Swagger UI~~
 - [x] ~~Add logging - for controllers use INFO, for services use INFO, and for repositories use DEBUG level~~
 - [x] ~~Upon scheduling a task to send rides data, do not read every time from a database but rather from a cache (it can be simple List as temporary solution, mind the memory!)~~
 - [ ] ~~Convert REST API endpoint `/api/v1/vehicles/available` to WebSocket~~ - Won't Do
-- [ ] Convert REST API endpoint `/api/v1/vehicles/{vehicleId}` to WebSocket (check if possible since this REST endpoint will be used in the dashboard)
-- [ ] Handle case where deleting a vehicle in use
+- [ ] ~~Convert REST API endpoint `/api/v1/vehicles/{vehicleId}` to WebSocket (check if possible since this REST endpoint will be used in the dashboard)~~ - Won't Do
+- [ ] Handle case when deleting a vehicle in use
 - [ ] Handle deleting vehicles written in ride database table (db constraints)
 - [ ] Add deleteObject functionality for s3 service
 - [x] ~~Turn off mocking S3 in test environment~~
-- [ ] Cover all services with unit tests
-- [ ] Cover all controllers with integration tests
 - [x] ~~Fix ride price calculator (it's not working properly when incorporating hours in calculation)~~
 
 ## TODO Frontend
