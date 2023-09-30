@@ -16,39 +16,6 @@ The application must ensure real-time sync with multiple client instances, displ
 - React with TypeScript for frontend development
 - Package by Feature for project structure
 
-## 📚 Backend Dependencies
-
-### Core Libraries:
-- **AWS SDK**:
-    - `software.amazon.awssdk:bom:2.20.128`
-    - `software.amazon.awssdk:s3`
-    - `com.amazonaws.secretsmanager:aws-secretsmanager-jdbc:1.0.12`
-- **Commons IO**: `commons-io:commons-io:2.13.0`
-- **PostgreSQL Runtime**: `org.postgresql:postgresql`
-
-### Spring Boot & Integration:
-- **Web Starter**: `org.springframework.boot:spring-boot-starter-web:3.1.4`
-- **Data JDBC**: `org.springframework.boot:spring-boot-starter-data-jdbc:3.1.4`
-- **Integration JDBC**: `org.springframework.integration:spring-integration-jdbc:6.1.2`
-- **General Integration**: `org.springframework.boot:spring-boot-starter-integration:3.1.4`
-- **Validation**: `org.springframework.boot:spring-boot-starter-validation:3.1.4`
-- **WebSocket**: `org.springframework.boot:spring-boot-starter-websocket:3.1.4`
-- **Actuator**: `org.springframework.boot:spring-boot-starter-actuator:3.1.4`
-
-### Miscellaneous Libraries:
-- **Flyway Core**: `org.flywaydb:flyway-core:9.16.3`
-- **JavaFaker**: `com.github.javafaker:javafaker:1.0.2`
-- **SpringDoc OpenAPI UI**: `org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0`
-
-### Testing Libraries:
-- **Spring Boot Test Starter**: `org.springframework.boot:spring-boot-starter-test:3.1.4`
-- **Mockito Core**: `org.mockito:mockito-core:5.5.0`
-- **Testcontainers**:
-    - `org.testcontainers:testcontainers:1.17.6`
-    - `org.testcontainers:postgresql:1.17.6`
-    - `org.testcontainers:junit-jupiter`
-- **AssertJ Core**: `org.assertj:assertj-core`
-
 ## Application Workflow
 
 Users can register a vehicle, which has a distinct name in the database and an associated image 
