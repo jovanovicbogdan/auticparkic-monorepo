@@ -12,8 +12,6 @@ spring:
     driver-class-name: org.postgresql.Driver
   main:
     web-application-type: servlet
-  #  profiles:
-#    active: "dev" # can be overridden through env variable: SPRING_PROFILES_ACTIVE=dev
   servlet:
     multipart:
       max-file-size: "10MB"
@@ -34,7 +32,7 @@ logging:
       springframework:
         jdbc: debug
 
-# spring boot actuator
+# spring boot actuator configuration
 management:
   server:
       port: 10000

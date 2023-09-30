@@ -1,33 +1,74 @@
 # 🚗 Autić Parkić Application
 
-This application handles real-time ride tracking, allowing users to stream elapsed time for rides and manage vehicle-related operations.
+The application must ensure real-time sync with multiple client instances, displaying consistent elapsed time for rides in RUNNING status across all clients. This demands a real-time communication mechanism between the server and all connected clients to maintain a consistent state.
 
-## 🔗 [Live Application](http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com/) | 📝 [Swagger API Documentation](http://auticparkic-api-test.eba-jtrhurmp.eu-central-1.elasticbeanstalk.com:10000/swagger-ui/index.html)
+## 🔗 [Live Application](https://auticparkic.bogdanjovanovic.dev/) | 📝 [Swagger API Documentation](https://auticparkic-api.bogdanjovanovic.dev/)
 
-## 🌟 Features
-- 🕐 Real-time ride tracking using WebSockets
-- 🚀 Efficient ride time calculation leveraging system memory caching
-- 🚗 Comprehensive vehicle management - from creation to image upload
-- 📜 High-quality documentation with OpenAPI specification
+## 🛠️ Tech Stack
 
-## 💾 Backend Technologies & Dependencies
-- **Java Spring Boot**: A robust backend framework chosen for its mature ecosystem, efficient performance, and vast enterprise features.
-- **PostgreSQL**: Our go-to relational database, chosen for its reliable locking mechanisms.
-- **AWS S3**: For secure and scalable file storage.
+- Java 17
+- Spring Boot 3
+- WebSockets for real-time communication
+- PostgreSQL 15.4
+- Flyway for seamless database migrations
+- Docker for containerization and deployment
+- AWS for cloud-based infrastructure
+- React with TypeScript for frontend development
+- Package by Feature for project structure
 
-### Major Dependencies:
-- `spring-boot-starter-web`: For creating web applications.
-- `spring-boot-starter-data-jdbc`: To connect with relational databases.
-- `spring-boot-starter-websocket`: For handling WebSocket connections.
-- `springdoc-openapi-starter-webmvc-ui`: For OpenAPI documentation.
-- `testcontainers`: For integration testing with real containers.
+## 📚 Backend Dependencies
 
-## 🔄 CI/CD
-- **GitHub Actions**: A powerful CI/CD tool ensuring consistent builds and deployments.
+### Core Libraries:
+- **AWS SDK**:
+    - `software.amazon.awssdk:bom:2.20.128`
+    - `software.amazon.awssdk:s3`
+    - `com.amazonaws.secretsmanager:aws-secretsmanager-jdbc:1.0.12`
+- **Commons IO**: `commons-io:commons-io:2.13.0`
+- **PostgreSQL Runtime**: `org.postgresql:postgresql`
 
-## 🖥️ Frontend Technologies
-- **React.js with TypeScript**: Chosen for the complexity of the UI required on the client-side, aiding in maintaining a dynamic state.
+### Spring Boot & Integration:
+- **Web Starter**: `org.springframework.boot:spring-boot-starter-web:3.1.4`
+- **Data JDBC**: `org.springframework.boot:spring-boot-starter-data-jdbc:3.1.4`
+- **Integration JDBC**: `org.springframework.integration:spring-integration-jdbc:6.1.2`
+- **General Integration**: `org.springframework.boot:spring-boot-starter-integration:3.1.4`
+- **Validation**: `org.springframework.boot:spring-boot-starter-validation:3.1.4`
+- **WebSocket**: `org.springframework.boot:spring-boot-starter-websocket:3.1.4`
+- **Actuator**: `org.springframework.boot:spring-boot-starter-actuator:3.1.4`
 
-## ⏳ Real-Time Streaming Elapsed Time
+### Miscellaneous Libraries:
+- **Flyway Core**: `org.flywaydb:flyway-core:9.16.3`
+- **JavaFaker**: `com.github.javafaker:javafaker:1.0.2`
+- **SpringDoc OpenAPI UI**: `org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0`
 
-Given the application's requirement to stream elapsed time (by publishing to a message broker) every second, we'll cache temporary `started_at`, `resumed_at`, and `paused_at` values in system memory (RAM) to bypass constant database reads. As the active rides won't exceed 20 at any given moment, leveraging extensive distributed caching solutions like Redis or memcached isn't necessary.
+### Testing Libraries:
+- **Spring Boot Test Starter**: `org.springframework.boot:spring-boot-starter-test:3.1.4`
+- **Mockito Core**: `org.mockito:mockito-core:5.5.0`
+- **Testcontainers**:
+    - `org.testcontainers:testcontainers:1.17.6`
+    - `org.testcontainers:postgresql:1.17.6`
+    - `org.testcontainers:junit-jupiter`
+- **AssertJ Core**: `org.assertj:assertj-core`
+
+## Application Workflow
+
+Users can register a vehicle, which has a distinct name in the database and an associated image 
+stored on AWS S3. Once a vehicle is registered, rides can be initiated. It's important 
+to note that a vehicle can only be engaged in a single ride at a given time. Rides transition 
+through several distinct statuses: CREATED, RUNNING, PAUSED, STOPPED, and FINISHED. Initially, 
+a ride is in the CREATED state. Once RUNNING, it can either be PAUSED or STOPPED. When a ride is 
+PAUSED, it can be resumed by returning to the RUNNING state. Conversely, a STOPPED ride offers 
+two choices: it can either restart or advance to its FINISHED state. Opting to restart concludes 
+the current ride and launches a new one using the same vehicle. Once designated as FINISHED, a 
+ride's status is fixed and unalterable. A key function is the real-time tabulation and distribution 
+of the elapsed ride time once it's RUNNING. This time calculation disregards any PAUSED intervals. 
+To facilitate this, the database stores arrays of started_at and paused_at timestamps. The computed 
+elapsed time is then shared in real-time to all connected clients using the STOMP WebSocket 
+protocol. Considering the application's need to relay elapsed time updates every second, ongoing 
+rides are temporarily cached in system memory (RAM) using Collections.synchronizedList. This 
+strategy helps avoid recurrent database queries. Given the cap of 20 active rides at any 
+instance, there's no compelling reason to employ comprehensive distributed caching systems like 
+Redis or memcached.
+
+## License
+
+[MIT License](https://choosealicense.com/licenses/mit/)
