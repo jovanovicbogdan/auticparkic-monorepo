@@ -75,8 +75,8 @@ export default function VehicleSelect({
         setAvailableVehicles(() => activeVehicles);
         if (activeVehicles.length === 0) {
           warningNotification(
-            "Greška",
-            "Svi autići su zauzeti ili su označeni kao nedostupni"
+            "Warning",
+            "There are no available vehicles at the moment"
           );
           setShowForm(false);
         }

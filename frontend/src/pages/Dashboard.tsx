@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  ColorModeScript,
   Button,
   ChakraProvider,
   Input,
@@ -21,6 +22,7 @@ import Vehicles from "../components/Dashboard/Vehicles.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { warningNotification } from "../services/notification.ts";
+import theme from "../lib/theme.ts";
 
 type NavItemProps = {
   text: string;
@@ -110,8 +112,8 @@ export default function Dashboard() {
   function addVehicle() {
     if (!vehicleName || !vehicleImage) {
       warningNotification(
-        "Greška",
-        "Proverite da li ste uneli ime i sliku vozila"
+        "Warning",
+        "Check if vehicle name and image are entered"
       );
       return;
     }
@@ -123,8 +125,7 @@ export default function Dashboard() {
     setLoading(true);
     api("/v1/vehicles", "post", payload)
       .then((res) => {
-        if (res.status !== "ok")
-          throw new Error("Dodavanje vozila nije uspelo");
+        if (res.status !== "ok") throw new Error("Vehicle creation failed");
 
         return res.data as number;
       })
@@ -138,7 +139,7 @@ export default function Dashboard() {
         );
       })
       .then((res) => {
-        if (res.status !== "ok") throw new Error("Dodavanje slike nije uspelo");
+        if (res.status !== "ok") throw new Error("Image upload failed");
         getAndSetAvailableVehicles();
         setIsAddVehicleSliderOpen(false);
         setVehicleName("");
@@ -153,7 +154,7 @@ export default function Dashboard() {
 
   function updateVehicleData(vehicleId: number, payload: any) {
     if (!payload.vehicleName) {
-      warningNotification("Greška", "Proverite da li je ime vozila uneto");
+      warningNotification("Warning", "Check if vehicle name is entered");
       return;
     }
 
@@ -162,8 +163,8 @@ export default function Dashboard() {
       .then((res) => {
         if (res.status !== "ok") {
           warningNotification(
-            "Greška",
-            "Došlo je do greške, proverite da li se vozilo trenutno koristi u vožnji"
+            "Warning",
+            "An error occurred, check if the vehicle is currently in use"
           );
           throw new Error("Update nije uspeo");
         }
@@ -192,7 +193,8 @@ export default function Dashboard() {
   }, [updateVehicle]);
 
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
       <div className="dashboard-root">
         {loading && <Spinner />}
         <div className="dashboard-navbar">
@@ -200,14 +202,14 @@ export default function Dashboard() {
           <nav>
             <ul>
               <NavItem
-                text="Vozila"
+                text="Vehicles"
                 icon={"fa-car-side"}
                 setShowVehicles={setShowVehicles}
                 setShowEmployees={setShowEmployees}
                 isActive={showVehicles}
               />
               <NavItem
-                text="Zaposleni"
+                text="Employees"
                 icon={"fa-user-group"}
                 setShowVehicles={setShowVehicles}
                 setShowEmployees={setShowEmployees}
@@ -237,15 +239,15 @@ export default function Dashboard() {
               <DrawerOverlay />
               <DrawerContent>
                 <DrawerCloseButton />
-                <DrawerHeader>Dodaj novo vozilo</DrawerHeader>
+                <DrawerHeader>Add new vehicle</DrawerHeader>
 
                 <DrawerBody>
                   <p className="font-sm mb-1">
-                    <span className="text-red">*</span> &mdash; obavezna polja
+                    <span className="text-red">*</span> &mdash; required fields
                   </p>
                   <div>
                     <label>
-                      Ime Vozila <span className="text-red">*</span>
+                      Vehicle name <span className="text-red">*</span>
                     </label>
                     <Input
                       type="text"
@@ -254,7 +256,7 @@ export default function Dashboard() {
                   </div>
                   <div className="mt-2">
                     <label htmlFor="upload-image">
-                      Dodaj sliku <span className="text-red">*</span>
+                      Upload image <span className="text-red">*</span>
                       {vehicleImage && (
                         <span className="font-sm text-gray ml-1">
                           {vehicleImage.name}
@@ -279,7 +281,7 @@ export default function Dashboard() {
                     mr={3}
                     onClick={onCloseAddVehicleDrawer}
                   >
-                    Otkaži
+                    Cancel
                   </Button>
                   <Button
                     colorScheme="blue"
@@ -288,7 +290,7 @@ export default function Dashboard() {
                       onCloseAddVehicleDrawer();
                     }}
                   >
-                    Sačuvaj
+                    Add Vehicle
                   </Button>
                 </DrawerFooter>
               </DrawerContent>
@@ -306,7 +308,7 @@ export default function Dashboard() {
             <DrawerOverlay />
             <DrawerContent>
               <DrawerCloseButton />
-              <DrawerHeader>Izmeni vozilo</DrawerHeader>
+              <DrawerHeader>Edit vehicle</DrawerHeader>
 
               <DrawerBody>
                 <div>
@@ -319,11 +321,11 @@ export default function Dashboard() {
                   />
                 </div>
                 <p className="font-sm mb-1">
-                  <span className="text-red">*</span> &mdash; obavezna polja
+                  <span className="text-red">*</span> &mdash; required fields
                 </p>
                 <div>
                   <label>
-                    Novo Ime Vozila <span className="text-red">*</span>
+                    New vehicle name <span className="text-red">*</span>
                   </label>
                   <Input
                     type="text"
@@ -335,8 +337,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <label className="checkbox-label">
-                    Da li je vozilo dostupno?{" "}
-                    <span className="text-red">*</span>
+                    Is vehicle available? <span className="text-red">*</span>
                     <input
                       className="ml-2"
                       type="checkbox"
@@ -354,7 +355,7 @@ export default function Dashboard() {
                   mr={3}
                   onClick={onCloseUpdateVehicleDrawer}
                 >
-                  Otkaži
+                  Cancel
                 </Button>
                 <Button
                   colorScheme="blue"
@@ -368,7 +369,7 @@ export default function Dashboard() {
                     onCloseUpdateVehicleDrawer();
                   }}
                 >
-                  Sačuvaj
+                  Update Vehicle
                 </Button>
               </DrawerFooter>
             </DrawerContent>

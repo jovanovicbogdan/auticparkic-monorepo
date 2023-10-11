@@ -40,7 +40,7 @@ export default function Form(props: FormProps) {
   const [step, setStep] = useState(0);
   const [selectedVehicleId, setSelectedVehicleId] = useState<number>(-1);
 
-  const stepPageTitles = ["Izaberi Autić", "Pregled Izbora"];
+  const stepPageTitles = ["Choose Vehicle", "Choice Preview"];
 
   function createNewRide(vehicleId: number) {
     props.stompClient.publish({
@@ -51,7 +51,7 @@ export default function Form(props: FormProps) {
 
   function nextStep() {
     if (selectedVehicleId === -1) {
-      warningNotification("Greška", "Molimo izaberite autić");
+      warningNotification("Warning", "Please select a vehicle");
       return;
     }
 
@@ -97,16 +97,16 @@ export default function Form(props: FormProps) {
           setSelectedVehicleId={setSelectedVehicleId}
           setShowForm={props.setShowForm}
         />
-        <div className="mt-2">
+        <div className="mt-3 ml-5">
           <button className="btn-beige font-md mr-1" onClick={() => nextStep()}>
-            {step === stepPageTitles.length - 1 ? "Završi" : "Dalje"}
+            {step === stepPageTitles.length - 1 ? "Create Ride" : "Next"}
           </button>
           <button
             disabled={step === 0}
             className="btn-outlined-beige back-btn text-beige font-md"
             onClick={() => prevStep()}
           >
-            Nazad
+            Back
           </button>
         </div>
       </div>
