@@ -58,12 +58,12 @@ export default function Vehicles({
   return (
     <div className="dashboard-tables br-md">
       <div className="dashboard-description">
-        <h2>Vozila</h2>
+        <h2>Vehicles</h2>
         <button
           className="btn-outlined-black text-hover-white font-sm"
           onClick={onOpenAddVehicleDrawer}
         >
-          Dodaj Vozilo
+          Add Vehicle
         </button>
       </div>
       {loading && <Spinner />}
@@ -71,9 +71,9 @@ export default function Vehicles({
         <thead>
           <tr className="font-sm">
             <th></th>
-            <th>VOZILO</th>
+            <th>VEHICLE</th>
             <th>STATUS</th>
-            <th>DODATO</th>
+            <th>DATE ADDED</th>
             <th></th>
           </tr>
         </thead>
@@ -95,7 +95,7 @@ export default function Vehicles({
                   variant="solid"
                   colorScheme={`${vehicle.isActive ? "blue" : "red"}`}
                 >
-                  {vehicle.isActive ? "DOSTUPNO" : "NEDOSTUPNO"}
+                  {vehicle.isActive ? "AVAILABLE" : "UNAVAILABLE"}
                 </Badge>
               </td>
               <td>{new Date(vehicle.createdAt).toLocaleDateString()}</td>
@@ -107,7 +107,7 @@ export default function Vehicles({
                     onOpenUpdateVehicleDrawer();
                   }}
                 >
-                  Izmeni
+                  Edit
                 </a>
               </td>
             </tr>

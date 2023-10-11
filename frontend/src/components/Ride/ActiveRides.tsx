@@ -117,14 +117,14 @@ export default function ActiveRides() {
                 ride.startedAt !== null &&
                 ride.startedAt !== undefined && (
                   <p className="text-beige font-sm">
-                    Vožnja započeta u{" "}
+                    Ride started at{" "}
                     {convertUTCDateToLocalDate(new Date(ride.startedAt))}
                   </p>
                 )}
               {ride.status === Status.STOPPED &&
                 ride.stoppedAt !== undefined && (
                   <p className="text-beige font-sm">
-                    Vožnja zaustavljena u{" "}
+                    Ride stopped at{" "}
                     {convertUTCDateToLocalDate(new Date(ride.stoppedAt))}
                   </p>
                 )}
@@ -138,18 +138,18 @@ export default function ActiveRides() {
                       className="btn-outlined-beige text-beige text-hover-black font-md"
                       onClick={() => restartRide(ride.rideId)}
                     >
-                      Restartuj
+                      Restart
                     </button>
                     <button
                       onClick={() => finishRide(ride.rideId)}
                       className="btn-outlined-beige text-beige text-hover-black font-md"
                     >
-                      Završi
+                      Finish
                     </button>
                   </div>
                 </div>
                 <div className="text-beige font-xl font-md mt-2">
-                  Cena: {ride.price} RSD
+                  Price: {ride.price} RSD
                 </div>
               </div>
             )}
@@ -159,7 +159,7 @@ export default function ActiveRides() {
                   className="btn-outlined-beige text-beige text-hover-black font-md"
                   onClick={() => startRide(ride.rideId)}
                 >
-                  Kreni
+                  Start
                 </button>
               )}
               {ride.status === Status.PAUSED && (
@@ -167,7 +167,7 @@ export default function ActiveRides() {
                   className="btn-outlined-beige text-beige text-hover-black font-md"
                   onClick={() => startRide(ride.rideId)}
                 >
-                  Nastavi
+                  Continue
                 </button>
               )}
               {ride.status === Status.RUNNING && (
@@ -176,13 +176,13 @@ export default function ActiveRides() {
                     className="btn-outlined-beige text-beige text-hover-black font-md"
                     onClick={() => pauseRide(ride.rideId)}
                   >
-                    Pauziraj
+                    Pause
                   </button>
                   <button
                     className="btn-outlined-beige text-beige text-hover-black font-md"
                     onClick={() => stopRide(ride.rideId)}
                   >
-                    Zaustavi
+                    Stop
                   </button>
                 </div>
               )}

@@ -21,7 +21,7 @@ export default function VehicleChoicePreview({
     api(`/v1/vehicles/${vehicleId}`, "get", undefined, controller.signal)
       .then((res) => {
         if (res.status !== "ok")
-          throw new Error("Greška pri dobavljanju vozila");
+          throw new Error("Error while fetching vehicle");
         return res.data as Vehicle;
       })
       .then((vehicle) => {
