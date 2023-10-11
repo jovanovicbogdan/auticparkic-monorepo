@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "auticparkic-api",
-      "image": "bogdanjovanovic/auticparkic-api:30.09.2023.19.04.33",
+      "image": "bogdanjovanovic/auticparkic-api:11.10.2023.17.46.55",
       "essential": true,
       "memory": 512,
       "portMappings": [
