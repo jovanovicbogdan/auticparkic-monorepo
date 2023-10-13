@@ -4,7 +4,7 @@
 - Create `autic_parkic` database
 - Run `./gradlew bootRun` in `backend` directory to start the backend on port 10000
 - Run `npm install` in `frontend` directory to install dependencies
-- Run `npm start:dev` in `frontend` directory to start the frontend on port 3000
+- Run `npm run start:dev` in `frontend` directory to start the frontend on port 3000
 
 ## AWS Beanstalk Environment Configuration
 
