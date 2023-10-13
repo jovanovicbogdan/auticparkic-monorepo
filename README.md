@@ -18,22 +18,22 @@ The application must ensure real-time sync with multiple client instances, displ
 
 ## Application Workflow
 
-Users can register a vehicle, which has a distinct name in the database and an associated image 
-stored on AWS S3. Once a vehicle is registered, rides can be initiated. It's important 
-to note that a vehicle can only be engaged in a single ride at a given time. Rides transition 
-through several distinct statuses: CREATED, RUNNING, PAUSED, STOPPED, and FINISHED. Initially, 
-a ride is in the CREATED state. Once RUNNING, it can either be PAUSED or STOPPED. When a ride is 
-PAUSED, it can be resumed by returning to the RUNNING state. Conversely, a STOPPED ride offers 
-two choices: it can either restart or advance to its FINISHED state. Opting to restart concludes 
-the current ride and launches a new one using the same vehicle. Once designated as FINISHED, a 
-ride's status is fixed and unalterable. A key function is the real-time tabulation and distribution 
-of the elapsed ride time once it's RUNNING. This time calculation disregards any PAUSED intervals. 
-To facilitate this, the database stores arrays of started_at and paused_at timestamps. The computed 
-elapsed time is then shared in real-time to all connected clients using the STOMP WebSocket 
-protocol. Considering the application's need to relay elapsed time updates every second, ongoing 
-rides are temporarily cached in system memory (RAM) using Collections.synchronizedList. This 
-strategy helps avoid recurrent database queries. Given the cap of 20 active rides at any 
-instance, there's no compelling reason to employ comprehensive distributed caching systems like 
+Users can register a vehicle, which has a distinct name in the database and an associated image
+stored on **AWS S3**. Once a vehicle is registered, rides can be initiated. It's important
+to note that a vehicle can only be engaged in a single ride at a given time. Rides transition
+through several distinct statuses: _CREATED_, _RUNNING_, _PAUSED_, _STOPPED_, and _FINISHED_. Initially,
+a ride is in the _CREATED_ state. Once _RUNNING_, it can either be _PAUSED_ or _STOPPED_. When a ride is
+_PAUSED_, it can be resumed by returning to the _RUNNING_ state. Conversely, a _STOPPED_ ride offers
+two choices: it can either restart or advance to its _FINISHED_ state. Opting to restart concludes
+the current ride and launches a new one using the same vehicle. Once designated as _FINISHED_, a
+ride's status is fixed and unalterable. A key function is the real-time tabulation and distribution
+of the elapsed ride time once it's _RUNNING_. This time calculation disregards any _PAUSED_ intervals.
+To facilitate this, the database stores arrays of _started_at_ and _paused_at_ timestamps. The computed
+elapsed time is then shared in real-time to all connected clients using the **STOMP WebSocket**
+protocol. Considering the application's need to relay elapsed time updates every second, ongoing
+rides are temporarily cached in system memory (_RAM_) using `Collections.synchronizedList`. This
+strategy helps avoid recurrent database queries. Given the cap of 20 active rides at any
+instance, there's no compelling reason to employ comprehensive distributed caching systems like
 Redis or memcached.
 
 ## License
